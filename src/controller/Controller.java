@@ -6,6 +6,7 @@
 package controller;
 
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -14,35 +15,35 @@ import java.awt.event.WindowEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.bytedeco.javacv.FrameGrabber;
+
 import model.Mosaic;
 import view.MainWindow;
 import view.AboutDialog;
 
 /**
  * Controller class.
- * 
- * @author Erick
  */
 public class Controller extends WindowAdapter implements ActionListener, ChangeListener {
     private Mosaic mosaic;
     private MainWindow mainWindow;
     private AboutDialog about;
+    private final JFileChooser fileChooser;
     
     /**
      * Controller constructor.
-     * 
-     * @author Erick
      */
     public Controller() {
         mosaic = null;
         mainWindow = null;
         about = null;
+        fileChooser = new JFileChooser();
     }
     
     /**
      * Perform components action commands.
-     *
-     * @author Erick
      * @param e Action event
      */
     // <editor-fold defaultstate="collapsed" desc="Perform components action commands">
@@ -65,13 +66,13 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             /* Menu bar */
             /* Fiile menu */
             case "fileMenu": return;
-            case "newFile": return;
-            case "openFile": return;
-            case "save": return;
-            case "saveAs": return;
-            case "exportMosaicMenu": return;
-            case "exportPiecesMenu": return;
-            case "close": return;
+            case "newFile": newFile(); return;
+            case "openFile": openFile(); return;
+            case "save": save(); return;
+            case "saveAs": saveAs(); return;
+            case "exportMosaicMenu": exportMosaic(); return;
+            case "exportPiecesMenu": exportPieces(); return;
+            case "close": close(); return;
             case "exit": exit(); return;
             
             /* About menu */
@@ -80,14 +81,14 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             
             /* Tabbed pane */
             /* Frame tab */
-            case "openVideo": return;
+            case "openVideo": openVideo(); return;
             
             /* Mosaic tab */
-            case "generate": return;
-            case "exportMosaicButton": return;
+            case "generate": generate(); return;
+            case "exportMosaicButton": exportMosaic(); return;
             
             /* Pieces tab */
-            case "exportPiecesButton": return;
+            case "exportPiecesButton": exportPieces(); return;
             
             /* Unknow */
             default: System.err.println("Error: unknow command \"" + command + "\"");
@@ -98,8 +99,6 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
 
     /**
      * Perform state changed
-     *
-     * @author Erick
      * @param e Change event
      */
     @Override
@@ -111,8 +110,6 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     /**
      * Close connections and terminate application.
-     * 
-     * @author Erick
      * @param e Event.
      */
     @Override
@@ -124,8 +121,6 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     /**
      * Initialize Model-View-Controller.
-     *
-     * @author Erick
      */
     // <editor-fold defaultstate="collapsed" desc="Initialize Model-View-Controller">
     public void initMVC()
@@ -143,6 +138,9 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             /* Show main window */
             mainWindow.setExtendedState(MainWindow.MAXIMIZED_BOTH);
             mainWindow.setVisible(true);
+            
+            /* Set components to default closed state */
+            mainWindow.reset();
         }
         else {
             System.err.println("Error: could not initialize MVC application.");
@@ -154,13 +152,11 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     
     /**
-     * Setters
+     * MVC setters
      */
     
     /**
      * Set the mosaic model.
-     * 
-     * @author Erick
      * @param model Mosaic model.
      */
     public void setMosaic(Mosaic model) {
@@ -169,8 +165,6 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     /**
      * Set the main window.
-     * 
-     * @author Erick
      * @param view Main window.
      */
     public void setMainWindow(MainWindow view) {
@@ -179,8 +173,6 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     /**
      * Set the about dialog.
-     * 
-     * @author Erick
      * @param view About dialog.
      */
     public void setAbout(AboutDialog view) {
@@ -189,24 +181,132 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     
     
     /**
-     * Components action commands
+     * Components action commands.
      */
     
     /**
-     * Exit application.
-     * 
-     * @author Erick
+     * Discard everything and create a new Mosaicator project by opening a new
+     * video.
+     */
+    public void newFile() {
+        close();
+        openVideo();
+    }
+    
+    /**
+     * Open new Mosaicator project file.
+     */
+    public void openFile() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            try {
+                // Read Mosaicator project file
+                mosaic.openVideo(fileChooser.getSelectedFile());
+            } catch (FrameGrabber.Exception ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    /**
+     * Save Mosaicator project file.
+     */
+    public void save() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            
+        }
+    }
+    
+    /**
+     * Save Mosaicator project file as.
+     */
+    public void saveAs() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            
+        }
+    }
+    
+    /**
+     * Export mosaic as image.
+     */
+    public void exportMosaic() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            
+        }
+    }
+    
+    /**
+     * Export posaic pieces as image.
+     */
+    public void exportPieces() {
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            String path = fileChooser.getSelectedFile().getAbsolutePath();
+            
+        }
+    }
+    
+    /**
+     * Close current Mosaicator project and release resources.
+     */
+    public void close() {
+        mainWindow.reset();
+        try {
+            mosaic.closeVideo();
+        } catch (FrameGrabber.Exception ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error cerrando el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    /**
+     * Release resources and exit the Mosaicator application.
      */
     public void exit() {
         mainWindow.dispose();
+        close();
     }
     
     /**
      * Show about dialog.
-     * 
-     * @author Erick
      */
     public void about() {
         about.setVisible(true);
+    }
+    
+    /**
+     * Open video file.
+     */
+    public void openVideo() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        
+        if (fileChooser.showOpenDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            try {
+                mosaic.openVideo(fileChooser.getSelectedFile());
+                mainWindow.setVideoMetadata(mosaic.getVideoMetadata());
+            } catch (FrameGrabber.Exception ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    /**
+     * Generate mosaic.
+     */
+    public void generate() {
+        
     }
 }
