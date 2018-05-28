@@ -5,8 +5,12 @@
  */
 package controller;
 
+import java.io.File;
+
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.JSpinner;
+import javax.swing.JSlider;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -104,7 +108,16 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     @Override
     // <editor-fold defaultstate="collapsed" desc="Perform component state changed">
     public void stateChanged(ChangeEvent e) {
+        Object source = e.getSource();
         
+        if ((source instanceof JSlider) || (source instanceof JSpinner)) {
+            try {
+                mainWindow.setFrame(mosaic.getFrame(mainWindow.getFrameNumber()));
+            } catch (FrameGrabber.Exception ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, "No se puede obtener el cuadro:\n", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
     // </editor-fold>
     
@@ -202,7 +215,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
                 // Read Mosaicator project file
-                mosaic.openVideo(fileChooser.getSelectedFile());
+                File file = fileChooser.getSelectedFile();
+                mosaic.openVideo(file);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -296,6 +310,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             try {
                 mosaic.openVideo(fileChooser.getSelectedFile());
                 mainWindow.setVideoMetadata(mosaic.getVideoMetadata());
+                mainWindow.setFrame(mosaic.getFrame(0));
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
