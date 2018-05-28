@@ -143,9 +143,6 @@
       <Dimension value="[640, 400]"/>
     </Property>
     <Property name="name" type="java.lang.String" value="frame" noResource="true"/>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[640, 400]"/>
-    </Property>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
@@ -248,34 +245,38 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="fpsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="framesLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="videoWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="videoHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="formatLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="sizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="pathLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="lengthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="nameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="fpsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="framesLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="videoWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="videoHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="formatLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="sizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="pathLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="lengthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="nameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="nameValue" pref="81" max="32767" attributes="0"/>
+                                      <Component id="lengthValue" max="32767" attributes="0"/>
+                                      <Component id="pathValue" max="32767" attributes="0"/>
+                                      <Component id="sizeValue" max="32767" attributes="0"/>
+                                      <Component id="formatValue" max="32767" attributes="0"/>
+                                      <Component id="videoHeightValue" max="32767" attributes="0"/>
+                                      <Component id="videoWidthValue" max="32767" attributes="0"/>
+                                      <Component id="framesValue" max="32767" attributes="0"/>
+                                      <Component id="fpsValue" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="openVideo" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="nameValue" pref="81" max="32767" attributes="0"/>
-                              <Component id="lengthValue" max="32767" attributes="0"/>
-                              <Component id="pathValue" max="32767" attributes="0"/>
-                              <Component id="sizeValue" max="32767" attributes="0"/>
-                              <Component id="formatValue" max="32767" attributes="0"/>
-                              <Component id="videoHeightValue" max="32767" attributes="0"/>
-                              <Component id="videoWidthValue" max="32767" attributes="0"/>
-                              <Component id="framesValue" max="32767" attributes="0"/>
-                              <Component id="fpsValue" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="openVideo" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -695,28 +696,32 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="splisLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="samplingLevelLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                              <Component id="scaleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="splisLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="samplingLevelLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="scaleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="samplingLevelValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="splitsValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="mosaicWidthValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="scaleValue" alignment="1" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="0" pref="4" max="32767" attributes="0"/>
+                                  <Component id="generate" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="samplingLevelValue" alignment="0" max="32767" attributes="0"/>
-                              <Component id="splitsValue" alignment="1" max="32767" attributes="0"/>
-                              <Component id="mosaicWidthValue" alignment="0" max="32767" attributes="0"/>
-                              <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
-                              <Component id="scaleValue" alignment="1" max="32767" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace pref="14" max="32767" attributes="0"/>
-                          <Component id="generate" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -882,7 +887,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                      <Component id="piecesPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane1" pref="409" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -895,7 +900,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jScrollPane1" max="32767" attributes="0"/>
-                          <Component id="jPanel1" pref="329" max="32767" attributes="0"/>
+                          <Component id="piecesPanel" pref="329" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -903,13 +908,14 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="jPanel1">
+            <Container class="javax.swing.JPanel" name="piecesPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Piezas"/>
                   </Border>
                 </Property>
+                <Property name="name" type="java.lang.String" value="piecesPanel" noResource="true"/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[200, 277]"/>
                 </Property>
@@ -920,15 +926,19 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="piecesLabel" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="piecesLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="piecesValue" pref="75" max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="exportPiecesButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jTextField1" pref="75" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
-                          <Component id="exportPiecesButton" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -938,7 +948,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="piecesLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jTextField1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="piecesValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="exportPiecesButton" min="-2" max="-2" attributes="0"/>
@@ -954,18 +964,20 @@
                     <Property name="name" type="java.lang.String" value="piecesLabel" noResource="true"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JButton" name="exportPiecesButton">
-                  <Properties>
-                    <Property name="mnemonic" type="int" value="69"/>
-                    <Property name="text" type="java.lang.String" value="Exportar..."/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JTextField" name="jTextField1">
+                <Component class="javax.swing.JTextField" name="piecesValue">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="null"/>
                     </Property>
+                    <Property name="name" type="java.lang.String" value="piecesValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="exportPiecesButton">
+                  <Properties>
+                    <Property name="mnemonic" type="int" value="69"/>
+                    <Property name="text" type="java.lang.String" value="Exportar..."/>
+                    <Property name="name" type="java.lang.String" value="exportPiecesButton" noResource="true"/>
                   </Properties>
                 </Component>
               </SubComponents>

@@ -101,10 +101,10 @@ public class MainWindow extends javax.swing.JFrame {
         exportMosaicButton = new javax.swing.JButton();
         mosaicPreview = new javax.swing.JPanel();
         piecesTab = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
+        piecesPanel = new javax.swing.JPanel();
         piecesLabel = new javax.swing.JLabel();
+        piecesValue = new javax.swing.JTextField();
         exportPiecesButton = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -127,7 +127,6 @@ public class MainWindow extends javax.swing.JFrame {
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/resources/icon.png")).getImage());
         setMinimumSize(new java.awt.Dimension(640, 400));
         setName("frame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(640, 400));
 
         tabbedPane.setName("tabbedPane"); // NOI18N
 
@@ -211,31 +210,33 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(videoPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fpsLabel)
-                    .addComponent(framesLabel)
-                    .addComponent(videoWidthLabel)
-                    .addComponent(videoHeightLabel)
-                    .addComponent(formatLabel)
-                    .addComponent(sizeLabel)
-                    .addComponent(pathLabel)
-                    .addComponent(lengthLabel)
-                    .addComponent(nameLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(nameValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                    .addComponent(lengthValue)
-                    .addComponent(pathValue)
-                    .addComponent(sizeValue)
-                    .addComponent(formatValue)
-                    .addComponent(videoHeightValue)
-                    .addComponent(videoWidthValue)
-                    .addComponent(framesValue)
-                    .addComponent(fpsValue))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fpsLabel)
+                            .addComponent(framesLabel)
+                            .addComponent(videoWidthLabel)
+                            .addComponent(videoHeightLabel)
+                            .addComponent(formatLabel)
+                            .addComponent(sizeLabel)
+                            .addComponent(pathLabel)
+                            .addComponent(lengthLabel)
+                            .addComponent(nameLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(nameValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                            .addComponent(lengthValue)
+                            .addComponent(pathValue)
+                            .addComponent(sizeValue)
+                            .addComponent(formatValue)
+                            .addComponent(videoHeightValue)
+                            .addComponent(videoWidthValue)
+                            .addComponent(framesValue)
+                            .addComponent(fpsValue)))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(openVideo)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(videoPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(openVideo)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         videoPanelLayout.setVerticalGroup(
             videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,25 +458,27 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(mosaicPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(splisLabel)
-                    .addComponent(mosaicHeightLabel)
-                    .addComponent(mosaicWidthLabel)
-                    .addComponent(samplingLevelLabel)
-                    .addComponent(scaleLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(samplingLevelValue)
-                    .addComponent(splitsValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(mosaicWidthValue)
-                    .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(splisLabel)
+                            .addComponent(mosaicHeightLabel)
+                            .addComponent(mosaicWidthLabel)
+                            .addComponent(samplingLevelLabel)
+                            .addComponent(scaleLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(samplingLevelValue)
+                            .addComponent(splitsValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(mosaicWidthValue)
+                            .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addGap(0, 4, Short.MAX_VALUE)
+                        .addComponent(generate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exportMosaicButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(mosaicPanelLayout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
-                .addComponent(generate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exportMosaicButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mosaicPanelLayout.setVerticalGroup(
             mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -545,40 +548,45 @@ public class MainWindow extends javax.swing.JFrame {
 
         piecesTab.setName("piecesTab"); // NOI18N
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Piezas"));
-        jPanel1.setPreferredSize(new java.awt.Dimension(200, 277));
+        piecesPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Piezas"));
+        piecesPanel.setName("piecesPanel"); // NOI18N
+        piecesPanel.setPreferredSize(new java.awt.Dimension(200, 277));
 
         piecesLabel.setText("Número de piezas:");
         piecesLabel.setName("piecesLabel"); // NOI18N
 
+        piecesValue.setEditable(false);
+        piecesValue.setBorder(null);
+        piecesValue.setName("piecesValue"); // NOI18N
+
         exportPiecesButton.setMnemonic('E');
         exportPiecesButton.setText("Exportar...");
+        exportPiecesButton.setName("exportPiecesButton"); // NOI18N
 
-        jTextField1.setEditable(false);
-        jTextField1.setBorder(null);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout piecesPanelLayout = new javax.swing.GroupLayout(piecesPanel);
+        piecesPanel.setLayout(piecesPanelLayout);
+        piecesPanelLayout.setHorizontalGroup(
+            piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(piecesLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(piecesPanelLayout.createSequentialGroup()
+                        .addComponent(piecesLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, piecesPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(exportPiecesButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(exportPiecesButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        piecesPanelLayout.setVerticalGroup(
+            piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(piecesLabel)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(piecesValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(exportPiecesButton)
                 .addContainerGap(240, Short.MAX_VALUE))
@@ -590,7 +598,7 @@ public class MainWindow extends javax.swing.JFrame {
             piecesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(piecesTabLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(piecesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
                 .addContainerGap())
@@ -601,7 +609,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(piecesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
+                    .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -725,14 +733,14 @@ public class MainWindow extends javax.swing.JFrame {
         about.setActionCommand(about.getName());
         
         /* Tabbed panel */
-        /* Frame panel */
+        /* Frame tab */
         openVideo.setActionCommand(openVideo.getName());
         
-        /* Mosaic panel */
+        /* Mosaic tab */
         generate.setActionCommand(generate.getName());
         exportMosaicButton.setActionCommand(exportMosaicButton.getName());
         
-        /* Pieces panel */
+        /* Pieces tab */
         exportPiecesButton.setActionCommand(exportPiecesButton.getName());
     }
     // </editor-fold>
@@ -779,6 +787,74 @@ public class MainWindow extends javax.swing.JFrame {
     }
     // </editor-fold>
     
+    /**
+     * Set component enabled status
+     *
+     * @author Erick
+     * @param name Component name
+     * @param enabled Enabled status
+     */
+    // <editor-fold defaultstate="collapsed" desc="Set component enabled status">
+    public void setComponentEnabled(String name, boolean enabled) {
+        /* NULL name */
+        if (name == null) {
+            System.err.println("Error: empty component name");
+            return;
+        }
+        
+        /* Handle name */
+        switch (name) {
+            /* Menu bar */
+            case "menuBar": menuBar.setEnabled(enabled); return;
+            
+            /* File menu */
+            case "fileMenu": fileMenu.setEnabled(enabled); return;
+            case "newFile": newFile.setEnabled(enabled); return;
+            case "openFile": openFile.setEnabled(enabled); return;
+            case "save": save.setEnabled(enabled); return;
+            case "saveAs": saveAs.setEnabled(enabled); return;
+            case "exportMosaicMenu": exportMosaicMenu.setEnabled(enabled); return;
+            case "exportPiecesMenu": exportPiecesMenu.setEnabled(enabled); return;
+            case "close": close.setEnabled(enabled); return;
+            case "exit": exit.setEnabled(enabled); return;
+            
+            /* Help menu */
+            case "helpMenu": helpMenu.setEnabled(enabled); return;
+            case "about": about.setEnabled(enabled); return;
+            
+            
+            /* Tabbed pane */
+            case "tabbedPane": tabbedPane.setEnabled(enabled); return;
+            
+            /* Frame tab */
+            case "frameTab": frameTab.setEnabled(enabled); return;
+            case "videoPanel": videoPanel.setEnabled(enabled); return;
+            case "openVideo": openVideo.setEnabled(enabled); return;
+            case "frameControlPanel": frameControlPanel.setEnabled(enabled); return;
+            case "hourValue": hourValue.setEnabled(enabled); return;
+            case "minuteValue": minuteValue.setEnabled(enabled); return;
+            case "secondValue": secondValue.setEnabled(enabled); return;
+            case "milisecondValue": milisecondValue.setEnabled(enabled); return;
+            case "frameValue": frameValue.setEnabled(enabled); return;
+            case "frameSlider": frameSlider.setEnabled(enabled); return;
+            
+            /* Mosaic tab */
+            case "mosaicTab": mosaicTab.setEnabled(enabled); return;
+            case "mosaicPanel": mosaicPanel.setEnabled(enabled); return;
+            case "generate": generate.setEnabled(enabled); return;
+            case "exportMosaicButton": exportMosaicButton.setEnabled(enabled); return;
+            
+            /* Pirces tab */
+            case "piecesTab": piecesTab.setEnabled(enabled); return;
+            case "piecesPanel": piecesPanel.setEnabled(enabled); return;
+            case "exportPiecesButton": exportPiecesButton.setEnabled(enabled); return;
+            
+            /* Unknow */
+            default: System.err.println("Error: unknow component \"" + name + "\"");
+        }
+    }
+    // </editor-fold>
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem about;
     private javax.swing.JMenuItem close;
@@ -807,9 +883,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel hourLabel;
     private javax.swing.JSpinner hourValue;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lengthLabel;
     private javax.swing.JTextField lengthValue;
     private javax.swing.JMenuBar menuBar;
@@ -830,7 +904,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel pathLabel;
     private javax.swing.JTextField pathValue;
     private javax.swing.JLabel piecesLabel;
+    private javax.swing.JPanel piecesPanel;
     private javax.swing.JPanel piecesTab;
+    private javax.swing.JTextField piecesValue;
     private javax.swing.JLabel samplingLevelLabel;
     private javax.swing.JSpinner samplingLevelValue;
     private javax.swing.JMenuItem save;

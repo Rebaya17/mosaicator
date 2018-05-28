@@ -24,9 +24,9 @@ import view.AboutDialog;
  * @author Erick
  */
 public class Controller extends WindowAdapter implements ActionListener, ChangeListener {
-    Mosaic mosaic;
-    MainWindow mainWindow;
-    AboutDialog about;
+    private Mosaic mosaic;
+    private MainWindow mainWindow;
+    private AboutDialog about;
     
     /**
      * Controller constructor.
@@ -65,14 +65,29 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             /* Menu bar */
             /* Fiile menu */
             case "fileMenu": return;
-            
-            /* Edit menu */
-            case "editMenu": return;
+            case "newFile": return;
+            case "openFile": return;
+            case "save": return;
+            case "saveAs": return;
+            case "exportMosaicMenu": return;
+            case "exportPiecesMenu": return;
+            case "close": return;
+            case "exit": exit(); return;
             
             /* About menu */
             case "helpMenu": return;
             case "about": about(); return;
             
+            /* Tabbed pane */
+            /* Frame tab */
+            case "openVideo": return;
+            
+            /* Mosaic tab */
+            case "generate": return;
+            case "exportMosaicButton": return;
+            
+            /* Pieces tab */
+            case "exportPiecesButton": return;
             
             /* Unknow */
             default: System.err.println("Error: unknow command \"" + command + "\"");
