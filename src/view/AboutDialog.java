@@ -7,15 +7,11 @@ package view;
 
 /**
  * About dialog class.
- * 
- * @author Erick
  */
 public class AboutDialog extends javax.swing.JDialog
 {
     /**
      * Creates new form About.
-     * 
-     * @author Erick
      * @param parent Parent object
      */
     public AboutDialog(java.awt.Frame parent)
@@ -152,8 +148,6 @@ public class AboutDialog extends javax.swing.JDialog
 
     /**
      * Dialog closed.
-     * 
-     * @author Erick
      * @param evt Event
      */
     private void closeDialog(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_closeDialog
@@ -162,8 +156,6 @@ public class AboutDialog extends javax.swing.JDialog
 
     /**
      * Accept button pressed.
-     * 
-     * @author Erick
      * @param evt Event
      */
     private void acceptActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_acceptActionPerformed
@@ -173,8 +165,6 @@ public class AboutDialog extends javax.swing.JDialog
     
     /**
      * Close the dialog.
-     * 
-     * @author Erick
      */
     private void close()
     {
