@@ -13,14 +13,10 @@ import controller.Controller;
 
 /**
  * Mosaicator class.
- * 
- * @author Erick
  */
 public class Mosaicator {
     /**
      * Main function.
-     * 
-     * @author Erick
      * @param args command line arguments.
      */
     public static void main(String[] args) {
