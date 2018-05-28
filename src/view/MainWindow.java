@@ -5,16 +5,30 @@
  */
 package view;
 
+import javax.swing.event.ChangeEvent;
+
+import java.awt.Component;
+import java.awt.Container;
+
+import javax.swing.SpinnerNumberModel;
+import javax.swing.DefaultBoundedRangeModel;
+
+import java.awt.image.BufferedImage;
+import java.awt.Rectangle;
+
 import controller.Controller;
+import model.VideoMetadata;
 
 /**
  * Main window class.
- * 
- * @author Erick
  */
 public class MainWindow extends javax.swing.JFrame {
+    private BufferedImage frame;
+    private BufferedImage mosaic;
+    private VideoMetadata videoMetadata;
+    
     /**
-     * Creates new form MainWindow
+     * Creates new form MainWindow.
      */
     public MainWindow() {
         /* Set the Nimbus look and feel */
@@ -36,9 +50,12 @@ public class MainWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
         
-        /* Init and setup components */
+        /* Initialize and setup components */
+        frame = null;
+        mosaic = null;
         initComponents();
         setupComponents();
+        
     }
 
     /**
@@ -53,26 +70,26 @@ public class MainWindow extends javax.swing.JFrame {
         tabbedPane = new javax.swing.JTabbedPane();
         frameTab = new javax.swing.JPanel();
         videoPanel = new javax.swing.JPanel();
-        nameLabel = new javax.swing.JLabel();
-        nameValue = new javax.swing.JTextField();
-        pathLabel = new javax.swing.JLabel();
-        pathValue = new javax.swing.JTextField();
-        sizeLabel = new javax.swing.JLabel();
-        sizeValue = new javax.swing.JTextField();
-        formatLabel = new javax.swing.JLabel();
-        formatValue = new javax.swing.JTextField();
-        videoHeightLabel = new javax.swing.JLabel();
-        videoHeightValue = new javax.swing.JTextField();
+        videoNameLabel = new javax.swing.JLabel();
+        videoNameValue = new javax.swing.JTextField();
+        videoPathLabel = new javax.swing.JLabel();
+        videoPathValue = new javax.swing.JTextField();
+        videoSizeLabel = new javax.swing.JLabel();
+        videoSizeValue = new javax.swing.JTextField();
+        videoFormatLabel = new javax.swing.JLabel();
+        videoFormatValue = new javax.swing.JTextField();
         videoWidthLabel = new javax.swing.JLabel();
         videoWidthValue = new javax.swing.JTextField();
-        lengthLabel = new javax.swing.JLabel();
-        lengthValue = new javax.swing.JTextField();
-        framesLabel = new javax.swing.JLabel();
-        framesValue = new javax.swing.JTextField();
-        fpsLabel = new javax.swing.JLabel();
-        fpsValue = new javax.swing.JTextField();
+        videoHeightLabel = new javax.swing.JLabel();
+        videoHeightValue = new javax.swing.JTextField();
+        videoLengthLabel = new javax.swing.JLabel();
+        videoLengthValue = new javax.swing.JTextField();
+        videoFramesLabel = new javax.swing.JLabel();
+        videoFramesValue = new javax.swing.JTextField();
+        videoFpsLabel = new javax.swing.JLabel();
+        videoFpsValue = new javax.swing.JTextField();
         openVideo = new javax.swing.JButton();
-        frameControlPanel = new javax.swing.JPanel();
+        frameSelectorPanel = new javax.swing.JPanel();
         hourLabel = new javax.swing.JLabel();
         hourValue = new javax.swing.JSpinner();
         colon1 = new javax.swing.JLabel();
@@ -84,7 +101,21 @@ public class MainWindow extends javax.swing.JFrame {
         frameLabel = new javax.swing.JLabel();
         frameValue = new javax.swing.JSpinner();
         frameSlider = new javax.swing.JSlider();
-        framePreview = new javax.swing.JPanel();
+        frameViewPort = new javax.swing.JPanel() {
+            @Override
+            protected void paintComponent(java.awt.Graphics g)
+            {
+                super.paintComponent(g);
+
+                Rectangle image = new Rectangle();
+                if (frame != null) {
+                    image.setBounds(0, 0, frame.getWidth(), frame.getHeight());
+                    image = fitAndCenter(image, getBounds());
+                }
+
+                g.drawImage(frame, image.x, image.y, image.width, image.height, this);
+            }
+        };
         mosaicTab = new javax.swing.JPanel();
         mosaicPanel = new javax.swing.JPanel();
         splisLabel = new javax.swing.JLabel();
@@ -93,19 +124,34 @@ public class MainWindow extends javax.swing.JFrame {
         samplingLevelValue = new javax.swing.JSpinner();
         scaleLabel = new javax.swing.JLabel();
         scaleValue = new javax.swing.JSpinner();
-        mosaicHeightLabel = new javax.swing.JLabel();
-        mosaicHeightValue = new javax.swing.JSpinner();
         mosaicWidthLabel = new javax.swing.JLabel();
         mosaicWidthValue = new javax.swing.JSpinner();
+        mosaicHeightLabel = new javax.swing.JLabel();
+        mosaicHeightValue = new javax.swing.JSpinner();
         generate = new javax.swing.JButton();
         exportMosaicButton = new javax.swing.JButton();
-        mosaicPreview = new javax.swing.JPanel();
+        mosaicViewPort = new javax.swing.JPanel() {
+            @Override
+            protected void paintComponent(java.awt.Graphics g)
+            {
+                super.paintComponent(g);
+
+                Rectangle image = new Rectangle();
+                if (mosaic != null) {
+                    image.setBounds(0, 0, mosaic.getWidth(), mosaic.getHeight());
+                    image = fitAndCenter(image, getBounds());
+                }
+
+                g.drawImage(mosaic, image.x, image.y, image.width, image.height, this);
+            }
+        };
         piecesTab = new javax.swing.JPanel();
         piecesPanel = new javax.swing.JPanel();
         piecesLabel = new javax.swing.JLabel();
         piecesValue = new javax.swing.JTextField();
         exportPiecesButton = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        piecesScroll = new javax.swing.JScrollPane();
+        piecesCanvas = new javax.swing.JPanel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newFile = new javax.swing.JMenuItem();
@@ -126,7 +172,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTitle("Mosaicator");
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/resources/icon.png")).getImage());
         setMinimumSize(new java.awt.Dimension(640, 400));
-        setName("frame"); // NOI18N
+        setName("mainWindow"); // NOI18N
 
         tabbedPane.setName("tabbedPane"); // NOI18N
 
@@ -136,40 +182,33 @@ public class MainWindow extends javax.swing.JFrame {
         videoPanel.setName("videoPanel"); // NOI18N
         videoPanel.setPreferredSize(new java.awt.Dimension(200, 277));
 
-        nameLabel.setText("Nombre:");
-        nameLabel.setName("nameLabel"); // NOI18N
+        videoNameLabel.setText("Nombre:");
+        videoNameLabel.setName("videoNameLabel"); // NOI18N
 
-        nameValue.setEditable(false);
-        nameValue.setBorder(null);
-        nameValue.setName("nameValue"); // NOI18N
+        videoNameValue.setEditable(false);
+        videoNameValue.setBorder(null);
+        videoNameValue.setName("videoNameValue"); // NOI18N
 
-        pathLabel.setText("Ubicación:");
-        pathLabel.setName("pathLabel"); // NOI18N
+        videoPathLabel.setText("Ubicación:");
+        videoPathLabel.setName("videoPathLabel"); // NOI18N
 
-        pathValue.setEditable(false);
-        pathValue.setBorder(null);
-        pathValue.setName("pathValue"); // NOI18N
+        videoPathValue.setEditable(false);
+        videoPathValue.setBorder(null);
+        videoPathValue.setName("videoPathValue"); // NOI18N
 
-        sizeLabel.setText("Tamaño:");
-        sizeLabel.setName("sizeLabel"); // NOI18N
+        videoSizeLabel.setText("Tamaño:");
+        videoSizeLabel.setName("videoSizeLabel"); // NOI18N
 
-        sizeValue.setEditable(false);
-        sizeValue.setBorder(null);
-        sizeValue.setName("sizeValue"); // NOI18N
+        videoSizeValue.setEditable(false);
+        videoSizeValue.setBorder(null);
+        videoSizeValue.setName("videoSizeValue"); // NOI18N
 
-        formatLabel.setText("Formato:");
-        formatLabel.setName("formatLabel"); // NOI18N
+        videoFormatLabel.setText("Formatos:");
+        videoFormatLabel.setName("videoFormatLabel"); // NOI18N
 
-        formatValue.setEditable(false);
-        formatValue.setBorder(null);
-        formatValue.setName("formatValue"); // NOI18N
-
-        videoHeightLabel.setText("Alto:");
-        videoHeightLabel.setName("videoHeightLabel"); // NOI18N
-
-        videoHeightValue.setEditable(false);
-        videoHeightValue.setBorder(null);
-        videoHeightValue.setName("videoHeightValue"); // NOI18N
+        videoFormatValue.setEditable(false);
+        videoFormatValue.setBorder(null);
+        videoFormatValue.setName("videoFormatValue"); // NOI18N
 
         videoWidthLabel.setText("Ancho:");
         videoWidthLabel.setName("videoWidthLabel"); // NOI18N
@@ -178,26 +217,34 @@ public class MainWindow extends javax.swing.JFrame {
         videoWidthValue.setBorder(null);
         videoWidthValue.setName("videoWidthValue"); // NOI18N
 
-        lengthLabel.setText("Diración:");
-        lengthLabel.setName("lengthLabel"); // NOI18N
+        videoHeightLabel.setText("Alto:");
+        videoHeightLabel.setName("videoHeightLabel"); // NOI18N
 
-        lengthValue.setEditable(false);
-        lengthValue.setBorder(null);
-        lengthValue.setName("lengthValue"); // NOI18N
+        videoHeightValue.setEditable(false);
+        videoHeightValue.setBorder(null);
+        videoHeightValue.setName("videoHeightValue"); // NOI18N
 
-        framesLabel.setText("Cuadros:");
-        framesLabel.setName("framesLabel"); // NOI18N
+        videoLengthLabel.setText("Duración:");
+        videoLengthLabel.setName("videoLengthLabel"); // NOI18N
 
-        framesValue.setEditable(false);
-        framesValue.setBorder(null);
-        framesValue.setName("pathValue"); // NOI18N
+        videoLengthValue.setEditable(false);
+        videoLengthValue.setToolTipText("HH:MM:SS,MS");
+        videoLengthValue.setBorder(null);
+        videoLengthValue.setName("videoLengthValue"); // NOI18N
 
-        fpsLabel.setText("Tasa de cuadros:");
-        fpsLabel.setName("fpsLabel"); // NOI18N
+        videoFramesLabel.setText("Cuadros:");
+        videoFramesLabel.setName("videoFramesLabel"); // NOI18N
 
-        fpsValue.setEditable(false);
-        fpsValue.setBorder(null);
-        fpsValue.setName("fpsValue"); // NOI18N
+        videoFramesValue.setEditable(false);
+        videoFramesValue.setBorder(null);
+        videoFramesValue.setName("pathValue"); // NOI18N
+
+        videoFpsLabel.setText("Tasa de cuadros:");
+        videoFpsLabel.setName("videoFpsLabel"); // NOI18N
+
+        videoFpsValue.setEditable(false);
+        videoFpsValue.setBorder(null);
+        videoFpsValue.setName("videoFpsValue"); // NOI18N
 
         openVideo.setMnemonic('A');
         openVideo.setText("Abrir...");
@@ -212,30 +259,34 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(videoPanelLayout.createSequentialGroup()
                         .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(fpsLabel)
-                            .addComponent(framesLabel)
-                            .addComponent(videoWidthLabel)
-                            .addComponent(videoHeightLabel)
-                            .addComponent(formatLabel)
-                            .addComponent(sizeLabel)
-                            .addComponent(pathLabel)
-                            .addComponent(lengthLabel)
-                            .addComponent(nameLabel))
+                            .addComponent(videoFpsLabel)
+                            .addComponent(videoFramesLabel)
+                            .addComponent(videoLengthLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(nameValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                            .addComponent(lengthValue)
-                            .addComponent(pathValue)
-                            .addComponent(sizeValue)
-                            .addComponent(formatValue)
-                            .addComponent(videoHeightValue)
-                            .addComponent(videoWidthValue)
-                            .addComponent(framesValue)
-                            .addComponent(fpsValue)))
+                            .addComponent(videoLengthValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                            .addComponent(videoFramesValue)
+                            .addComponent(videoFpsValue)))
                     .addGroup(videoPanelLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(openVideo)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(videoPathLabel)
+                            .addComponent(videoSizeLabel)
+                            .addComponent(videoNameLabel)
+                            .addComponent(videoFormatLabel)
+                            .addComponent(videoWidthLabel)
+                            .addComponent(videoHeightLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(videoHeightValue)
+                            .addComponent(videoWidthValue)
+                            .addComponent(videoFormatValue)
+                            .addComponent(videoNameValue)
+                            .addComponent(videoSizeValue)
+                            .addComponent(videoPathValue))))
                 .addContainerGap())
         );
         videoPanelLayout.setVerticalGroup(
@@ -243,114 +294,116 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(videoPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nameLabel)
-                    .addComponent(nameValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoNameLabel)
+                    .addComponent(videoNameValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(pathLabel)
-                    .addComponent(pathValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoPathLabel)
+                    .addComponent(videoPathValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sizeLabel)
-                    .addComponent(sizeValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoSizeLabel)
+                    .addComponent(videoSizeValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(formatLabel)
-                    .addComponent(formatValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(videoHeightLabel)
-                    .addComponent(videoHeightValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoFormatLabel)
+                    .addComponent(videoFormatValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(videoWidthLabel)
                     .addComponent(videoWidthValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(videoHeightLabel)
+                    .addComponent(videoHeightValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lengthLabel)
-                    .addComponent(lengthValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoLengthLabel)
+                    .addComponent(videoLengthValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(framesLabel)
-                    .addComponent(framesValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoFramesLabel)
+                    .addComponent(videoFramesValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fpsLabel)
-                    .addComponent(fpsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(videoFpsLabel)
+                    .addComponent(videoFpsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(openVideo)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(63, Short.MAX_VALUE))
         );
 
-        frameControlPanel.setMinimumSize(new java.awt.Dimension(398, 74));
-        frameControlPanel.setName("frameControlPanel"); // NOI18N
+        frameSelectorPanel.setMinimumSize(new java.awt.Dimension(398, 74));
+        frameSelectorPanel.setName("frameSelectorPanel"); // NOI18N
 
         hourLabel.setText("Tiempo:");
+        hourLabel.setToolTipText("HH:MM:SS:MS");
         hourLabel.setName("hourLabel"); // NOI18N
 
-        hourValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        hourValue.setToolTipText("Horas");
         hourValue.setName("hourValue"); // NOI18N
 
         colon1.setText(":");
         colon1.setToolTipText("");
         colon1.setName("colon1"); // NOI18N
 
-        minuteValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        minuteValue.setToolTipText("Minutos");
         minuteValue.setName("minuteValue"); // NOI18N
 
         colon2.setText(":");
         colon2.setName("colon2"); // NOI18N
 
-        secondValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, 59, 1));
+        secondValue.setToolTipText("Segundos");
         secondValue.setName("secondValue"); // NOI18N
 
         colon3.setText(":");
         colon3.setName("colon3"); // NOI18N
 
-        milisecondValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, 999, 1));
+        milisecondValue.setToolTipText("Milisegundos");
         milisecondValue.setName("milisecondValue"); // NOI18N
 
         frameLabel.setText("Cuadro:");
         frameLabel.setName("frameLabel"); // NOI18N
 
-        frameValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+        frameValue.setMinimumSize(new java.awt.Dimension(60, 20));
         frameValue.setName("frameValue"); // NOI18N
+        frameValue.setPreferredSize(new java.awt.Dimension(60, 20));
 
         frameSlider.setValue(0);
         frameSlider.setName("frameSlider"); // NOI18N
 
-        javax.swing.GroupLayout frameControlPanelLayout = new javax.swing.GroupLayout(frameControlPanel);
-        frameControlPanel.setLayout(frameControlPanelLayout);
-        frameControlPanelLayout.setHorizontalGroup(
-            frameControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout frameSelectorPanelLayout = new javax.swing.GroupLayout(frameSelectorPanel);
+        frameSelectorPanel.setLayout(frameSelectorPanelLayout);
+        frameSelectorPanelLayout.setHorizontalGroup(
+            frameSelectorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(frameSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(frameControlPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(frameSelectorPanelLayout.createSequentialGroup()
+                .addContainerGap(23, Short.MAX_VALUE)
                 .addComponent(hourLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(hourValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(hourValue, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colon1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(minuteValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(minuteValue, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colon2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(secondValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(secondValue, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colon3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(milisecondValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(milisecondValue, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(frameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(frameValue, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
-        frameControlPanelLayout.setVerticalGroup(
-            frameControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(frameControlPanelLayout.createSequentialGroup()
-                .addGroup(frameControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        frameSelectorPanelLayout.setVerticalGroup(
+            frameSelectorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(frameSelectorPanelLayout.createSequentialGroup()
+                .addGroup(frameSelectorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(hourLabel)
                     .addComponent(hourValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(colon1)
@@ -366,17 +419,17 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        framePreview.setName("framePreview"); // NOI18N
+        frameViewPort.setName("frameViewPort"); // NOI18N
 
-        javax.swing.GroupLayout framePreviewLayout = new javax.swing.GroupLayout(framePreview);
-        framePreview.setLayout(framePreviewLayout);
-        framePreviewLayout.setHorizontalGroup(
-            framePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        javax.swing.GroupLayout frameViewPortLayout = new javax.swing.GroupLayout(frameViewPort);
+        frameViewPort.setLayout(frameViewPortLayout);
+        frameViewPortLayout.setHorizontalGroup(
+            frameViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 409, Short.MAX_VALUE)
         );
-        framePreviewLayout.setVerticalGroup(
-            framePreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+        frameViewPortLayout.setVerticalGroup(
+            frameViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 271, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout frameTabLayout = new javax.swing.GroupLayout(frameTab);
@@ -388,8 +441,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(videoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(frameControlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(framePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(frameSelectorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(frameViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         frameTabLayout.setVerticalGroup(
@@ -399,9 +452,9 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frameTabLayout.createSequentialGroup()
-                        .addComponent(framePreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(frameViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(frameControlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(frameSelectorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -416,32 +469,27 @@ public class MainWindow extends javax.swing.JFrame {
         splisLabel.setText("Divisiones:");
         splisLabel.setName("splitsLabel"); // NOI18N
 
-        splitsValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         splitsValue.setName("splitsValue"); // NOI18N
 
         samplingLevelLabel.setText("Nivel de muestreo:");
         samplingLevelLabel.setName("samplingLevelLabel"); // NOI18N
 
-        samplingLevelValue.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
         samplingLevelValue.setName("samplingLevelValue"); // NOI18N
 
         scaleLabel.setText("Escalado:");
         scaleLabel.setName("scaleLabel"); // NOI18N
 
-        scaleValue.setModel(new javax.swing.SpinnerNumberModel(1.0f, 1.0f, null, 0.1f));
         scaleValue.setName("scaleValue"); // NOI18N
-
-        mosaicHeightLabel.setText("Alto:");
-        mosaicHeightLabel.setName("mosaicHeightLabel"); // NOI18N
-
-        mosaicHeightValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
-        mosaicHeightValue.setName("mosaicHeightValue"); // NOI18N
 
         mosaicWidthLabel.setText("Ancho");
         mosaicWidthLabel.setName("mosaicWidthLabel"); // NOI18N
 
-        mosaicWidthValue.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
         mosaicWidthValue.setName("mosaicWidthValue"); // NOI18N
+
+        mosaicHeightLabel.setText("Alto:");
+        mosaicHeightLabel.setName("mosaicHeightLabel"); // NOI18N
+
+        mosaicHeightValue.setName("mosaicHeightValue"); // NOI18N
 
         generate.setMnemonic('G');
         generate.setText("Generar");
@@ -467,13 +515,13 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(scaleLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(samplingLevelValue)
+                            .addComponent(samplingLevelValue, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
                             .addComponent(splitsValue, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(mosaicWidthValue)
                             .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addGap(0, 4, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(generate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exportMosaicButton)
@@ -497,12 +545,12 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(scaleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mosaicHeightLabel)
-                    .addComponent(mosaicHeightValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(mosaicWidthLabel)
                     .addComponent(mosaicWidthValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(mosaicHeightLabel)
+                    .addComponent(mosaicHeightValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generate)
@@ -510,16 +558,16 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap(118, Short.MAX_VALUE))
         );
 
-        mosaicPreview.setName("mosaicPreview"); // NOI18N
+        mosaicViewPort.setName("mosaicViewPort"); // NOI18N
 
-        javax.swing.GroupLayout mosaicPreviewLayout = new javax.swing.GroupLayout(mosaicPreview);
-        mosaicPreview.setLayout(mosaicPreviewLayout);
-        mosaicPreviewLayout.setHorizontalGroup(
-            mosaicPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout mosaicViewPortLayout = new javax.swing.GroupLayout(mosaicViewPort);
+        mosaicViewPort.setLayout(mosaicViewPortLayout);
+        mosaicViewPortLayout.setHorizontalGroup(
+            mosaicViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 409, Short.MAX_VALUE)
         );
-        mosaicPreviewLayout.setVerticalGroup(
-            mosaicPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        mosaicViewPortLayout.setVerticalGroup(
+            mosaicViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -531,7 +579,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(mosaicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mosaicPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(mosaicViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mosaicTabLayout.setVerticalGroup(
@@ -540,7 +588,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
-                    .addComponent(mosaicPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(mosaicViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -589,8 +637,25 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(piecesValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(exportPiecesButton)
-                .addContainerGap(240, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        piecesScroll.setName("piecesScroll"); // NOI18N
+
+        piecesCanvas.setName("piecesCanvas"); // NOI18N
+
+        javax.swing.GroupLayout piecesCanvasLayout = new javax.swing.GroupLayout(piecesCanvas);
+        piecesCanvas.setLayout(piecesCanvasLayout);
+        piecesCanvasLayout.setHorizontalGroup(
+            piecesCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 407, Short.MAX_VALUE)
+        );
+        piecesCanvasLayout.setVerticalGroup(
+            piecesCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 327, Short.MAX_VALUE)
+        );
+
+        piecesScroll.setViewportView(piecesCanvas);
 
         javax.swing.GroupLayout piecesTabLayout = new javax.swing.GroupLayout(piecesTab);
         piecesTab.setLayout(piecesTabLayout);
@@ -600,7 +665,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(piecesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                .addComponent(piecesScroll)
                 .addContainerGap())
         );
         piecesTabLayout.setVerticalGroup(
@@ -608,7 +673,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, piecesTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(piecesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(piecesScroll)
                     .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -710,9 +775,90 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
+     * Update the selected frame number from time scale.
+     */
+    private void updateFrameNumber() {
+        long hour = ((Number) hourValue.getValue()).longValue();
+        long minute = ((Number) minuteValue.getValue()).longValue();
+        long second = ((Number) secondValue.getValue()).longValue();
+        long milisecond = ((Number) milisecondValue.getValue()).longValue();
+        int frameNumber = VideoMetadata.timeToFrame(hour, minute, second, milisecond, 0, videoMetadata.length, videoMetadata.frames);
+        
+        /* Bounds error */
+        if ((frameNumber < 0) || (frameNumber >= videoMetadata.frames)) {
+            updateTimeScale(frameNumber);
+            return;
+        }
+        
+        /* Frame selectors */
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
+    }
+    
+    /**
+     * Update the time scale from frame number.
+     */
+    private int updateTimeScale(int frameNumber) {
+        /* Clamp */
+        if (frameNumber >= videoMetadata.frames) frameNumber = videoMetadata.frames - 1;
+        else if (frameNumber < 0) frameNumber = 0;
+        
+        /* Assign values */
+        long microseconds = VideoMetadata.frameToMicroseconds(frameNumber, videoMetadata.frames, videoMetadata.length);
+        int hour = (int) VideoMetadata.microsecondsToHours(microseconds);
+        int minute = (int) VideoMetadata.microsecondsToMinutes(microseconds);
+        int second = (int) VideoMetadata.microsecondsToSeconds(microseconds);
+        int milisecond = (int) VideoMetadata.microsecondsToMiliseconds(microseconds);
+        
+        /* Time scale */
+        hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
+        minuteValue.setModel(new SpinnerNumberModel(hour == 0 ? minute : minute % 60, null, null, 1));
+        secondValue.setModel(new SpinnerNumberModel(minute == 0 ? second : second % 60, null, null, 1));
+        milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 1));
+        
+        /* Frame selectors */
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
+        
+        return frameNumber;
+    }
+    
+    /**
+     * Set component and all its childrend enabled status.<br>
+     * <a href="https://stackoverflow.com/a/13920371">Source.</a>
+     * @param component Parent component.
+     * @param enabled Enabled status.
+     */
+    static private void setFullyEnabled(Component component, boolean enabled) {
+        component.setEnabled(enabled);
+        if (component instanceof Container) {
+            for (Component child : ((Container) component).getComponents()) {
+                setFullyEnabled(child, enabled);
+            }
+        }
+    }
+    
+    /**
+     * Fit and center an image into panel.
+     * @param image Image.
+     * @param panel Panel.
+     * @return Dimensions and position.
+     */
+    private Rectangle fitAndCenter(Rectangle image, Rectangle panel) {
+        /* Zoom */
+        double zoom = Math.min(Math.min((double) panel.width / (double) image.width, (double) panel.height / (double) image.height), 1.0);
+        image.width *= zoom;
+        image.height *= zoom;
+
+        /* Center */
+        image.x = (panel.width < image.width ? 0 : (panel.width - image.width) >> 1);
+        image.y = (panel.height < image.height ? 0 : (panel.height - image.height) >> 1);
+        
+        return image;
+    }
+    
+    /**
      * Setup components.
-     * 
-     * @author Erick
      */
     // <editor-fold defaultstate="collapsed" desc="Setup components">
     private void setupComponents() {
@@ -747,8 +893,6 @@ public class MainWindow extends javax.swing.JFrame {
     
     /**
      * Set controller object.
-     * 
-     * @author Erick
      * @param controller Controller object.
      */
     // <editor-fold defaultstate="collapsed" desc="Set controller">
@@ -776,7 +920,19 @@ public class MainWindow extends javax.swing.JFrame {
         /* Tabbed panel */
         /* Frame panel */
         openVideo.addActionListener(controller);
+        hourValue.addChangeListener(controller);
+        minuteValue.addChangeListener(controller);
+        secondValue.addChangeListener(controller);
+        milisecondValue.addChangeListener(controller);
         frameValue.addChangeListener(controller);
+        frameSlider.addChangeListener(controller);
+        
+        hourValue.addChangeListener((ChangeEvent e) -> { updateFrameNumber(); });
+        minuteValue.addChangeListener((ChangeEvent e) -> { updateFrameNumber(); });
+        secondValue.addChangeListener((ChangeEvent e) -> { updateFrameNumber(); });
+        milisecondValue.addChangeListener((ChangeEvent e) -> { updateFrameNumber(); });
+        frameValue.addChangeListener((ChangeEvent e) -> { updateTimeScale(((Number) frameValue.getValue()).intValue()); });
+        frameSlider.addChangeListener((ChangeEvent e) -> { updateTimeScale(frameSlider.getValue()); });
         
         /* Mosaic panel */
         generate.addActionListener(controller);
@@ -788,11 +944,9 @@ public class MainWindow extends javax.swing.JFrame {
     // </editor-fold>
     
     /**
-     * Set component enabled status
-     *
-     * @author Erick
-     * @param name Component name
-     * @param enabled Enabled status
+     * Set component enabled status.
+     * @param name Component name.
+     * @param enabled Enabled status.
      */
     // <editor-fold defaultstate="collapsed" desc="Set component enabled status">
     public void setComponentEnabled(String name, boolean enabled) {
@@ -830,7 +984,7 @@ public class MainWindow extends javax.swing.JFrame {
             case "frameTab": frameTab.setEnabled(enabled); return;
             case "videoPanel": videoPanel.setEnabled(enabled); return;
             case "openVideo": openVideo.setEnabled(enabled); return;
-            case "frameControlPanel": frameControlPanel.setEnabled(enabled); return;
+            case "frameSelectorPanel": frameSelectorPanel.setEnabled(enabled); return;
             case "hourValue": hourValue.setEnabled(enabled); return;
             case "minuteValue": minuteValue.setEnabled(enabled); return;
             case "secondValue": secondValue.setEnabled(enabled); return;
@@ -848,12 +1002,222 @@ public class MainWindow extends javax.swing.JFrame {
             case "piecesTab": piecesTab.setEnabled(enabled); return;
             case "piecesPanel": piecesPanel.setEnabled(enabled); return;
             case "exportPiecesButton": exportPiecesButton.setEnabled(enabled); return;
+            case "piecesScroll": piecesScroll.setEnabled(enabled); return;
             
             /* Unknow */
             default: System.err.println("Error: unknow component \"" + name + "\"");
         }
     }
     // </editor-fold>
+    
+    /**
+     * Reset all components to default state.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Reset components">
+    public void reset() {
+        /* Menu bar */
+        save.setEnabled(false);
+        saveAs.setEnabled(false);
+        exportMosaicMenu.setEnabled(false);
+        exportPiecesMenu.setEnabled(false);
+        close.setEnabled(false);
+        
+        /* Frame tab */
+        /* Video panel */
+        setFullyEnabled(videoPanel, false);
+        videoNameValue.setText("-");
+        videoPathValue.setText("-");
+        videoSizeValue.setText("-");
+        videoFormatValue.setText("-");
+        videoWidthValue.setText("-");
+        videoHeightValue.setText("-");
+        videoLengthValue.setText("-");
+        videoFramesValue.setText("-");
+        videoFpsValue.setText("-");
+        int center = javax.swing.JTextField.CENTER;
+        videoNameValue.setHorizontalAlignment(center);
+        videoPathValue.setHorizontalAlignment(center);
+        videoSizeValue.setHorizontalAlignment(center);
+        videoFormatValue.setHorizontalAlignment(center);
+        videoWidthValue.setHorizontalAlignment(center);
+        videoHeightValue.setHorizontalAlignment(center);
+        videoLengthValue.setHorizontalAlignment(center);
+        videoFramesValue.setHorizontalAlignment(center);
+        videoFpsValue.setHorizontalAlignment(center);
+        openVideo.setText("Abrir...");
+        openVideo.setEnabled(true);
+        
+        /* Frame selector panel */
+        setFullyEnabled(frameSelectorPanel, false);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(0, null, null, 0);
+        hourValue.setModel(spinnerModel);
+        minuteValue.setModel(spinnerModel);
+        secondValue.setModel(spinnerModel);
+        milisecondValue.setModel(spinnerModel);
+        frameValue.setModel(spinnerModel);
+        frameSlider.setModel(new DefaultBoundedRangeModel());
+        
+        /* Mosaic tab */
+        setFullyEnabled(mosaicPanel, false);
+        splitsValue.setModel(spinnerModel);
+        samplingLevelValue.setModel(spinnerModel);
+        scaleValue.setModel(spinnerModel);
+        mosaicWidthValue.setModel(spinnerModel);
+        mosaicHeightValue.setModel(spinnerModel);
+        
+        /* Pieces tab */
+        setFullyEnabled(piecesPanel, false);
+        piecesCanvas.removeAll();
+    }
+    // </editor-fold>
+    
+    /**
+     * Update menu bar and video, frame selector and mosaic panels.
+     * @param metadata Video metadata
+     */
+    // <editor-fold defaultstate="collapsed" desc="Update video metadata">
+    public void setVideoMetadata(VideoMetadata metadata) {
+        /* Assign new metadata */
+        videoMetadata = metadata;
+        if (metadata == null) {
+            reset();
+            return;
+        }
+        
+        /* Menu bar */
+        save.setEnabled(true);
+        saveAs.setEnabled(true);
+        exportMosaicMenu.setEnabled(false);
+        exportPiecesMenu.setEnabled(false);
+        close.setEnabled(true);
+        
+        /* Frame tab */
+        /* Video panel */
+        setFullyEnabled(videoPanel, true);
+        int center = javax.swing.JTextField.LEADING;
+        String hours = String.format("%02d", metadata.getHours());
+        String minutes = String.format("%02d", metadata.getMinutes() % 60L);
+        String seconds = String.format("%02d", metadata.getSeconds() % 60L);
+        String miliseconds = String.format("%02d", metadata.getMiliseconds() % 1000L);
+        
+        String size = metadata.getGigabytes() + " GB";
+        if (size.equals("0 GB")) size = metadata.getMegabytes() + " MB";
+        if (size.equals("0 MB")) size = metadata.getKilobytes() + " KB";
+        if (size.equals("0 KB")) size = metadata.getBytes() + " B";
+        
+        videoNameValue.setHorizontalAlignment(center);
+        videoPathValue.setHorizontalAlignment(center);
+        videoSizeValue.setHorizontalAlignment(center);
+        videoFormatValue.setHorizontalAlignment(center);
+        videoWidthValue.setHorizontalAlignment(center);
+        videoHeightValue.setHorizontalAlignment(center);
+        videoLengthValue.setHorizontalAlignment(center);
+        videoFramesValue.setHorizontalAlignment(center);
+        videoFpsValue.setHorizontalAlignment(center);
+        videoNameValue.setText(metadata.name);
+        videoPathValue.setText(metadata.path);
+        videoSizeValue.setText(size);
+        videoFormatValue.setText(metadata.format);
+        videoWidthValue.setText(metadata.width + " px");
+        videoHeightValue.setText(metadata.height + " px");
+        videoLengthValue.setText(hours + ":" + minutes + ":" + seconds + "," + miliseconds);
+        videoFramesValue.setText(String.valueOf(metadata.frames));
+        videoFpsValue.setText(String.format("%.2f", metadata.fps) + " FPS");
+        openVideo.setText("Cambiar...");
+        
+        /* Frame selector panel */
+        setFullyEnabled(frameSelectorPanel, true);
+        hourValue.setEnabled(metadata.getHours() > 0);
+        minuteValue.setEnabled(metadata.getMinutes() > 0);
+        secondValue.setEnabled(metadata.getSeconds() > 0);
+        hourValue.setModel(new SpinnerNumberModel(0, 0, (int) metadata.getHours(), 1));
+        minuteValue.setModel(new SpinnerNumberModel(0, null, null, 1));
+        secondValue.setModel(new SpinnerNumberModel(0, null, null, 1));
+        milisecondValue.setModel(new SpinnerNumberModel(0, null, null, 1));
+        frameValue.setModel(new SpinnerNumberModel(0.0, 0.0, (double) metadata.frames, 0.1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(0, 0, 0, metadata.frames));
+        
+        /* Mosaic tab */
+        setFullyEnabled(mosaicPanel, true);
+        splitsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
+        samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
+        scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
+        mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width, metadata.width >> 2, metadata.width << 4, 1));
+        mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height, metadata.height >> 2, metadata.width << 4, 1));
+        exportMosaicButton.setEnabled(false);
+        
+        /* Pieces tab */
+        setFullyEnabled(piecesPanel, false);
+        piecesCanvas.removeAll();
+    }
+    // </editor-fold>
+    
+    /**
+     * Set video frame preview
+     * @param newFrame Frame to draw. 
+     */
+    public void setFrame(BufferedImage newFrame) {
+        frame = newFrame;
+        
+        /* Refresh */
+        frameViewPort.revalidate();
+        frameViewPort.repaint();
+    }
+    
+    /**
+     * Set mosaic and update the export option enabled state.
+     * @param newMosaic Mosaic to draw.
+     * @param pieces Pieces to draw.
+     */
+    public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces) {
+        mosaic = newMosaic;
+        boolean enabled = (mosaicViewPort != null);
+        
+        /* Load pieces */
+        if (enabled) {
+            
+        } else {
+            piecesCanvas.removeAll();
+        }
+        
+        /* Menu bar */
+        exportMosaicMenu.setEnabled(enabled);
+        exportPiecesMenu.setEnabled(enabled);
+        
+        /* Mosaic tab */
+        exportMosaicButton.setEnabled(enabled);
+        
+        /* Pieces tab */
+        setFullyEnabled(piecesPanel, enabled);
+        
+        /* Refresh */
+        mosaicViewPort.revalidate();
+        mosaicViewPort.repaint();
+    }
+    
+    /**
+     * Get the loaded mosaic status.
+     * @return True if has a loaded mosaic.
+     */
+    public boolean hasMosaic() {
+        return mosaicViewPort != null;
+    }
+    
+    /**
+     * Get the loaded video status.
+     * @return True if has a loaded video.
+     */
+    public boolean hasVideo() {
+        return openVideo.getText().equals("Cambiar...");
+    }
+    
+    /**
+     * Get the number of the current selected frame.
+     * @return The number of the current selected frame.
+     */
+    public int getFrameNumber() {
+        return frameSlider.getValue();
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem about;
@@ -867,44 +1231,33 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton exportPiecesButton;
     private javax.swing.JMenuItem exportPiecesMenu;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JLabel formatLabel;
-    private javax.swing.JTextField formatValue;
-    private javax.swing.JLabel fpsLabel;
-    private javax.swing.JTextField fpsValue;
-    private javax.swing.JPanel frameControlPanel;
     private javax.swing.JLabel frameLabel;
-    private javax.swing.JPanel framePreview;
+    private javax.swing.JPanel frameSelectorPanel;
     private javax.swing.JSlider frameSlider;
     private javax.swing.JPanel frameTab;
     private javax.swing.JSpinner frameValue;
-    private javax.swing.JLabel framesLabel;
-    private javax.swing.JTextField framesValue;
+    private javax.swing.JPanel frameViewPort;
     private javax.swing.JButton generate;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel hourLabel;
     private javax.swing.JSpinner hourValue;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JLabel lengthLabel;
-    private javax.swing.JTextField lengthValue;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JSpinner milisecondValue;
     private javax.swing.JSpinner minuteValue;
     private javax.swing.JLabel mosaicHeightLabel;
     private javax.swing.JSpinner mosaicHeightValue;
     private javax.swing.JPanel mosaicPanel;
-    private javax.swing.JPanel mosaicPreview;
     private javax.swing.JPanel mosaicTab;
+    private javax.swing.JPanel mosaicViewPort;
     private javax.swing.JLabel mosaicWidthLabel;
     private javax.swing.JSpinner mosaicWidthValue;
-    private javax.swing.JLabel nameLabel;
-    private javax.swing.JTextField nameValue;
     private javax.swing.JMenuItem newFile;
     private javax.swing.JMenuItem openFile;
     private javax.swing.JButton openVideo;
-    private javax.swing.JLabel pathLabel;
-    private javax.swing.JTextField pathValue;
+    private javax.swing.JPanel piecesCanvas;
     private javax.swing.JLabel piecesLabel;
     private javax.swing.JPanel piecesPanel;
+    private javax.swing.JScrollPane piecesScroll;
     private javax.swing.JPanel piecesTab;
     private javax.swing.JTextField piecesValue;
     private javax.swing.JLabel samplingLevelLabel;
@@ -917,14 +1270,26 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator separator1;
     private javax.swing.JPopupMenu.Separator separator2;
     private javax.swing.JPopupMenu.Separator separator3;
-    private javax.swing.JLabel sizeLabel;
-    private javax.swing.JTextField sizeValue;
     private javax.swing.JLabel splisLabel;
     private javax.swing.JSpinner splitsValue;
     private javax.swing.JTabbedPane tabbedPane;
+    private javax.swing.JLabel videoFormatLabel;
+    private javax.swing.JTextField videoFormatValue;
+    private javax.swing.JLabel videoFpsLabel;
+    private javax.swing.JTextField videoFpsValue;
+    private javax.swing.JLabel videoFramesLabel;
+    private javax.swing.JTextField videoFramesValue;
     private javax.swing.JLabel videoHeightLabel;
     private javax.swing.JTextField videoHeightValue;
+    private javax.swing.JLabel videoLengthLabel;
+    private javax.swing.JTextField videoLengthValue;
+    private javax.swing.JLabel videoNameLabel;
+    private javax.swing.JTextField videoNameValue;
     private javax.swing.JPanel videoPanel;
+    private javax.swing.JLabel videoPathLabel;
+    private javax.swing.JTextField videoPathValue;
+    private javax.swing.JLabel videoSizeLabel;
+    private javax.swing.JTextField videoSizeValue;
     private javax.swing.JLabel videoWidthLabel;
     private javax.swing.JTextField videoWidthValue;
     // End of variables declaration//GEN-END:variables
