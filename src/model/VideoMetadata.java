@@ -5,9 +5,6 @@
  */
 package model;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Video metadata class.
  */
@@ -181,7 +178,7 @@ public class VideoMetadata implements Cloneable {
      * @param microseconds Microseconds.
      * @return Equivalente in miliseconds.
      */
-    public static long microsecondsToMilieconds(long microseconds) {
+    public static long microsecondsToMiliseconds(long microseconds) {
         return microseconds / 1000L;
     }
     
@@ -245,7 +242,7 @@ public class VideoMetadata implements Cloneable {
      * @return Lenght in miliseconds.
      */
     public long getMiliseconds() {
-        return microsecondsToMilieconds(length);
+        return microsecondsToMiliseconds(length);
     }
     
     /**
