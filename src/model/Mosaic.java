@@ -5,11 +5,16 @@
  */
 package model;
 
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.Java2DFrameConverter;
+
+import java.awt.image.BufferedImage;
+
+import java.io.File;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mosaic class.
@@ -17,13 +22,15 @@ import org.bytedeco.javacv.FrameGrabber;
 public class Mosaic {
     private FFmpegFrameGrabber grabber;
     private final VideoMetadata metadata;
+    private final Java2DFrameConverter toBufferedImage;
     
     /**
      * Mosaic Constructor.
      */
     public Mosaic() {
-        metadata = new VideoMetadata();
         grabber = null;
+        metadata = new VideoMetadata();
+        toBufferedImage = new Java2DFrameConverter();
     }
     
     /**
@@ -85,5 +92,10 @@ public class Mosaic {
             Logger.getLogger(Mosaic.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
+        grabber.setFrameNumber(frameNumber);
+        return toBufferedImage.convert(grabber.grab());
     }
 }
