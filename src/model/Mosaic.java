@@ -94,6 +94,12 @@ public class Mosaic {
         return null;
     }
     
+    /**
+     * Get the frame especified by number.
+     * @param frameNumber Number of frame.
+     * @return Buffered image of selected frame.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
+     */
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
         grabber.setFrameNumber(frameNumber);
         return toBufferedImage.convert(grabber.grab());
