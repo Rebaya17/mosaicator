@@ -778,30 +778,56 @@ public class MainWindow extends javax.swing.JFrame {
      * Update the selected frame number from time scale.
      */
     private void updateFrameNumber() {
+        /* Read values */
         long hour = ((Number) hourValue.getValue()).longValue();
         long minute = ((Number) minuteValue.getValue()).longValue();
         long second = ((Number) secondValue.getValue()).longValue();
         long milisecond = ((Number) milisecondValue.getValue()).longValue();
+        
+        if (milisecond >= 1000) { second += milisecond / 1000; milisecond %= 1000; }
+        if (second >= 60) { minute += second / 60; second %= 60; }
+        if (minute >= 60) { hour += minute / 60; minute %= 60; }
+        
+        if (milisecond < 0) { milisecond = 1000 - milisecond; second -= milisecond / 1000; milisecond = 1000 - milisecond % 1000; }
+        if (second < 0) { second = 60 - second; minute -= second / 60; second = 60 - second % 60; }
+        if (minute < 0) { minute = 60 - minute; hour -= minute / 60; minute = 60 - minute % 60; }
+        
         int frameNumber = VideoMetadata.timeToFrame(hour, minute, second, milisecond, 0, videoMetadata.length, videoMetadata.frames);
         
-        /* Bounds error */
-        if ((frameNumber < 0) || (frameNumber >= videoMetadata.frames)) {
-            updateTimeScale(frameNumber);
-            return;
+        /* Clamp */
+        if (frameNumber >= videoMetadata.frames) {
+            frameNumber = videoMetadata.frames - 1;
+            hour = VideoMetadata.microsecondsToHours(videoMetadata.length);
+            minute = VideoMetadata.microsecondsToMinutes(videoMetadata.length);
+            second = VideoMetadata.microsecondsToSeconds(videoMetadata.length);
+            milisecond = VideoMetadata.microsecondsToMiliseconds(videoMetadata.length);
+        }
+        else if (frameNumber < 0) {
+            frameNumber = 0;
+            hour = 0;
+            minute = 0;
+            second = 0;
+            milisecond = 0;
         }
         
+        /* Time scale */
+        hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
+        minuteValue.setModel(new SpinnerNumberModel(hour == 0 ? minute : minute % 60, null, null, 1));
+        secondValue.setModel(new SpinnerNumberModel(minute == 0 ? second : second % 60, null, null, 1));
+        milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
+        
         /* Frame selectors */
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
         frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
     }
     
     /**
      * Update the time scale from frame number.
      */
-    private int updateTimeScale(int frameNumber) {
+    private void updateTimeScale(int frameNumber) {
         /* Clamp */
         if (frameNumber >= videoMetadata.frames) frameNumber = videoMetadata.frames - 1;
-        else if (frameNumber < 0) frameNumber = 0;
+        else if (frameNumber < 0)                frameNumber = 0;
         
         /* Assign values */
         long microseconds = VideoMetadata.frameToMicroseconds(frameNumber, videoMetadata.frames, videoMetadata.length);
@@ -814,13 +840,11 @@ public class MainWindow extends javax.swing.JFrame {
         hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
         minuteValue.setModel(new SpinnerNumberModel(hour == 0 ? minute : minute % 60, null, null, 1));
         secondValue.setModel(new SpinnerNumberModel(minute == 0 ? second : second % 60, null, null, 1));
-        milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 1));
+        milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
         
         /* Frame selectors */
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
         frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
-        
-        return frameNumber;
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
     }
     
     /**
