@@ -703,29 +703,31 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
+                                  <Component id="generate" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="splisLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="samplingLevelLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="scaleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="gapLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="samplingLevelValue" alignment="0" pref="74" max="32767" attributes="0"/>
                                       <Component id="splitsValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="mosaicWidthValue" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="samplingLevelValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="gapValue" alignment="1" max="32767" attributes="0"/>
                                       <Component id="scaleValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="mosaicWidthValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
                                   </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="generate" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -745,7 +747,12 @@
                               <Component id="samplingLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="samplingLevelValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="gapLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="gapValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="scaleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="scaleValue" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -765,7 +772,7 @@
                               <Component id="generate" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="exportMosaicButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="118" max="32767" attributes="0"/>
+                          <EmptySpace pref="67" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -791,6 +798,18 @@
                 <Component class="javax.swing.JSpinner" name="samplingLevelValue">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="samplingLevelValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="gapLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Intervalos de tiempo:"/>
+                    <Property name="name" type="java.lang.String" value="gapLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="gapValue">
+                  <Properties>
+                    <Property name="toolTipText" type="java.lang.String" value="Segundos"/>
+                    <Property name="name" type="java.lang.String" value="gapValue" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="scaleLabel">

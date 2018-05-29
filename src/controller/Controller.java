@@ -216,7 +216,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             try {
                 // Read Mosaicator project file
                 File file = fileChooser.getSelectedFile();
-                mosaic.openVideo(file);
+                mosaic.openVideo(null);
+                mainWindow.setMosaic(null, null);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -311,6 +312,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
                 mosaic.openVideo(fileChooser.getSelectedFile());
                 mainWindow.setVideoMetadata(mosaic.getVideoMetadata());
                 mainWindow.setFrame(mosaic.getFrame(0));
+                mainWindow.setMosaic(null, null);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

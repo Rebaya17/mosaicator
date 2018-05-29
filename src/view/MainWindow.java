@@ -122,6 +122,8 @@ public class MainWindow extends javax.swing.JFrame {
         splitsValue = new javax.swing.JSpinner();
         samplingLevelLabel = new javax.swing.JLabel();
         samplingLevelValue = new javax.swing.JSpinner();
+        gapLabel = new javax.swing.JLabel();
+        gapValue = new javax.swing.JSpinner();
         scaleLabel = new javax.swing.JLabel();
         scaleValue = new javax.swing.JSpinner();
         mosaicWidthLabel = new javax.swing.JLabel();
@@ -476,6 +478,12 @@ public class MainWindow extends javax.swing.JFrame {
 
         samplingLevelValue.setName("samplingLevelValue"); // NOI18N
 
+        gapLabel.setText("Intervalos de tiempo:");
+        gapLabel.setName("gapLabel"); // NOI18N
+
+        gapValue.setToolTipText("Segundos");
+        gapValue.setName("gapValue"); // NOI18N
+
         scaleLabel.setText("Escalado:");
         scaleLabel.setName("scaleLabel"); // NOI18N
 
@@ -507,25 +515,27 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addGap(0, 2, Short.MAX_VALUE)
+                        .addComponent(generate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exportMosaicButton)
+                        .addGap(0, 2, Short.MAX_VALUE))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(splisLabel)
                             .addComponent(mosaicHeightLabel)
                             .addComponent(mosaicWidthLabel)
                             .addComponent(samplingLevelLabel)
-                            .addComponent(scaleLabel))
+                            .addComponent(scaleLabel)
+                            .addComponent(gapLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(samplingLevelValue, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
                             .addComponent(splitsValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(mosaicWidthValue)
-                            .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(generate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exportMosaicButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(samplingLevelValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(gapValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(mosaicWidthValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         mosaicPanelLayout.setVerticalGroup(
@@ -539,7 +549,11 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(samplingLevelLabel)
                     .addComponent(samplingLevelValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gapLabel)
+                    .addComponent(gapValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(43, 43, 43)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(scaleLabel)
                     .addComponent(scaleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -555,7 +569,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generate)
                     .addComponent(exportMosaicButton))
-                .addContainerGap(118, Short.MAX_VALUE))
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         mosaicViewPort.setName("mosaicViewPort"); // NOI18N
@@ -1022,7 +1036,7 @@ public class MainWindow extends javax.swing.JFrame {
             case "generate": generate.setEnabled(enabled); return;
             case "exportMosaicButton": exportMosaicButton.setEnabled(enabled); return;
             
-            /* Pirces tab */
+            /* Pieces tab */
             case "piecesTab": piecesTab.setEnabled(enabled); return;
             case "piecesPanel": piecesPanel.setEnabled(enabled); return;
             case "exportPiecesButton": exportPiecesButton.setEnabled(enabled); return;
@@ -1085,6 +1099,7 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, false);
         splitsValue.setModel(spinnerModel);
         samplingLevelValue.setModel(spinnerModel);
+        gapValue.setModel(spinnerModel);
         scaleValue.setModel(spinnerModel);
         mosaicWidthValue.setModel(spinnerModel);
         mosaicHeightValue.setModel(spinnerModel);
@@ -1165,6 +1180,7 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, true);
         splitsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
+        samplingLevelValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
         scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
         mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width, metadata.width >> 2, metadata.width << 4, 1));
         mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height, metadata.height >> 2, metadata.width << 4, 1));
@@ -1195,7 +1211,7 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces) {
         mosaic = newMosaic;
-        boolean enabled = (mosaicViewPort != null);
+        boolean enabled = (mosaic != null);
         
         /* Load pieces */
         if (enabled) {
@@ -1261,6 +1277,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel frameTab;
     private javax.swing.JSpinner frameValue;
     private javax.swing.JPanel frameViewPort;
+    private javax.swing.JLabel gapLabel;
+    private javax.swing.JSpinner gapValue;
     private javax.swing.JButton generate;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JLabel hourLabel;
