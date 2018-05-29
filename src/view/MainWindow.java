@@ -478,7 +478,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         samplingLevelValue.setName("samplingLevelValue"); // NOI18N
 
-        gapLabel.setText("Intervalos de tiempo:");
+        gapLabel.setText("Período de muestreo:");
         gapLabel.setName("gapLabel"); // NOI18N
 
         gapValue.setToolTipText("Segundos");
@@ -553,7 +553,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(gapLabel)
                     .addComponent(gapValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(43, 43, 43)
+                .addGap(18, 18, 18)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(scaleLabel)
                     .addComponent(scaleValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -569,7 +569,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generate)
                     .addComponent(exportMosaicButton))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(92, Short.MAX_VALUE))
         );
 
         mosaicViewPort.setName("mosaicViewPort"); // NOI18N
@@ -1180,7 +1180,7 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, true);
         splitsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
-        samplingLevelValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
+        gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
         scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
         mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width, metadata.width >> 2, metadata.width << 4, 1));
         mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height, metadata.height >> 2, metadata.width << 4, 1));

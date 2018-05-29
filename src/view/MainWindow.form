@@ -752,7 +752,7 @@
                               <Component id="gapLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="gapValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="43" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="scaleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="scaleValue" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -772,7 +772,7 @@
                               <Component id="generate" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="exportMosaicButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="67" max="32767" attributes="0"/>
+                          <EmptySpace pref="92" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -802,7 +802,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="gapLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Intervalos de tiempo:"/>
+                    <Property name="text" type="java.lang.String" value="Per&#xed;odo de muestreo:"/>
                     <Property name="name" type="java.lang.String" value="gapLabel" noResource="true"/>
                   </Properties>
                 </Component>
