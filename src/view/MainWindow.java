@@ -1124,10 +1124,10 @@ public class MainWindow extends javax.swing.JFrame {
         String seconds = String.format("%02d", metadata.getSeconds() % 60L);
         String miliseconds = String.format("%02d", metadata.getMiliseconds() % 1000L);
         
-        String size = metadata.getGigabytes() + " GB";
-        if (size.equals("0 GB")) size = metadata.getMegabytes() + " MB";
-        if (size.equals("0 MB")) size = metadata.getKilobytes() + " KB";
-        if (size.equals("0 KB")) size = metadata.getBytes() + " B";
+        String size = String.format("%.2f GB", (double) metadata.size / (double) (1 << 30));
+             if (metadata.getGigabytes() == 0) size = String.format("%.2f MB", (double) metadata.size / (double) (1 << 20));
+        else if (metadata.getMegabytes() == 0) size = String.format("%.2f KB", (double) metadata.size / (double) (1 << 10));
+        else if (metadata.getMegabytes() == 0) size = metadata.getBytes() + " B";
         
         videoNameValue.setHorizontalAlignment(center);
         videoPathValue.setHorizontalAlignment(center);
