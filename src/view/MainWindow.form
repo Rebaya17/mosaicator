@@ -202,9 +202,9 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="frameSelectorPanel" max="32767" attributes="0"/>
-                          <Component id="frameViewPort" max="32767" attributes="0"/>
+                          <Component id="frame" max="32767" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -214,8 +214,8 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="videoPanel" pref="329" max="32767" attributes="0"/>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="frameViewPort" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="frame" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="frameSelectorPanel" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -623,23 +623,20 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="frameViewPort">
+            <Container class="view.ImagePanel" name="frame">
               <Properties>
-                <Property name="name" type="java.lang.String" value="frameViewPort" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="frame" noResource="true"/>
               </Properties>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel() {&#xa;            @Override&#xa;            protected void paintComponent(java.awt.Graphics g)&#xa;            {&#xa;                super.paintComponent(g);&#xa;                &#xa;                Rectangle image = new Rectangle();&#xa;                if (frame != null) {&#xa;                    image.setBounds(0, 0, frame.getWidth(), frame.getHeight());&#xa;                    image = fitAndCenter(image, getBounds());&#xa;                }&#xa;                &#xa;                g.drawImage(frame, image.x, image.y, image.width, image.height, this);&#xa;            }&#xa;        };"/>
-              </AuxValues>
 
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="409" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="271" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -665,18 +662,18 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="mosaicPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="mosaicViewPort" max="32767" attributes="0"/>
+                      <Component id="mosaic" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="mosaic" max="32767" attributes="0"/>
                           <Component id="mosaicPanel" pref="329" max="32767" attributes="0"/>
-                          <Component id="mosaicViewPort" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -861,13 +858,10 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="mosaicViewPort">
+            <Container class="view.ImagePanel" name="mosaic">
               <Properties>
-                <Property name="name" type="java.lang.String" value="mosaicViewPort" noResource="true"/>
+                <Property name="name" type="java.lang.String" value="mosaic" noResource="true"/>
               </Properties>
-              <AuxValues>
-                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JPanel() {&#xa;            @Override&#xa;            protected void paintComponent(java.awt.Graphics g)&#xa;            {&#xa;                super.paintComponent(g);&#xa;                &#xa;                Rectangle image = new Rectangle();&#xa;                if (mosaic != null) {&#xa;                    image.setBounds(0, 0, mosaic.getWidth(), mosaic.getHeight());&#xa;                    image = fitAndCenter(image, getBounds());&#xa;                }&#xa;                &#xa;                g.drawImage(mosaic, image.x, image.y, image.width, image.height, this);&#xa;            }&#xa;        };"/>
-              </AuxValues>
 
               <Layout>
                 <DimensionLayout dim="0">

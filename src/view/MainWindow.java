@@ -23,8 +23,6 @@ import model.VideoMetadata;
  * Main window class.
  */
 public class MainWindow extends javax.swing.JFrame {
-    private BufferedImage frame;
-    private BufferedImage mosaic;
     private VideoMetadata videoMetadata;
     
     /**
@@ -51,8 +49,7 @@ public class MainWindow extends javax.swing.JFrame {
         //</editor-fold>
         
         /* Initialize and setup components */
-        frame = null;
-        mosaic = null;
+        videoMetadata = null;
         initComponents();
         setupComponents();
         
@@ -101,21 +98,7 @@ public class MainWindow extends javax.swing.JFrame {
         frameLabel = new javax.swing.JLabel();
         frameValue = new javax.swing.JSpinner();
         frameSlider = new javax.swing.JSlider();
-        frameViewPort = new javax.swing.JPanel() {
-            @Override
-            protected void paintComponent(java.awt.Graphics g)
-            {
-                super.paintComponent(g);
-
-                Rectangle image = new Rectangle();
-                if (frame != null) {
-                    image.setBounds(0, 0, frame.getWidth(), frame.getHeight());
-                    image = fitAndCenter(image, getBounds());
-                }
-
-                g.drawImage(frame, image.x, image.y, image.width, image.height, this);
-            }
-        };
+        frame = new view.ImagePanel();
         mosaicTab = new javax.swing.JPanel();
         mosaicPanel = new javax.swing.JPanel();
         splisLabel = new javax.swing.JLabel();
@@ -132,21 +115,7 @@ public class MainWindow extends javax.swing.JFrame {
         mosaicHeightValue = new javax.swing.JSpinner();
         generate = new javax.swing.JButton();
         exportMosaicButton = new javax.swing.JButton();
-        mosaicViewPort = new javax.swing.JPanel() {
-            @Override
-            protected void paintComponent(java.awt.Graphics g)
-            {
-                super.paintComponent(g);
-
-                Rectangle image = new Rectangle();
-                if (mosaic != null) {
-                    image.setBounds(0, 0, mosaic.getWidth(), mosaic.getHeight());
-                    image = fitAndCenter(image, getBounds());
-                }
-
-                g.drawImage(mosaic, image.x, image.y, image.width, image.height, this);
-            }
-        };
+        mosaic = new view.ImagePanel();
         piecesTab = new javax.swing.JPanel();
         piecesPanel = new javax.swing.JPanel();
         piecesLabel = new javax.swing.JLabel();
@@ -421,17 +390,17 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        frameViewPort.setName("frameViewPort"); // NOI18N
+        frame.setName("frame"); // NOI18N
 
-        javax.swing.GroupLayout frameViewPortLayout = new javax.swing.GroupLayout(frameViewPort);
-        frameViewPort.setLayout(frameViewPortLayout);
-        frameViewPortLayout.setHorizontalGroup(
-            frameViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
+        javax.swing.GroupLayout frameLayout = new javax.swing.GroupLayout(frame);
+        frame.setLayout(frameLayout);
+        frameLayout.setHorizontalGroup(
+            frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
-        frameViewPortLayout.setVerticalGroup(
-            frameViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 271, Short.MAX_VALUE)
+        frameLayout.setVerticalGroup(
+            frameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout frameTabLayout = new javax.swing.GroupLayout(frameTab);
@@ -444,7 +413,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(frameSelectorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(frameViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(frame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         frameTabLayout.setVerticalGroup(
@@ -453,8 +422,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, frameTabLayout.createSequentialGroup()
-                        .addComponent(frameViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(frameTabLayout.createSequentialGroup()
+                        .addComponent(frame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(frameSelectorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -572,16 +541,16 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap(92, Short.MAX_VALUE))
         );
 
-        mosaicViewPort.setName("mosaicViewPort"); // NOI18N
+        mosaic.setName("mosaic"); // NOI18N
 
-        javax.swing.GroupLayout mosaicViewPortLayout = new javax.swing.GroupLayout(mosaicViewPort);
-        mosaicViewPort.setLayout(mosaicViewPortLayout);
-        mosaicViewPortLayout.setHorizontalGroup(
-            mosaicViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout mosaicLayout = new javax.swing.GroupLayout(mosaic);
+        mosaic.setLayout(mosaicLayout);
+        mosaicLayout.setHorizontalGroup(
+            mosaicLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 409, Short.MAX_VALUE)
         );
-        mosaicViewPortLayout.setVerticalGroup(
-            mosaicViewPortLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        mosaicLayout.setVerticalGroup(
+            mosaicLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
@@ -593,16 +562,16 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(mosaicPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(mosaicViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(mosaic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         mosaicTabLayout.setVerticalGroup(
             mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mosaicTabLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mosaicTabLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
-                    .addComponent(mosaicViewPort, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(mosaic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -1197,11 +1166,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @param newFrame Frame to draw. 
      */
     public void setFrame(BufferedImage newFrame) {
-        frame = newFrame;
-        
-        /* Refresh */
-        frameViewPort.revalidate();
-        frameViewPort.repaint();
+        frame.setImage(newFrame);
     }
     
     /**
@@ -1210,8 +1175,8 @@ public class MainWindow extends javax.swing.JFrame {
      * @param pieces Pieces to draw.
      */
     public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces) {
-        mosaic = newMosaic;
-        boolean enabled = (mosaic != null);
+        mosaic.setImage(newMosaic);
+        boolean enabled = mosaic.hasImage();
         
         /* Load pieces */
         if (enabled) {
@@ -1231,8 +1196,16 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(piecesPanel, enabled);
         
         /* Refresh */
-        mosaicViewPort.revalidate();
-        mosaicViewPort.repaint();
+        mosaic.revalidate();
+        mosaic.repaint();
+    }
+    
+    /**
+     * Get the loaded frame status.
+     * @return True if has a loaded frame.
+     */
+    public boolean hasFrame() {
+        return frame.hasImage();
     }
     
     /**
@@ -1240,7 +1213,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @return True if has a loaded mosaic.
      */
     public boolean hasMosaic() {
-        return mosaicViewPort != null;
+        return mosaic.hasImage();
     }
     
     /**
@@ -1248,7 +1221,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @return True if has a loaded video.
      */
     public boolean hasVideo() {
-        return openVideo.getText().equals("Cambiar...");
+        return videoMetadata != null;
     }
     
     /**
@@ -1271,12 +1244,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton exportPiecesButton;
     private javax.swing.JMenuItem exportPiecesMenu;
     private javax.swing.JMenu fileMenu;
+    private view.ImagePanel frame;
     private javax.swing.JLabel frameLabel;
     private javax.swing.JPanel frameSelectorPanel;
     private javax.swing.JSlider frameSlider;
     private javax.swing.JPanel frameTab;
     private javax.swing.JSpinner frameValue;
-    private javax.swing.JPanel frameViewPort;
     private javax.swing.JLabel gapLabel;
     private javax.swing.JSpinner gapValue;
     private javax.swing.JButton generate;
@@ -1286,11 +1259,11 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JSpinner milisecondValue;
     private javax.swing.JSpinner minuteValue;
+    private view.ImagePanel mosaic;
     private javax.swing.JLabel mosaicHeightLabel;
     private javax.swing.JSpinner mosaicHeightValue;
     private javax.swing.JPanel mosaicPanel;
     private javax.swing.JPanel mosaicTab;
-    private javax.swing.JPanel mosaicViewPort;
     private javax.swing.JLabel mosaicWidthLabel;
     private javax.swing.JSpinner mosaicWidthValue;
     private javax.swing.JMenuItem newFile;
