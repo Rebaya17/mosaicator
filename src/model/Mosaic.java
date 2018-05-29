@@ -101,6 +101,8 @@ public class Mosaic {
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
+        if (grabber == null) return null;
+        
         grabber.setFrameNumber(frameNumber);
         return toBufferedImage.convert(grabber.grab());
     }
