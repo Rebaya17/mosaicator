@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * Video metadata class.
  */
-public final class VideoMetadata {
+public final class Metadata {
     private final String absolutePath;
     private final long size;
     private final String formats;
@@ -30,7 +30,7 @@ public final class VideoMetadata {
      * @param f Number of frames.
      * @param fraps Frames per second.
      */
-    public VideoMetadata(File file, String format, int w, int h, long mcs, int f ,double fraps) {
+    public Metadata(File file, String format, int w, int h, long mcs, int f ,double fraps) {
         absolutePath = file.getAbsolutePath();
         size = file.length();
         formats = format;

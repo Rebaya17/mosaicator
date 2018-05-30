@@ -709,7 +709,7 @@
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="splisLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="divisionsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="samplingLevelLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -718,7 +718,7 @@
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="splitsValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="divisionsValue" alignment="1" max="32767" attributes="0"/>
                                       <Component id="samplingLevelValue" alignment="1" max="32767" attributes="0"/>
                                       <Component id="gapValue" alignment="1" max="32767" attributes="0"/>
                                       <Component id="scaleValue" alignment="1" max="32767" attributes="0"/>
@@ -736,8 +736,8 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="splisLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="splitsValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="divisionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="divisionsValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -775,15 +775,15 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="splisLabel">
+                <Component class="javax.swing.JLabel" name="divisionsLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Divisiones:"/>
-                    <Property name="name" type="java.lang.String" value="splitsLabel" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="divisionsLabel" noResource="true"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JSpinner" name="splitsValue">
+                <Component class="javax.swing.JSpinner" name="divisionsValue">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="splitsValue" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="divisionsValue" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="samplingLevelLabel">

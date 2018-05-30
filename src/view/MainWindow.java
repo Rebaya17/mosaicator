@@ -17,13 +17,13 @@ import java.awt.image.BufferedImage;
 import java.awt.Rectangle;
 
 import controller.Controller;
-import model.VideoMetadata;
+import model.Metadata;
 
 /**
  * Main window class.
  */
 public class MainWindow extends javax.swing.JFrame {
-    private VideoMetadata videoMetadata;
+    private Metadata metadata;
     
     /**
      * Creates new form MainWindow.
@@ -49,7 +49,7 @@ public class MainWindow extends javax.swing.JFrame {
         //</editor-fold>
         
         /* Initialize and setup components */
-        videoMetadata = null;
+        metadata = null;
         initComponents();
         setupComponents();
     }
@@ -100,8 +100,8 @@ public class MainWindow extends javax.swing.JFrame {
         frame = new view.ImagePanel();
         mosaicTab = new javax.swing.JPanel();
         mosaicPanel = new javax.swing.JPanel();
-        splisLabel = new javax.swing.JLabel();
-        splitsValue = new javax.swing.JSpinner();
+        divisionsLabel = new javax.swing.JLabel();
+        divisionsValue = new javax.swing.JSpinner();
         samplingLevelLabel = new javax.swing.JLabel();
         samplingLevelValue = new javax.swing.JSpinner();
         gapLabel = new javax.swing.JLabel();
@@ -436,10 +436,10 @@ public class MainWindow extends javax.swing.JFrame {
         mosaicPanel.setName("mosaicPanel"); // NOI18N
         mosaicPanel.setPreferredSize(new java.awt.Dimension(200, 277));
 
-        splisLabel.setText("Divisiones:");
-        splisLabel.setName("splitsLabel"); // NOI18N
+        divisionsLabel.setText("Divisiones:");
+        divisionsLabel.setName("divisionsLabel"); // NOI18N
 
-        splitsValue.setName("splitsValue"); // NOI18N
+        divisionsValue.setName("divisionsValue"); // NOI18N
 
         samplingLevelLabel.setText("Nivel de muestreo:");
         samplingLevelLabel.setName("samplingLevelLabel"); // NOI18N
@@ -490,7 +490,7 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGap(0, 2, Short.MAX_VALUE))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(splisLabel)
+                            .addComponent(divisionsLabel)
                             .addComponent(mosaicHeightLabel)
                             .addComponent(mosaicWidthLabel)
                             .addComponent(samplingLevelLabel)
@@ -498,7 +498,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(gapLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(splitsValue, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(divisionsValue, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(samplingLevelValue, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(gapValue, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -511,8 +511,8 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(mosaicPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(splisLabel)
-                    .addComponent(splitsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(divisionsLabel)
+                    .addComponent(divisionsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(samplingLevelLabel)
@@ -776,15 +776,15 @@ public class MainWindow extends javax.swing.JFrame {
         if (second < 0) { second = 60 - second; minute -= second / 60; second = 60 - second % 60; }
         if (minute < 0) { minute = 60 - minute; hour -= minute / 60; minute = 60 - minute % 60; }
         
-        int frameNumber = videoMetadata.frameFromTime(hour, minute, second, milisecond, 0);
+        int frameNumber = metadata.frameFromTime(hour, minute, second, milisecond, 0);
         
         /* Clamp */
-        if (frameNumber >= videoMetadata.frames()) {
-            frameNumber = videoMetadata.frames() - 1;
-            hour = (long) Math.floor(videoMetadata.hours());
-            minute = (long) Math.floor(videoMetadata.minutes());
-            second = (long) Math.floor(videoMetadata.seconds());
-            milisecond = (long) Math.floor(videoMetadata.miliseconds());
+        if (frameNumber >= metadata.frames()) {
+            frameNumber = metadata.frames() - 1;
+            hour = (long) Math.floor(metadata.hours());
+            minute = (long) Math.floor(metadata.minutes());
+            second = (long) Math.floor(metadata.seconds());
+            milisecond = (long) Math.floor(metadata.miliseconds());
         }
         else if (frameNumber < 0) {
             frameNumber = 0;
@@ -801,8 +801,8 @@ public class MainWindow extends javax.swing.JFrame {
         milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
         
         /* Frame selectors */
-        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames() - 1));
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames() - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, metadata.frames() - 1));
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, metadata.frames() - 1, 1));
     }
     
     /**
@@ -810,14 +810,14 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private void updateTimeScale(int frameNumber) {
         /* Clamp */
-        if (frameNumber >= videoMetadata.frames()) frameNumber = videoMetadata.frames() - 1;
+        if (frameNumber >= metadata.frames()) frameNumber = metadata.frames() - 1;
         else if (frameNumber < 0)                frameNumber = 0;
         
         /* Assign values */
-        long hour = (long) Math.floor(videoMetadata.hours());
-        long minute = (long) Math.floor(videoMetadata.minutes());
-        long second = (long) Math.floor(videoMetadata.seconds());
-        long milisecond = (long) Math.floor(videoMetadata.miliseconds());
+        long hour = (long) Math.floor(metadata.hours());
+        long minute = (long) Math.floor(metadata.minutes());
+        long second = (long) Math.floor(metadata.seconds());
+        long milisecond = (long) Math.floor(metadata.miliseconds());
         
         /* Time scale */
         hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
@@ -826,8 +826,8 @@ public class MainWindow extends javax.swing.JFrame {
         milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
         
         /* Frame selectors */
-        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames() - 1));
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames() - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, metadata.frames() - 1));
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, metadata.frames() - 1, 1));
     }
     
     /**
@@ -1033,7 +1033,7 @@ public class MainWindow extends javax.swing.JFrame {
         frame.setImage(null);
         
         /* Video panel */
-        videoMetadata = null;
+        metadata = null;
         setFullyEnabled(videoPanel, false);
         videoNameValue.setText("-");
         videoPathValue.setText("-");
@@ -1070,7 +1070,7 @@ public class MainWindow extends javax.swing.JFrame {
         /* Mosaic tab */
         mosaic.setImage(null);
         setFullyEnabled(mosaicPanel, false);
-        splitsValue.setModel(spinnerModel);
+        divisionsValue.setModel(spinnerModel);
         samplingLevelValue.setModel(spinnerModel);
         gapValue.setModel(spinnerModel);
         scaleValue.setModel(spinnerModel);
@@ -1088,9 +1088,9 @@ public class MainWindow extends javax.swing.JFrame {
      * @param metadata Video metadata
      */
     // <editor-fold defaultstate="collapsed" desc="Update video metadata">
-    public void setVideoMetadata(VideoMetadata metadata) {
+    public void setVideoMetadata(Metadata metadata) {
         /* Assign new metadata */
-        videoMetadata = metadata;
+        this.metadata = metadata;
         if (metadata == null) {
             reset();
             return;
@@ -1113,11 +1113,11 @@ public class MainWindow extends javax.swing.JFrame {
         String miliseconds = String.format("%02d", (long) Math.floor(metadata.miliseconds()) % 1000L);
         
         String size;
-        long bytes = videoMetadata.bytes();
+        long bytes = this.metadata.bytes();
              if (bytes <       1024) size = bytes + " B";
-        else if (bytes <    1048576) size = String.format("%.2f KB", videoMetadata.kilobytes());
-        else if (bytes < 1073741824) size = String.format("%.2f MB", videoMetadata.megabytes());
-        else                         size = String.format("%.2f GB", videoMetadata.gigabytes());
+        else if (bytes <    1048576) size = String.format("%.2f KB", this.metadata.kilobytes());
+        else if (bytes < 1073741824) size = String.format("%.2f MB", this.metadata.megabytes());
+        else                         size = String.format("%.2f GB", this.metadata.gigabytes());
         
         videoNameValue.setHorizontalAlignment(center);
         videoPathValue.setHorizontalAlignment(center);
@@ -1141,9 +1141,9 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Frame selector panel */
         setFullyEnabled(frameSelectorPanel, true);
-        hourValue.setEnabled(metadata.hours() > 0);
-        minuteValue.setEnabled(metadata.minutes() > 0);
-        secondValue.setEnabled(metadata.seconds() > 0);
+        hourValue.setEnabled(Math.floor(metadata.hours()) > 0.0);
+        minuteValue.setEnabled(Math.floor(metadata.minutes()) > 0);
+        secondValue.setEnabled(Math.floor(metadata.seconds()) > 0);
         hourValue.setModel(new SpinnerNumberModel(0, 0, (int) metadata.hours(), 1));
         minuteValue.setModel(new SpinnerNumberModel(0, null, null, 1));
         secondValue.setModel(new SpinnerNumberModel(0, null, null, 1));
@@ -1153,7 +1153,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Mosaic tab */
         setFullyEnabled(mosaicPanel, true);
-        splitsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
+        divisionsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
         scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
@@ -1227,7 +1227,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @return True if has a loaded video.
      */
     public boolean hasVideo() {
-        return videoMetadata != null;
+        return metadata != null;
     }
     
     /**
@@ -1238,12 +1238,38 @@ public class MainWindow extends javax.swing.JFrame {
         return frameSlider.getValue();
     }
     
+    /**
+     * Get the number of mosaic divisions.
+     * @return The number of mosaic divisions.
+     */
+    public int getDivisions() {
+        return (Integer) divisionsValue.getValue();
+    }
+    
+    /**
+     * Get the gap between frames to sample.
+     * @return The gap between frames to sample.
+     */
+    public int getGap() {
+        return (Integer) gapValue.getValue();
+    }
+    
+    /**
+     * Get the sampling level.
+     * @return The sampling level.
+     */
+    public int getSamplingLevel() {
+        return (Integer) samplingLevelValue.getValue();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem about;
     private javax.swing.JMenuItem close;
     private javax.swing.JLabel colon1;
     private javax.swing.JLabel colon2;
     private javax.swing.JLabel colon3;
+    private javax.swing.JLabel divisionsLabel;
+    private javax.swing.JSpinner divisionsValue;
     private javax.swing.JMenuItem exit;
     private javax.swing.JButton exportMosaicButton;
     private javax.swing.JMenuItem exportMosaicMenu;
@@ -1291,8 +1317,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator separator1;
     private javax.swing.JPopupMenu.Separator separator2;
     private javax.swing.JPopupMenu.Separator separator3;
-    private javax.swing.JLabel splisLabel;
-    private javax.swing.JSpinner splitsValue;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JLabel videoFormatLabel;
     private javax.swing.JTextField videoFormatValue;

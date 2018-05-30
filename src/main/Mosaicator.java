@@ -5,7 +5,7 @@
  */
 package main;
 
-import model.Mosaic;
+import model.Multimedia;
 import view.MainWindow;
 import view.AboutDialog;
 import controller.Controller;
@@ -21,19 +21,19 @@ public class Mosaicator {
      */
     public static void main(String[] args) {
         /* MVC objects */
-        Mosaic mosaic;
+        Multimedia video;
         MainWindow mainWindow;
         AboutDialog about;
         Controller controller;
         
         /* Inicialize objects */
-        mosaic = new Mosaic();
+        video = new Multimedia();
         mainWindow = new MainWindow();
         about = new AboutDialog(mainWindow);
         controller = new Controller();
         
         /* Initialize MVC */
-        controller.setMosaic(mosaic);
+        controller.setMosaic(video);
         controller.setMainWindow(mainWindow);
         controller.setAbout(about);
         controller.initMVC();

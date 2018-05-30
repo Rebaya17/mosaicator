@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bytedeco.javacv.FrameGrabber;
 
-import model.Mosaic;
+import model.Multimedia;
 import view.MainWindow;
 import view.AboutDialog;
 
@@ -31,7 +31,7 @@ import view.AboutDialog;
  * Controller class.
  */
 public class Controller extends WindowAdapter implements ActionListener, ChangeListener {
-    private Mosaic mosaic;
+    private Multimedia video;
     private MainWindow mainWindow;
     private AboutDialog about;
     private final JFileChooser fileChooser;
@@ -40,7 +40,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Controller constructor.
      */
     public Controller() {
-        mosaic = null;
+        video = null;
         mainWindow = null;
         about = null;
         fileChooser = new JFileChooser();
@@ -112,7 +112,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         
         if ((source instanceof JSlider) || (source instanceof JSpinner)) {
             try {
-                mainWindow.setFrame(mosaic.getFrame(mainWindow.getFrameNumber()));
+                mainWindow.setFrame(video.getFrame(mainWindow.getFrameNumber()));
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(null, "No se puede obtener el cuadro:\n", "Error", JOptionPane.ERROR_MESSAGE);
@@ -140,7 +140,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     {
         /* Check MVC objects */
         boolean good = true;
-        good &= (mosaic != null);
+        good &= (video != null);
         good &= (mainWindow != null);
         good &= (mainWindow != null);
         
@@ -172,8 +172,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Set the mosaic model.
      * @param model Mosaic model.
      */
-    public void setMosaic(Mosaic model) {
-        mosaic = model;
+    public void setMosaic(Multimedia model) {
+        video = model;
     }
     
     /**
@@ -216,7 +216,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             try {
                 // Read Mosaicator project file
                 File file = fileChooser.getSelectedFile();
-                mosaic.openVideo(null);
+                video.open(null);
                 mainWindow.setMosaic(null, null);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -279,7 +279,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     public void close() {
         mainWindow.reset();
         try {
-            mosaic.closeVideo();
+            video.close();
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error cerrando el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -309,9 +309,9 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         
         if (fileChooser.showOpenDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
-                mosaic.openVideo(fileChooser.getSelectedFile());
-                mainWindow.setVideoMetadata(mosaic.getVideoMetadata());
-                mainWindow.setFrame(mosaic.getFrame(0));
+                video.open(fileChooser.getSelectedFile());
+                mainWindow.setVideoMetadata(video.getMetadata());
+                mainWindow.setFrame(video.getFrame(0));
                 mainWindow.setMosaic(null, null);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,6 +324,11 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Generate mosaic.
      */
     public void generate() {
-        
+        try {
+            mainWindow.setMosaic(video.getMosaic(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getSamplingLevel()), null);
+        } catch (FrameGrabber.Exception ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error creando el mosaico:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
