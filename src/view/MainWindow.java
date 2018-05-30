@@ -52,7 +52,6 @@ public class MainWindow extends javax.swing.JFrame {
         videoMetadata = null;
         initComponents();
         setupComponents();
-        
     }
 
     /**
@@ -450,7 +449,7 @@ public class MainWindow extends javax.swing.JFrame {
         gapLabel.setText("Período de muestreo:");
         gapLabel.setName("gapLabel"); // NOI18N
 
-        gapValue.setToolTipText("Segundos");
+        gapValue.setToolTipText("Cuadros");
         gapValue.setName("gapValue"); // NOI18N
 
         scaleLabel.setText("Escalado:");
@@ -767,23 +766,25 @@ public class MainWindow extends javax.swing.JFrame {
         long second = ((Number) secondValue.getValue()).longValue();
         long milisecond = ((Number) milisecondValue.getValue()).longValue();
         
+        /* Carry up */
         if (milisecond >= 1000) { second += milisecond / 1000; milisecond %= 1000; }
         if (second >= 60) { minute += second / 60; second %= 60; }
         if (minute >= 60) { hour += minute / 60; minute %= 60; }
         
+        /* Carry down */
         if (milisecond < 0) { milisecond = 1000 - milisecond; second -= milisecond / 1000; milisecond = 1000 - milisecond % 1000; }
         if (second < 0) { second = 60 - second; minute -= second / 60; second = 60 - second % 60; }
         if (minute < 0) { minute = 60 - minute; hour -= minute / 60; minute = 60 - minute % 60; }
         
-        int frameNumber = VideoMetadata.timeToFrame(hour, minute, second, milisecond, 0, videoMetadata.length, videoMetadata.frames);
+        int frameNumber = videoMetadata.frameFromTime(hour, minute, second, milisecond, 0);
         
         /* Clamp */
-        if (frameNumber >= videoMetadata.frames) {
-            frameNumber = videoMetadata.frames - 1;
-            hour = VideoMetadata.microsecondsToHours(videoMetadata.length);
-            minute = VideoMetadata.microsecondsToMinutes(videoMetadata.length);
-            second = VideoMetadata.microsecondsToSeconds(videoMetadata.length);
-            milisecond = VideoMetadata.microsecondsToMiliseconds(videoMetadata.length);
+        if (frameNumber >= videoMetadata.frames()) {
+            frameNumber = videoMetadata.frames() - 1;
+            hour = (long) Math.floor(videoMetadata.hours());
+            minute = (long) Math.floor(videoMetadata.minutes());
+            second = (long) Math.floor(videoMetadata.seconds());
+            milisecond = (long) Math.floor(videoMetadata.miliseconds());
         }
         else if (frameNumber < 0) {
             frameNumber = 0;
@@ -800,8 +801,8 @@ public class MainWindow extends javax.swing.JFrame {
         milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
         
         /* Frame selectors */
-        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames() - 1));
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames() - 1, 1));
     }
     
     /**
@@ -809,15 +810,14 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private void updateTimeScale(int frameNumber) {
         /* Clamp */
-        if (frameNumber >= videoMetadata.frames) frameNumber = videoMetadata.frames - 1;
+        if (frameNumber >= videoMetadata.frames()) frameNumber = videoMetadata.frames() - 1;
         else if (frameNumber < 0)                frameNumber = 0;
         
         /* Assign values */
-        long microseconds = VideoMetadata.frameToMicroseconds(frameNumber, videoMetadata.frames, videoMetadata.length);
-        int hour = (int) VideoMetadata.microsecondsToHours(microseconds);
-        int minute = (int) VideoMetadata.microsecondsToMinutes(microseconds);
-        int second = (int) VideoMetadata.microsecondsToSeconds(microseconds);
-        int milisecond = (int) VideoMetadata.microsecondsToMiliseconds(microseconds);
+        long hour = (long) Math.floor(videoMetadata.hours());
+        long minute = (long) Math.floor(videoMetadata.minutes());
+        long second = (long) Math.floor(videoMetadata.seconds());
+        long milisecond = (long) Math.floor(videoMetadata.miliseconds());
         
         /* Time scale */
         hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
@@ -826,8 +826,8 @@ public class MainWindow extends javax.swing.JFrame {
         milisecondValue.setModel(new SpinnerNumberModel(second == 0 ? milisecond : milisecond % 1000, null, null, 10));
         
         /* Frame selectors */
-        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames - 1));
-        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames - 1, 1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(frameNumber, 0, 0, videoMetadata.frames() - 1));
+        frameValue.setModel(new SpinnerNumberModel(frameNumber, 0, videoMetadata.frames() - 1, 1));
     }
     
     /**
@@ -1030,7 +1030,10 @@ public class MainWindow extends javax.swing.JFrame {
         close.setEnabled(false);
         
         /* Frame tab */
+        frame.setImage(null);
+        
         /* Video panel */
+        videoMetadata = null;
         setFullyEnabled(videoPanel, false);
         videoNameValue.setText("-");
         videoPathValue.setText("-");
@@ -1065,6 +1068,7 @@ public class MainWindow extends javax.swing.JFrame {
         frameSlider.setModel(new DefaultBoundedRangeModel());
         
         /* Mosaic tab */
+        mosaic.setImage(null);
         setFullyEnabled(mosaicPanel, false);
         splitsValue.setModel(spinnerModel);
         samplingLevelValue.setModel(spinnerModel);
@@ -1103,15 +1107,17 @@ public class MainWindow extends javax.swing.JFrame {
         /* Video panel */
         setFullyEnabled(videoPanel, true);
         int center = javax.swing.JTextField.LEADING;
-        String hours = String.format("%02d", metadata.getHours());
-        String minutes = String.format("%02d", metadata.getMinutes() % 60L);
-        String seconds = String.format("%02d", metadata.getSeconds() % 60L);
-        String miliseconds = String.format("%02d", metadata.getMiliseconds() % 1000L);
+        String hours = String.format("%02d", (long) Math.floor(metadata.hours()));
+        String minutes = String.format("%02d", (long) Math.floor(metadata.minutes()) % 60L);
+        String seconds = String.format("%02d", (long) Math.floor(metadata.seconds()) % 60L);
+        String miliseconds = String.format("%02d", (long) Math.floor(metadata.miliseconds()) % 1000L);
         
-        String size = String.format("%.2f GB", (double) metadata.size / (double) (1 << 30));
-             if (metadata.getGigabytes() == 0) size = String.format("%.2f MB", (double) metadata.size / (double) (1 << 20));
-        else if (metadata.getMegabytes() == 0) size = String.format("%.2f KB", (double) metadata.size / (double) (1 << 10));
-        else if (metadata.getMegabytes() == 0) size = metadata.getBytes() + " B";
+        String size;
+        long bytes = videoMetadata.bytes();
+             if (bytes <       1024) size = bytes + " B";
+        else if (bytes <    1048576) size = String.format("%.2f KB", videoMetadata.kilobytes());
+        else if (bytes < 1073741824) size = String.format("%.2f MB", videoMetadata.megabytes());
+        else                         size = String.format("%.2f GB", videoMetadata.gigabytes());
         
         videoNameValue.setHorizontalAlignment(center);
         videoPathValue.setHorizontalAlignment(center);
@@ -1122,28 +1128,28 @@ public class MainWindow extends javax.swing.JFrame {
         videoLengthValue.setHorizontalAlignment(center);
         videoFramesValue.setHorizontalAlignment(center);
         videoFpsValue.setHorizontalAlignment(center);
-        videoNameValue.setText(metadata.name);
-        videoPathValue.setText(metadata.path);
+        videoNameValue.setText(metadata.name());
+        videoPathValue.setText(metadata.path());
         videoSizeValue.setText(size);
-        videoFormatValue.setText(metadata.format);
-        videoWidthValue.setText(metadata.width + " px");
-        videoHeightValue.setText(metadata.height + " px");
+        videoFormatValue.setText(metadata.formats());
+        videoWidthValue.setText(metadata.width() + " px");
+        videoHeightValue.setText(metadata.height() + " px");
         videoLengthValue.setText(hours + ":" + minutes + ":" + seconds + "," + miliseconds);
-        videoFramesValue.setText(String.valueOf(metadata.frames));
-        videoFpsValue.setText(String.format("%.2f", metadata.fps) + " FPS");
+        videoFramesValue.setText(String.valueOf(metadata.frames()));
+        videoFpsValue.setText(String.format("%.2f", metadata.fps()) + " FPS");
         openVideo.setText("Cambiar...");
         
         /* Frame selector panel */
         setFullyEnabled(frameSelectorPanel, true);
-        hourValue.setEnabled(metadata.getHours() > 0);
-        minuteValue.setEnabled(metadata.getMinutes() > 0);
-        secondValue.setEnabled(metadata.getSeconds() > 0);
-        hourValue.setModel(new SpinnerNumberModel(0, 0, (int) metadata.getHours(), 1));
+        hourValue.setEnabled(metadata.hours() > 0);
+        minuteValue.setEnabled(metadata.minutes() > 0);
+        secondValue.setEnabled(metadata.seconds() > 0);
+        hourValue.setModel(new SpinnerNumberModel(0, 0, (int) metadata.hours(), 1));
         minuteValue.setModel(new SpinnerNumberModel(0, null, null, 1));
         secondValue.setModel(new SpinnerNumberModel(0, null, null, 1));
         milisecondValue.setModel(new SpinnerNumberModel(0, null, null, 1));
-        frameValue.setModel(new SpinnerNumberModel(0.0, 0.0, (double) metadata.frames, 0.1));
-        frameSlider.setModel(new DefaultBoundedRangeModel(0, 0, 0, metadata.frames));
+        frameValue.setModel(new SpinnerNumberModel(0.0, 0.0, (double) metadata.frames(), 0.1));
+        frameSlider.setModel(new DefaultBoundedRangeModel(0, 0, 0, metadata.frames()));
         
         /* Mosaic tab */
         setFullyEnabled(mosaicPanel, true);
@@ -1151,8 +1157,8 @@ public class MainWindow extends javax.swing.JFrame {
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
         scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
-        mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width, metadata.width >> 2, metadata.width << 4, 1));
-        mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height, metadata.height >> 2, metadata.width << 4, 1));
+        mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width(), metadata.width() >> 2, metadata.width() << 4, 1));
+        mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height(), metadata.height() >> 2, metadata.width() << 4, 1));
         exportMosaicButton.setEnabled(false);
         
         /* Pieces tab */

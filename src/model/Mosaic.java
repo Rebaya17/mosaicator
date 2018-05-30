@@ -20,8 +20,9 @@ import java.util.logging.Logger;
  * Mosaic class.
  */
 public class Mosaic {
+    private int frame;
     private FFmpegFrameGrabber grabber;
-    private final VideoMetadata metadata;
+    private VideoMetadata videoMetadata;
     private final Java2DFrameConverter toBufferedImage;
     
     /**
@@ -29,7 +30,7 @@ public class Mosaic {
      */
     public Mosaic() {
         grabber = null;
-        metadata = new VideoMetadata();
+        videoMetadata = null;
         toBufferedImage = new Java2DFrameConverter();
     }
     
@@ -39,6 +40,12 @@ public class Mosaic {
      * @throws org.bytedeco.javacv.FrameGrabber.Exception FrameGrabber exception.
      */
     public void openVideo(File video) throws FrameGrabber.Exception {
+        /* Null file close current video */
+        if (video == null) {
+            closeVideo();
+            return;
+        }
+        
         /* Close any previous video */
         if (grabber != null) {
             grabber.close();
@@ -46,24 +53,14 @@ public class Mosaic {
         }
         
         /* Video file metadata */
-        metadata.path = video.getAbsolutePath();
-        metadata.name = video.getName();
-        int point = metadata.name.indexOf('.');
-        if (point != -1) metadata.name = metadata.name.substring(0, point);
-        metadata.size = video.length();
+        String path = video.getAbsolutePath();
         
         /* Open video */
-        grabber = new FFmpegFrameGrabber(metadata.path);
+        grabber = new FFmpegFrameGrabber(path);
         grabber.start();
         
         /* Video multimedia metadata */
-        metadata.format = grabber.getFormat().toUpperCase();
-        metadata.width = grabber.getImageWidth();
-        metadata.height = grabber.getImageHeight();
-        metadata.aspectRatio = grabber.getAspectRatio();
-        metadata.length = grabber.getLengthInTime();
-        metadata.frames = grabber.getLengthInFrames();
-        metadata.fps = grabber.getFrameRate();
+        videoMetadata = new VideoMetadata(video, grabber.getFormat().toUpperCase(), grabber.getImageWidth(), grabber.getImageHeight(), grabber.getLengthInTime(), grabber.getLengthInFrames(), grabber.getFrameRate());
     }
     
     /**
@@ -78,7 +75,7 @@ public class Mosaic {
         }
         
         /* Clear metadata */
-        metadata.clear();
+        videoMetadata = null;
     }
     
     /**
@@ -86,12 +83,7 @@ public class Mosaic {
      * @return Video metadata.
      */
     public VideoMetadata getVideoMetadata () {
-        try {
-            return metadata.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(Mosaic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        return videoMetadata;
     }
     
     /**
@@ -103,7 +95,18 @@ public class Mosaic {
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
         if (grabber == null) return null;
         
+        frame = frameNumber;
         grabber.setFrameNumber(frameNumber);
         return toBufferedImage.convert(grabber.grab());
+    }
+    
+    /**
+     * Process the video each certain frames with the specified sampling level
+     * and store the result.
+     * @param gap Frames between samples.
+     * @param samplingLevel Sampling level.
+     */
+    public void processVideo(int gap, int samplingLevel) {
+        
     }
 }

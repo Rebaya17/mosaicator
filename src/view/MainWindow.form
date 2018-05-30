@@ -805,7 +805,7 @@
                 </Component>
                 <Component class="javax.swing.JSpinner" name="gapValue">
                   <Properties>
-                    <Property name="toolTipText" type="java.lang.String" value="Segundos"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Cuadros"/>
                     <Property name="name" type="java.lang.String" value="gapValue" noResource="true"/>
                   </Properties>
                 </Component>
