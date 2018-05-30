@@ -190,6 +190,45 @@ public final class Metadata {
     
     
     /**
+     * Locate the frame on the hours time scale.
+     * @param frame Number of frame.
+     * @return Associated time in hours.
+     */
+    public long hoursFromFrame(int frame) {
+        double ratio = (double) frame / (double) frames;
+        return (long) (ratio * hours());
+    }
+    
+    /**
+     * Locate the frame on the minutes time scale.
+     * @param frame Number of frame.
+     * @return Associated time in minutes.
+     */
+    public long minutesFromFrame(int frame) {
+        double ratio = (double) frame / (double) frames;
+        return (long) (ratio * minutes());
+    }
+    /**
+     * Locate the frame on the oseconds time scale.
+     * @param frame Number of frame.
+     * @return Associated time in seconds.
+     */
+    public long secondsFromFrame(int frame) {
+        double ratio = (double) frame / (double) frames;
+        return (long) (ratio * seconds());
+    }
+    
+    /**
+     * Locate the frame on the milioseconds time scale.
+     * @param frame Number of frame.
+     * @return Associated time in miliseconds.
+     */
+    public long milisecondsFromFrame(int frame) {
+        double ratio = (double) frame / (double) frames;
+        return (long) (ratio * miliseconds());
+    }
+    
+    /**
      * Locate the frame on the microseconds time scale.
      * @param frame Number of frame.
      * @return Associated time in microseconds.
