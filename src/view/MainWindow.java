@@ -814,10 +814,10 @@ public class MainWindow extends javax.swing.JFrame {
         else if (frameNumber < 0)                frameNumber = 0;
         
         /* Assign values */
-        long hour = (long) Math.floor(metadata.hours());
-        long minute = (long) Math.floor(metadata.minutes());
-        long second = (long) Math.floor(metadata.seconds());
-        long milisecond = (long) Math.floor(metadata.miliseconds());
+        long hour = (long) Math.floor(metadata.hoursFromFrame(frameNumber));
+        long minute = (long) Math.floor(metadata.minutesFromFrame(frameNumber));
+        long second = (long) Math.floor(metadata.secondsFromFrame(frameNumber));
+        long milisecond = (long) Math.floor(metadata.milisecondsFromFrame(frameNumber));
         
         /* Time scale */
         hourValue.setModel(new SpinnerNumberModel(hour, null, null, 1));
