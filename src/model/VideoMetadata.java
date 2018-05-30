@@ -5,51 +5,40 @@
  */
 package model;
 
+import java.io.File;
+
 /**
  * Video metadata class.
  */
-public class VideoMetadata implements Cloneable {
-    public String path;
-    public String name;
-    public long size;
-    public String format;
-    public int width;
-    public int height;
-    public double aspectRatio;
-    public long length;
-    public int frames;
-    public double fps;
+public final class VideoMetadata {
+    private final String absolutePath;
+    private final long size;
+    private final String formats;
+    private final int width;
+    private final int height;
+    private final long microseconds;
+    private final int frames;
+    private final double fps;
     
     /**
-     * Empty video metadata before constructor.
+     * Constructor
+     * @param file Video file.
+     * @param format Video format.
+     * @param w Frame width.
+     * @param h Frame height.
+     * @param mcs Video length in microseconds.
+     * @param f Number of frames.
+     * @param fraps Frames per second.
      */
-    {
-        clear();
-    }
-    
-    /**
-     * Clear metadata
-     */
-    public void clear() {
-        path = "";
-        name = "";
-        size = 0;
-        format = "";
-        width = 0;
-        height = 0;
-        length = 0;
-        frames = 0;
-        fps = 0;
-    }
-    
-    /**
-     * Clone video metadata.
-     * @return Current video metadata clon.
-     * @throws CloneNotSupportedException CLone not suppoerted exception.
-     */
-    @Override
-    public VideoMetadata clone() throws CloneNotSupportedException {
-        return (VideoMetadata) super.clone();
+    public VideoMetadata(File file, String format, int w, int h, long mcs, int f ,double fraps) {
+        absolutePath = file.getAbsolutePath();
+        size = file.length();
+        formats = format;
+        width = w;
+        height = h;
+        microseconds = mcs;
+        frames = f;
+        fps = fraps;
     }
     
     
@@ -58,230 +47,237 @@ public class VideoMetadata implements Cloneable {
      */
     
     /**
-     * Locate the frame on the microseconds time scale.
-     * @param frame Number of frame.
-     * @param totalFrames Number of total frames.
-     * @param totalMicroseconds Number of total microseconds.
-     * @return Associated time in microseconds.
-     */
-    public static long frameToMicroseconds(int frame, int totalFrames, long totalMicroseconds) {
-        double ratio = (double) frame / (double) totalFrames;
-        return (long) (ratio * totalMicroseconds);
-    }
-    
-    /**
-     * Get the frame number in the given microseconds time.
-     * @param microseconds Time in microseconds.
-     * @param totalMicroseconds Number of total microseconds.
-     * @param totalFrames Number of total frames.
-     * @return Associated time in microseconds.
-     */
-    public static int microsecondsToFrame(long microseconds, long totalMicroseconds, int totalFrames) {
-        double ratio = (double) microseconds / (double) totalMicroseconds;
-        return (int) (ratio * totalFrames);
-    }
-    
-    /**
-     * Get the frame number in the given time.
-     * @param hours Hours.
-     * @param minutes Minutes.
-     * @param seconds Seconds.
-     * @param miliseconds Miliseconds.
-     * @param microseconds Microseconds.
-     * @param totalMicroseconds Number of total microseconds.
-     * @param totalFrames Number of total frames.
-     * @return Associated time in microseconds.
-     */
-    public static int timeToFrame(long hours, long minutes, long seconds, long miliseconds, long microseconds, long totalMicroseconds, int totalFrames) {
-        double ratio = (double) timeToMicroseconds(hours, minutes, seconds, miliseconds, microseconds) / (double) totalMicroseconds;
-        return (int) (ratio * totalFrames);
-    }
-    
-    /**
      * Convert time in microseconds.
-     * @param hours Hours.
-     * @param minutes Minutes.
-     * @param seconds Seconds.
-     * @param miliseconds Miliseconds.
-     * @param microseconds Microseconds.
+     * @param h Hours.
+     * @param m Minutes.
+     * @param s Seconds.
+     * @param ms Miliseconds.
+     * @param mcs Microseconds.
      * @return Time in Microseconds.
      */
-    public static long timeToMicroseconds(long hours, long minutes, long seconds, long miliseconds, long microseconds) {
-        return hours * 3600000000L + minutes * 60000000L + seconds * 1000000L + miliseconds * 1000L + microseconds;
-    }
-    
-    /**
-     * Convert hours to microseconds.
-     * @param hours Hours.
-     * @return Equivalente in microseconds.
-     */
-    public static long hoursToMicroseconds(long hours) {
-        return hours * 3600000000L;
-    }
-    
-    /**
-     * Convert minutes to microseconds.
-     * @param minutes Minutes.
-     * @return Equivalente in microseconds.
-     */
-    public static long minutesToMicroseconds(long minutes) {
-        return minutes * 60000000L;
-    }
-    
-    /**
-     * Convert seconds to microseconds.
-     * @param seconds Seconds.
-     * @return Equivalente in microseconds.
-     */
-    public static long secondsToMicroseconds(long seconds) {
-        return seconds * 1000000L;
-    }
-    
-    /**
-     * Convert miliseconds to microseconds.
-     * @param miliseconds Miliseconds.
-     * @return Equivalente in microseconds.
-     */
-    public static long milisecondsToMicroseconds(long miliseconds) {
-        return miliseconds * 1000L;
+    public static long timeToMicroseconds(long h, long m, long s, long ms, long mcs) {
+        return h * 3600000000L + m * 60000000L + s * 1000000L + ms * 1000L + mcs;
     }
     
     /**
      * Convert microseconds to hours.
-     * @param microseconds Microseconds.
+     * @param mcs Microseconds.
      * @return Equivalente in hours.
      */
-    public static long microsecondsToHours(long microseconds) {
-        return microseconds / 3600000000L;
+    public static double microsecondsToHours(long mcs) {
+        return (double) mcs / (double) 3600000000L;
     }
     
     /**
      * Convert microseconds to minutes.
-     * @param microseconds Microseconds.
+     * @param mcs Microseconds.
      * @return Equivalente in minutes.
      */
-    public static long microsecondsToMinutes(long microseconds) {
-        return microseconds / 60000000L;
+    public static double microsecondsToMinutes(long mcs) {
+        return (double) mcs / (double) 60000000L;
     }
     
     /**
      * Convert microseconds to seconds.
-     * @param microseconds Microseconds.
+     * @param mcs Microseconds.
      * @return Equivalente in seconds.
      */
-    public static long microsecondsToSeconds(long microseconds) {
-        return microseconds / 1000000L;
+    public static double microsecondsToSeconds(long mcs) {
+        return (double) mcs / (double) 1000000L;
     }
     
     /**
      * Convert microseconds to miliseconds.
-     * @param microseconds Microseconds.
+     * @param mcs Microseconds.
      * @return Equivalente in miliseconds.
      */
-    public static long microsecondsToMiliseconds(long microseconds) {
-        return microseconds / 1000L;
+    public static double microsecondsToMiliseconds(long mcs) {
+        return (double) mcs / (double) 1000L;
     }
     
-    /**
-     * Convert bytes in kilobytes.
-     * @param bytes Bytes.
-     * @return Equivalent in kilobytes.
-     */
-    public static long bytesToKilobytes(long bytes) {
-        return bytes >> 10;
-    }
-    
-    /**
-     * Convert bytes in megabytes
-     * @param bytes Bytes
-     * @return Equivalent in megabytes
-     */
-    public static long bytesToMegabytes(long bytes) {
-        return bytes >> 20;
-    }
-    
-    /**
-     * Convert bytes in gigabytes
-     * @param bytes Bytes
-     * @return Equivalent in gigabytes
-     */
-    public static long bytesToGigabytes(long bytes) {
-        return bytes >> 30;
-    }
     
     /**
      * Getters
      */
     
     /**
-     * Get the lenght in hours.
-     * @return Lenght in hours.
+     * Get video absolute path.
+     * @return Absolute path.
      */
-    public long getHours() {
-        return microsecondsToHours(length);
+    public String path() {
+        return absolutePath;
     }
     
     /**
-     * Get the lenght in minutes.
-     * @return Lenght in minutes.
+     * Get video name without extension.
+     * @return Name of the file without extension.
      */
-    public long getMinutes() {
-        return microsecondsToMinutes(length);
+    public String name() {
+        int nameBegin = absolutePath.lastIndexOf('/');
+        if (nameBegin == -1) nameBegin = absolutePath.lastIndexOf('\\');
+        if (nameBegin == -1) nameBegin = 0;
+        
+        int nameEnd = absolutePath.lastIndexOf('.');
+        if (nameEnd == -1) nameEnd = absolutePath.length();
+        
+        return absolutePath.substring(nameBegin, nameEnd);
     }
     
-    /**
-     * Get the lenght in seconds.
-     * @return Lenght in seconds.
-     */
-    public long getSeconds() {
-        return microsecondsToSeconds(length);
-    }
-    
-    /**
-     * Get the lenght in miliseconds.
-     * @return Lenght in miliseconds.
-     */
-    public long getMiliseconds() {
-        return microsecondsToMiliseconds(length);
-    }
-    
-    /**
-     * Get the lenght in microseconds.
-     * @return Lenght in microseconds.
-     */
-    public long getMicroseconds() {
-        return length;
-    }
     
     /**
      * Get the size in gigabytes.
      * @return Size in gigabytes.
      */
-    public long getGigabytes() {
-        return bytesToGigabytes(size);
+    public double gigabytes() {
+        return (double) size / 1073741824.0;
     }
     
     /**
      * Get the size in megabytes.
      * @return Size in megabytes.
      */
-    public long getMegabytes() {
-        return bytesToMegabytes(size);
+    public double megabytes() {
+        return (double) size / 1048576.0;
     }
     
     /**
      * Get the size in kilobytes.
      * @return Size in kilobytes.
      */
-    public long getKilobytes() {
-        return bytesToKilobytes(size);
+    public double kilobytes() {
+        return (double) size / 1024.0;
     }
     
     /**
      * Get the size in bytes.
      * @return Size in bytes.
      */
-    public long getBytes() {
+    public long bytes() {
         return size;
+    }
+    
+    
+    /**
+     * Get video formats.
+     * @return Video formats.
+     */
+    public String formats() {
+        return formats;
+    }
+    
+    /**
+     * Get the frame width.
+     * @return Frame width.
+     */
+    public int width() {
+        return width;
+    }
+    
+    /**
+     * Get the frame height.
+     * @return Frame height.
+     */
+    public int height() {
+        return height;
+    }
+    
+    /**
+     * Get the aspect ratio.
+     * @return Aspect ratio.
+     */
+    public double AspecRatio () {
+        return (double) width / (double) height;
+    }
+    
+    
+    /**
+     * Locate the frame on the microseconds time scale.
+     * @param frame Number of frame.
+     * @return Associated time in microseconds.
+     */
+    public long microsecondsFromFrame(int frame) {
+        double ratio = (double) frame / (double) frames;
+        return (long) (ratio * microseconds);
+    }
+    
+    /**
+     * Get the frame number in the given microseconds time.
+     * @param mcs Time in microseconds.
+     * @return Associated time in microseconds.
+     */
+    public int frameFromMicrosecond(long mcs) {
+        double ratio = (double) mcs / (double) microseconds;
+        return (int) (ratio *frames);
+    }
+    
+    /**
+     * Get the frame number in the given time.
+     * @param h Hours.
+     * @param m Minutes.
+     * @param s Seconds.
+     * @param ms Miliseconds.
+     * @param mcs Microseconds.
+     * @return Associated time in microseconds.
+     */
+    public int frameFromTime(long h, long m, long s, long ms, long mcs) {
+        double ratio = (double) timeToMicroseconds(h, m, s, ms, mcs) / (double) microseconds;
+        return (int) (ratio * frames);
+    }
+    
+    /**
+     * Get the lenght in hours.
+     * @return Lenght in hours.
+     */
+    public double hours() {
+        return microsecondsToHours(microseconds);
+    }
+    
+    /**
+     * Get the lenght in minutes.
+     * @return Lenght in minutes.
+     */
+    public double minutes() {
+        return microsecondsToMinutes(microseconds);
+    }
+    
+    /**
+     * Get the lenght in seconds.
+     * @return Lenght in seconds.
+     */
+    public double seconds() {
+        return microsecondsToSeconds(microseconds);
+    }
+    
+    /**
+     * Get the lenght in miliseconds.
+     * @return Lenght in miliseconds.
+     */
+    public double miliseconds() {
+        return microsecondsToMiliseconds(microseconds);
+    }
+    
+    /**
+     * Get the lenght in microseconds.
+     * @return Lenght in microseconds.
+     */
+    public long microseconds() {
+        return microseconds;
+    }
+    
+    
+    /**
+     * Get the total number of frames.
+     * @return Total number of frames.
+     */
+    public int frames() {
+        return frames;
+    }
+    
+    /**
+     * Get video frame rate.
+     * @return Frame rate.
+     */
+    public double fps() {
+        return fps;
     }
 }
