@@ -78,13 +78,13 @@ public class Multimedia {
                     for (int i = x; (i < maxI) && (i < width); i++)
                         for (int j = y; (j < maxJ) && (j < height); j++) {
                             int rgb = frame.getRGB(i, j);
-                            meanR += rgb & 0x00FF0000;
-                            meanG += rgb & 0x0000FF00;
-                            meanB += rgb & 0x000000FF;
+                            meanR += (rgb >> 16) & 0x00FF0000;
+                            meanG += (rgb >>  8) & 0x0000FF00;
+                            meanB +=  rgb        & 0x000000FF;
                             sum++;
                         }
                     
-                    mean[k] = (meanR / sum) | (meanG / sum) | (meanB / sum);
+                    mean[k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
                     k++;
                 }
             }
@@ -185,13 +185,13 @@ public class Multimedia {
                         for (int i = x; (i < maxI) && (i < width); i++)
                             for (int j = y; (j < maxJ) && (j < height); j++) {
                                 int rgb = frame.getRGB(i, j);
-                                meanR += rgb & 0x00FF0000;
-                                meanG += rgb & 0x0000FF00;
-                                meanB += rgb & 0x000000FF;
+                                meanR += (rgb >> 16) & 0x00FF0000;
+                                meanG += (rgb >>  8) & 0x0000FF00;
+                                meanB +=  rgb        & 0x000000FF;
                                 sum++;
                             }
 
-                        frameSample[sample][k] = (meanR / sum) | (meanG / sum) | (meanB / sum);
+                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
                         k++;
                     }
                 
