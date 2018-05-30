@@ -5,33 +5,41 @@
  */
 package model;
 
+import java.io.File;
+import java.util.HashMap;
+
+import java.awt.image.BufferedImage;
+import org.bytedeco.javacpp.opencv_core.Mat;
+import org.bytedeco.javacv.OpenCVFrameConverter;
+
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
-
-import java.awt.image.BufferedImage;
-
-import java.io.File;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Mosaic class.
  */
 public class Mosaic {
-    private int frame;
+    private int gap;
+    private int samplingLevel;
     private FFmpegFrameGrabber grabber;
     private VideoMetadata videoMetadata;
-    private final Java2DFrameConverter toBufferedImage;
+    private HashMap<Integer, Integer[]> framesSampling;
+    
+    /* Frame converters */
+    private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
+    private static final OpenCVFrameConverter.ToMat TO_MAT = new OpenCVFrameConverter.ToMat();
+    
     
     /**
      * Mosaic Constructor.
      */
     public Mosaic() {
         grabber = null;
+        gap = 0;
+        samplingLevel = 0;
         videoMetadata = null;
-        toBufferedImage = new Java2DFrameConverter();
+        framesSampling = new HashMap<>();
     }
     
     /**
@@ -40,17 +48,8 @@ public class Mosaic {
      * @throws org.bytedeco.javacv.FrameGrabber.Exception FrameGrabber exception.
      */
     public void openVideo(File video) throws FrameGrabber.Exception {
-        /* Null file close current video */
-        if (video == null) {
-            closeVideo();
-            return;
-        }
-        
         /* Close any previous video */
-        if (grabber != null) {
-            grabber.close();
-            grabber = null;
-        }
+        if (grabber != null) closeVideo();
         
         /* Video file metadata */
         String path = video.getAbsolutePath();
@@ -76,6 +75,7 @@ public class Mosaic {
         
         /* Clear metadata */
         videoMetadata = null;
+        framesSampling.clear();
     }
     
     /**
@@ -94,19 +94,30 @@ public class Mosaic {
      */
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
         if (grabber == null) return null;
-        
-        frame = frameNumber;
         grabber.setFrameNumber(frameNumber);
-        return toBufferedImage.convert(grabber.grab());
+        return TO_BUFFERED_IMAGE.convert(grabber.grab());
     }
     
     /**
      * Process the video each certain frames with the specified sampling level
      * and store the result.
-     * @param gap Frames between samples.
-     * @param samplingLevel Sampling level.
+     * @param interval Frames between samples.
+     * @param level Sampling level.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public void processVideo(int gap, int samplingLevel) {
+    public void processVideo(int interval, int level) throws FrameGrabber.Exception {
+        if ((gap == interval) && (samplingLevel == level)) return;
+       
+        gap = interval;
+        samplingLevel = level;
+        framesSampling.clear();
         
+        int max = videoMetadata.frames();
+        for (int index = 0; index < max; index += gap) {
+            grabber.setFrameNumber(index);
+            Mat frame = TO_MAT.convert(grabber.grab());
+            
+            
+        }
     }
 }
