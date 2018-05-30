@@ -113,9 +113,8 @@ public final class Metadata {
      * @return Name of the file without extension.
      */
     public String name() {
-        int nameBegin = absolutePath.lastIndexOf('/');
-        if (nameBegin == -1) nameBegin = absolutePath.lastIndexOf('\\');
-        if (nameBegin == -1) nameBegin = 0;
+        int nameBegin = absolutePath.lastIndexOf('/') + 1;
+        if (nameBegin == 0) nameBegin = absolutePath.lastIndexOf('\\') + 1;
         
         int nameEnd = absolutePath.lastIndexOf('.');
         if (nameEnd == -1) nameEnd = absolutePath.length();
