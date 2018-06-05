@@ -7,10 +7,12 @@ package model;
 
 import java.io.File;
 import java.util.HashMap;
+//import java.util.PriorityQueue;
 
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.BufferedImage;
+import org.bytedeco.javacpp.avutil;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -38,6 +40,9 @@ public class Multimedia {
         metadata = null;
         grabber = null;
         framesSamples = new HashMap<>();
+        
+        /* Disable FFmpeg verbose */
+        avutil.av_log_set_level(avutil.AV_LOG_QUIET);
     }
     
     /**
@@ -191,7 +196,11 @@ public class Multimedia {
                                 sum++;
                             }
 
-                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
+                        if (sum == 0)
+                            frameSample[sample][k] = 0;
+                        else
+                            frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
+                        
                         k++;
                     }
                 
@@ -201,21 +210,27 @@ public class Multimedia {
         
         /* Get nearest */
         int destiny = frameSample.length;
+        //PriorityQueue<Integer> used = new PriorityQueue<>();
         sourceFrame = new int[destiny];
         
         /* For each destiny */
         for (int i = 0; i < destiny; i++) {
+            if (frameSample[i][0] == null) break;
             int min = Integer.MAX_VALUE;
             int nearest = 0;
             
             /* For each sampled frame */
             for (HashMap.Entry<Integer, Integer[]> sampled : framesSamples.entrySet()) {
                 frameNumber = sampled.getKey();
+                //if (used.contains(frameNumber)) continue;
+                
                 Integer[] mean = sampled.getValue();
                 int distance = 0;
                 
                 /* Manhattan distance */
                 for (int j = 0; j < mean.length; j++) {
+                    if (frameSample[i][j] == null) break;
+                    
                     int rgbDst = frameSample[i][j];
                     int rgbSrc = mean[j];
                     int r = Math.abs(((rgbSrc >> 16) & 0xFF) - ((rgbDst >> 16) & 0xFF));
@@ -229,6 +244,7 @@ public class Multimedia {
                 if (distance < min) {
                     min = distance;
                     nearest = frameNumber;
+                    //used.add(frameNumber);
                 }
             }
             
@@ -276,6 +292,7 @@ public class Multimedia {
         if (grabber == null) return null;
         grabber.setFrameNumber(frameNumber);
         BufferedImage frame = TO_BUFFERED_IMAGE.convert(grabber.grab());
+        if (frame == null) return null;
         
         ColorModel colorModel = frame.getColorModel();
         boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
