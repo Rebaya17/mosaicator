@@ -1079,7 +1079,6 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Pieces tab */
         setFullyEnabled(piecesPanel, false);
-        piecesCanvas.removeAll();
     }
     // </editor-fold>
     
