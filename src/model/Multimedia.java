@@ -227,6 +227,48 @@ public class Multimedia {
     }
     
     /**
+     * Build a photomosaic from the selected source frames.
+     * @param scale Scale of the photomosaic.
+     * @return A photomosaic.
+     * @throws FrameGrabber.Exception FrameGrabber exception.
+     */
+    private BufferedImage buildMosaic(float scale) throws FrameGrabber.Exception {
+        int sample = 0;
+        int width = Math.round(metadata.width() * scale);
+        int height = Math.round(metadata.height() * scale);
+        int widthEnd = width - 1;
+        int heightEnd = height - 1;
+        float pieceWidth = (float) width / (float) divisions;
+        float pieceHeight = (float) height / (float) divisions;
+        BufferedImage mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        
+        /* For each sample */
+        float x = 0.0F;
+        for (int col = 0; col < divisions; col++, x += pieceWidth) {
+            int maxX = Math.round(x + pieceWidth);
+            if (maxX > width) maxX = width;
+            
+            float y = 0.0F;
+            for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
+                BufferedImage frame = getFrame(sourceFrame[sample]);
+                int maxY = Math.round(y + pieceHeight);
+                if (maxY > height) maxY = height;
+            
+                /* Fill source */
+                for (int px = Math.round(x), xBegin = px, xEnd = maxX - px - 1; px < maxX; px++)
+                    for (int py = Math.round(y), yBegin = py, yEnd = maxY - py - 1; py < maxY; py++) {
+                        int i = (int) ((float) ((px - xBegin) * widthEnd) / (float) xEnd);
+                        int j = (int) ((float) ((py - yBegin) * heightEnd) / (float) yEnd);
+                        
+                        mosaic.setRGB(px, py, frame.getRGB(i, j));
+                    }
+            }
+        }
+        
+        return mosaic;
+    }
+    
+    /**
      * Open video from absolute path.
      * @param video Video file.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception FrameGrabber exception.
@@ -269,7 +311,7 @@ public class Multimedia {
      * @param interval Interval of frames to sample.
      * @param level Sampling level.
      * @param scale Scale of the mosaic.
-     * @return Photomosaic.
+     * @return A photomosaic.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
     public BufferedImage getMosaic(int frameNumber, int div, int interval, int level, float scale) throws FrameGrabber.Exception {
@@ -288,39 +330,7 @@ public class Multimedia {
         }
         
         /* Build mosaic */
-        int sample = 0;
-        int width = Math.round(metadata.width() * scale);
-        int height = Math.round(metadata.height() * scale);
-        int widthEnd = width - 1;
-        int heightEnd = height - 1;
-        float pieceWidth = (float) width / (float) divisions;
-        float pieceHeight = (float) height / (float) divisions;
-        BufferedImage mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
-        
-        /* For each sample */
-        float x = 0.0F;
-        for (int col = 0; col < divisions; col++, x += pieceWidth) {
-            int maxX = Math.round(x + pieceWidth);
-            if (maxX > width) maxX = width;
-            
-            float y = 0.0F;
-            for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
-                BufferedImage frame = getFrame(sourceFrame[sample]);
-                int maxY = Math.round(y + pieceHeight);
-                if (maxY > height) maxY = height;
-            
-                /* Fill source */
-                for (int px = Math.round(x), xBegin = px, xEnd = maxX - px - 1; px < maxX; px++)
-                    for (int py = Math.round(y), yBegin = py, yEnd = maxY - py - 1; py < maxY; py++) {
-                        int i = (int) ((float) ((px - xBegin) * widthEnd) / (float) xEnd);
-                        int j = (int) ((float) ((py - yBegin) * heightEnd) / (float) yEnd);
-                        
-                        mosaic.setRGB(px, py, frame.getRGB(i, j));
-                    }
-            }
-        }
-        
-        return mosaic;
+        return buildMosaic(scale);
     }
     
     /**
