@@ -325,7 +325,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void generate() {
         try {
-            mainWindow.setMosaic(video.getMosaic(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getSamplingLevel(), mainWindow.getScale()), null);
+            mainWindow.setMosaic(video.getMosaic(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getScale(), mainWindow.getSamplingLevel()), video.getSourceFrames());
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error creando el mosaico:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

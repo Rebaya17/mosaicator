@@ -2,6 +2,8 @@
 
 <Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="samplingType">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
         <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
@@ -697,9 +699,15 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="samplingByLevel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="samplingTotal" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
                                   <Component id="generate" min="-2" max="-2" attributes="0"/>
@@ -726,6 +734,10 @@
                                       <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="samplingTypeLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
@@ -739,15 +751,22 @@
                               <Component id="divisionsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="divisionsValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="gapLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="gapValue" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="samplingTypeLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="samplingTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="samplingByLevel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="samplingLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="samplingLevelValue" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="gapLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="gapValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
@@ -769,7 +788,7 @@
                               <Component id="generate" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="exportMosaicButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="92" max="32767" attributes="0"/>
+                          <EmptySpace pref="51" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -786,17 +805,6 @@
                     <Property name="name" type="java.lang.String" value="divisionsValue" noResource="true"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="samplingLevelLabel">
-                  <Properties>
-                    <Property name="text" type="java.lang.String" value="Nivel de muestreo:"/>
-                    <Property name="name" type="java.lang.String" value="samplingLevelLabel" noResource="true"/>
-                  </Properties>
-                </Component>
-                <Component class="javax.swing.JSpinner" name="samplingLevelValue">
-                  <Properties>
-                    <Property name="name" type="java.lang.String" value="samplingLevelValue" noResource="true"/>
-                  </Properties>
-                </Component>
                 <Component class="javax.swing.JLabel" name="gapLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Per&#xed;odo de muestreo:"/>
@@ -807,6 +815,43 @@
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" value="Cuadros"/>
                     <Property name="name" type="java.lang.String" value="gapValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="samplingTypeLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Tipo de muestreo:"/>
+                    <Property name="name" type="java.lang.String" value="samplingTypeLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JRadioButton" name="samplingByLevel">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="samplingType"/>
+                    </Property>
+                    <Property name="mnemonic" type="int" value="110"/>
+                    <Property name="text" type="java.lang.String" value="Por nivel"/>
+                    <Property name="name" type="java.lang.String" value="samplingByLevel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JRadioButton" name="samplingTotal">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="samplingType"/>
+                    </Property>
+                    <Property name="mnemonic" type="int" value="84"/>
+                    <Property name="text" type="java.lang.String" value="Total"/>
+                    <Property name="name" type="java.lang.String" value="samplingTotal" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="samplingLevelLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Nivel de muestreo:"/>
+                    <Property name="name" type="java.lang.String" value="samplingLevelLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JSpinner" name="samplingLevelValue">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="samplingLevelValue" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="scaleLabel">
@@ -992,28 +1037,62 @@
             </Container>
             <Container class="javax.swing.JScrollPane" name="piecesScroll">
               <Properties>
+                <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+                <Property name="verticalScrollBarPolicy" type="int" value="22"/>
+                <Property name="horizontalScrollBar" type="javax.swing.JScrollBar" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                  <ComponentRef name="null"/>
+                </Property>
                 <Property name="name" type="java.lang.String" value="piecesScroll" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="componentResized" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="piecesScrollComponentResized"/>
+              </Events>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="piecesCanvas">
+                <Container class="javax.swing.JPanel" name="piecesViewport">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="piecesCanvas" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="piecesViewport" noResource="true"/>
                   </Properties>
 
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="407" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="piecesCanvas" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <EmptySpace min="0" pref="327" max="32767" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="piecesCanvas" max="32767" attributes="0"/>
+                          </Group>
                       </Group>
                     </DimensionLayout>
                   </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="piecesCanvas">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="piecesCanvas" noResource="true"/>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <EmptySpace min="0" pref="380" max="32767" attributes="0"/>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <EmptySpace min="0" pref="316" max="32767" attributes="0"/>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                    </Container>
+                  </SubComponents>
                 </Container>
               </SubComponents>
             </Container>

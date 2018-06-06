@@ -5,6 +5,7 @@
  */
 package view;
 
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
@@ -15,11 +16,24 @@ public class ImagePanel extends javax.swing.JPanel {
     private BufferedImage image;
     
     /**
-     * Creates new form ImagePanel
+     * Creates new form ImagePanel.
      */
     public ImagePanel() {
         /* Initialize components */
         image = null;
+        initComponents();
+    }
+    
+    /**
+     * Creates new form ImagePanel with image.
+     * @param newImage New buffered image.
+     */
+    public ImagePanel(BufferedImage newImage) {
+        /* Set preffered size */
+        super.setPreferredSize(new Dimension(newImage.getWidth(), newImage.getHeight()));
+        
+        /* Initialize components */
+        image = newImage;
         initComponents();
     }
     

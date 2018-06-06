@@ -26,9 +26,9 @@ public class Multimedia {
     private int frameID;
     private int divisions;
     private int samplingLevel;
-    private int[] sourceFrame;
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
+    private BufferedImage[] sourceFrame;
     private final HashMap<Integer, Integer[]> framesSamples;
     private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
     
@@ -184,7 +184,7 @@ public class Multimedia {
         
         //PriorityQueue<Integer> used = new PriorityQueue<>();
         int destiny = frameSample.length;
-        sourceFrame = new int[destiny];
+        sourceFrame = new BufferedImage[destiny];
         
         /* For each destiny */
         for (int i = 0; i < destiny; i++) {
@@ -222,7 +222,7 @@ public class Multimedia {
             }
             
             /* Store nearest */
-            sourceFrame[i] = nearest;
+            sourceFrame[i] = getFrame(nearest);
         }
     }
     
@@ -250,7 +250,7 @@ public class Multimedia {
             
             float y = 0.0F;
             for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
-                BufferedImage frame = getFrame(sourceFrame[sample]);
+                BufferedImage frame = sourceFrame[sample];
                 int maxY = Math.round(y + pieceHeight);
                 if (maxY > height) maxY = height;
             
@@ -305,16 +305,20 @@ public class Multimedia {
     }
     
     /**
-     * Create and return photomosaic from video frames.
+     * Create and return photomosaic from video frames sampled with the current
+     * level. If level is less or equal zero makes total sampling.
      * @param frameNumber Number of the frame to mosaicate.
      * @param div Number of divisions.
      * @param interval Interval of frames to sample.
-     * @param level Sampling level.
      * @param scale Scale of the mosaic.
+     * @param level Sampling level.
      * @return A photomosaic.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public BufferedImage getMosaic(int frameNumber, int div, int interval, int level, float scale) throws FrameGrabber.Exception {
+    public BufferedImage getMosaic(int frameNumber, int div, int interval, float scale, int level) throws FrameGrabber.Exception {
+        /* Total sampling */
+        if (level <= 0) return getMosaic(frameNumber, div, interval, scale);
+        
         /* Process video frames */
         if ((gap != interval) || (samplingLevel != level)) {
             gap = interval;
@@ -331,6 +335,21 @@ public class Multimedia {
         
         /* Build mosaic */
         return buildMosaic(scale);
+    }
+    
+    /**
+     * Create and return photomosaic from video frames totally sampled.
+     * @param frameNumber Number of the frame to mosaicate.
+     * @param div Number of divisions.
+     * @param interval Interval of frames to sample.
+     * @param scale Scale of the mosaic.
+     * @return A photomosaic.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
+     */
+    public BufferedImage getMosaic(int frameNumber, int div, int interval, float scale) throws FrameGrabber.Exception {
+        samplingLevel = 0;
+        
+        return new BufferedImage(0, 0, BufferedImage.TYPE_3BYTE_BGR);
     }
     
     /**
@@ -355,8 +374,16 @@ public class Multimedia {
         
         ColorModel colorModel = frame.getColorModel();
         boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
-        WritableRaster raster = frame.copyData(frame.getRaster().createCompatibleWritableRaster());
+        WritableRaster raster = frame.copyData(null);
         
         return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
+    }
+    
+    /**
+     * Get the source frames array.
+     * @return Source frames array.
+     */
+    public BufferedImage[] getSourceFrames() {
+        return sourceFrame;
     }
 }
