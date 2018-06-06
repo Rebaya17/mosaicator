@@ -94,6 +94,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoFpsLabel = new javax.swing.JLabel();
         videoFpsValue = new javax.swing.JTextField();
         openVideo = new javax.swing.JButton();
+        exportFrameButton = new javax.swing.JButton();
         frameSelectorPanel = new javax.swing.JPanel();
         hourLabel = new javax.swing.JLabel();
         hourValue = new javax.swing.JSpinner();
@@ -143,6 +144,7 @@ public class MainWindow extends javax.swing.JFrame {
         save = new javax.swing.JMenuItem();
         saveAs = new javax.swing.JMenuItem();
         separator2 = new javax.swing.JPopupMenu.Separator();
+        exportFrameMenu = new javax.swing.JMenuItem();
         exportMosaicMenu = new javax.swing.JMenuItem();
         exportPiecesMenu = new javax.swing.JMenuItem();
         separator3 = new javax.swing.JPopupMenu.Separator();
@@ -233,6 +235,10 @@ public class MainWindow extends javax.swing.JFrame {
         openVideo.setText("Abrir...");
         openVideo.setName("openVideo"); // NOI18N
 
+        exportFrameButton.setMnemonic('E');
+        exportFrameButton.setText("Exportar...");
+        exportFrameButton.setName("exportFrameButton"); // NOI18N
+
         javax.swing.GroupLayout videoPanelLayout = new javax.swing.GroupLayout(videoPanel);
         videoPanel.setLayout(videoPanelLayout);
         videoPanelLayout.setHorizontalGroup(
@@ -240,20 +246,6 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(videoPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(videoPanelLayout.createSequentialGroup()
-                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(videoFpsLabel)
-                            .addComponent(videoFramesLabel)
-                            .addComponent(videoLengthLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(videoLengthValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                            .addComponent(videoFramesValue)
-                            .addComponent(videoFpsValue)))
-                    .addGroup(videoPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(openVideo)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(videoPanelLayout.createSequentialGroup()
                         .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(videoPathLabel)
@@ -269,7 +261,23 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(videoFormatValue)
                             .addComponent(videoNameValue)
                             .addComponent(videoSizeValue)
-                            .addComponent(videoPathValue))))
+                            .addComponent(videoPathValue)))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(videoFpsLabel)
+                            .addComponent(videoFramesLabel)
+                            .addComponent(videoLengthLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(videoLengthValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+                            .addComponent(videoFramesValue)
+                            .addComponent(videoFpsValue)))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(openVideo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exportFrameButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         videoPanelLayout.setVerticalGroup(
@@ -312,7 +320,9 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(videoFpsLabel)
                     .addComponent(videoFpsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(openVideo)
+                .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(openVideo)
+                    .addComponent(exportFrameButton))
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
@@ -763,6 +773,11 @@ public class MainWindow extends javax.swing.JFrame {
         separator2.setName("separator2"); // NOI18N
         fileMenu.add(separator2);
 
+        exportFrameMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        exportFrameMenu.setText("Exportar cuadro...");
+        exportFrameMenu.setName("exportFrameMenu"); // NOI18N
+        fileMenu.add(exportFrameMenu);
+
         exportMosaicMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         exportMosaicMenu.setMnemonic('E');
         exportMosaicMenu.setText("Exportar mosaico...");
@@ -956,6 +971,7 @@ public class MainWindow extends javax.swing.JFrame {
         openFile.setActionCommand(openFile.getName());
         save.setActionCommand(save.getName());
         saveAs.setActionCommand(saveAs.getName());
+        exportFrameMenu.setActionCommand(exportFrameMenu.getName());
         exportMosaicMenu.setActionCommand(exportMosaicMenu.getName());
         exportPiecesMenu.setActionCommand(exportPiecesMenu.getName());
         close.setActionCommand(close.getName());
@@ -967,6 +983,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Tabbed panel */
         /* Frame tab */
+        exportFrameButton.setActionCommand(exportFrameButton.getName());
         openVideo.setActionCommand(openVideo.getName());
         
         /* Mosaic tab */
@@ -995,6 +1012,7 @@ public class MainWindow extends javax.swing.JFrame {
         openFile.addActionListener(controller);
         save.addActionListener(controller);
         saveAs.addActionListener(controller);
+        exportFrameMenu.addActionListener(controller);
         exportMosaicMenu.addActionListener(controller);
         exportPiecesMenu.addActionListener(controller);
         close.addActionListener(controller);
@@ -1007,6 +1025,7 @@ public class MainWindow extends javax.swing.JFrame {
         /* Tabbed panel */
         /* Frame panel */
         openVideo.addActionListener(controller);
+        exportFrameButton.addActionListener(controller);
         hourValue.addChangeListener(controller);
         minuteValue.addChangeListener(controller);
         secondValue.addChangeListener(controller);
@@ -1056,6 +1075,7 @@ public class MainWindow extends javax.swing.JFrame {
             case "openFile": openFile.setEnabled(enabled); return;
             case "save": save.setEnabled(enabled); return;
             case "saveAs": saveAs.setEnabled(enabled); return;
+            case "exportFrameMenu": exportFrameMenu.setEnabled(enabled); return;
             case "exportMosaicMenu": exportMosaicMenu.setEnabled(enabled); return;
             case "exportPiecesMenu": exportPiecesMenu.setEnabled(enabled); return;
             case "close": close.setEnabled(enabled); return;
@@ -1107,6 +1127,7 @@ public class MainWindow extends javax.swing.JFrame {
         /* Menu bar */
         save.setEnabled(false);
         saveAs.setEnabled(false);
+        exportFrameMenu.setEnabled(false);
         exportMosaicMenu.setEnabled(false);
         exportPiecesMenu.setEnabled(false);
         close.setEnabled(false);
@@ -1184,8 +1205,9 @@ public class MainWindow extends javax.swing.JFrame {
         /* Menu bar */
         save.setEnabled(true);
         saveAs.setEnabled(true);
-        exportMosaicMenu.setEnabled(false);
-        exportPiecesMenu.setEnabled(false);
+        exportFrameMenu.setEnabled(true);
+        exportMosaicMenu.setEnabled(true);
+        exportPiecesMenu.setEnabled(true);
         close.setEnabled(true);
         
         /* Frame tab */
@@ -1226,6 +1248,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Frame selector panel */
         setFullyEnabled(frameSelectorPanel, true);
+        exportFrameButton.setEnabled(false);
         hourValue.setEnabled(Math.floor(metadata.hours()) > 0.0);
         minuteValue.setEnabled(Math.floor(metadata.minutes()) > 0);
         secondValue.setEnabled(Math.floor(metadata.seconds()) > 0);
@@ -1391,6 +1414,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel divisionsLabel;
     private javax.swing.JSpinner divisionsValue;
     private javax.swing.JMenuItem exit;
+    private javax.swing.JButton exportFrameButton;
+    private javax.swing.JMenuItem exportFrameMenu;
     private javax.swing.JButton exportMosaicButton;
     private javax.swing.JMenuItem exportMosaicMenu;
     private javax.swing.JButton exportPiecesButton;

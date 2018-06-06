@@ -66,6 +66,15 @@
                 <Property name="name" type="java.lang.String" value="separator2" noResource="true"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="exportFrameMenu">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Shift+Ctrl+C"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Exportar cuadro..."/>
+                <Property name="name" type="java.lang.String" value="exportFrameMenu" noResource="true"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="exportMosaicMenu">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -247,24 +256,6 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="videoFpsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="videoFramesLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="videoLengthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="videoLengthValue" pref="81" max="32767" attributes="0"/>
-                                      <Component id="videoFramesValue" max="32767" attributes="0"/>
-                                      <Component id="videoFpsValue" max="32767" attributes="0"/>
-                                  </Group>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="openVideo" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="videoPathLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -283,6 +274,26 @@
                                       <Component id="videoSizeValue" max="32767" attributes="0"/>
                                       <Component id="videoPathValue" max="32767" attributes="0"/>
                                   </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="videoFpsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="videoFramesLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="videoLengthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="videoLengthValue" pref="81" max="32767" attributes="0"/>
+                                      <Component id="videoFramesValue" max="32767" attributes="0"/>
+                                      <Component id="videoFpsValue" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  <Component id="openVideo" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="exportFrameButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -338,7 +349,10 @@
                               <Component id="videoFpsValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="openVideo" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="openVideo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="exportFrameButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                           <EmptySpace pref="63" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -486,6 +500,13 @@
                     <Property name="mnemonic" type="int" value="65"/>
                     <Property name="text" type="java.lang.String" value="Abrir..."/>
                     <Property name="name" type="java.lang.String" value="openVideo" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="exportFrameButton">
+                  <Properties>
+                    <Property name="mnemonic" type="int" value="69"/>
+                    <Property name="text" type="java.lang.String" value="Exportar..."/>
+                    <Property name="name" type="java.lang.String" value="exportFrameButton" noResource="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
