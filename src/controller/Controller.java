@@ -16,12 +16,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bytedeco.javacv.FrameGrabber;
+import javax.imageio.ImageIO;
 
 import model.Multimedia;
 import view.MainWindow;
@@ -211,6 +213,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void openFile() {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -230,6 +233,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void save() {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             String path = fileChooser.getSelectedFile().getAbsolutePath();
@@ -242,6 +246,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void saveAs() {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             String path = fileChooser.getSelectedFile().getAbsolutePath();
@@ -254,10 +259,15 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void exportMosaic() {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
-            String path = fileChooser.getSelectedFile().getAbsolutePath();
-            
+            try {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                ImageIO.write(video.getMosaic(), "png", new File(path + ".png"));
+            } catch (IOException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -266,6 +276,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void exportPieces() {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             String path = fileChooser.getSelectedFile().getAbsolutePath();
@@ -306,6 +317,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void openVideo() {
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showOpenDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
@@ -325,7 +337,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void generate() {
         try {
-            mainWindow.setMosaic(video.getMosaic(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getScale(), mainWindow.getSamplingLevel()), video.getSourceFrames());
+            video.mosaicate(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getScale(), mainWindow.getSamplingLevel());
+            mainWindow.setMosaic(video.getMosaic(), video.getSourceFrames());
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error creando el mosaico:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
