@@ -1248,7 +1248,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Frame selector panel */
         setFullyEnabled(frameSelectorPanel, true);
-        exportFrameButton.setEnabled(false);
+        exportFrameButton.setEnabled(true);
         hourValue.setEnabled(Math.floor(metadata.hours()) > 0.0);
         minuteValue.setEnabled(Math.floor(metadata.minutes()) > 0);
         secondValue.setEnabled(Math.floor(metadata.seconds()) > 0);
