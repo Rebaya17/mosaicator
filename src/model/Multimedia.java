@@ -291,6 +291,8 @@ public class Multimedia {
         int sample = 0;
         int width = Math.round(metadata.width() * scale);
         int height = Math.round(metadata.height() * scale);
+        int widthEnd = width - 1;
+        int heightEnd = height - 1;
         float pieceWidth = (float) width / (float) divisions;
         float pieceHeight = (float) height / (float) divisions;
         BufferedImage mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
@@ -300,20 +302,18 @@ public class Multimedia {
         for (int col = 0; col < divisions; col++, x += pieceWidth) {
             int maxX = Math.round(x + pieceWidth);
             if (maxX > width) maxX = width;
-            int xEnd = maxX;
             
             float y = 0.0F;
             for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
                 BufferedImage frame = getFrame(sourceFrame[sample]);
                 int maxY = Math.round(y + pieceHeight);
                 if (maxY > height) maxY = height;
-                int yEnd = maxY;
             
                 /* Fill source */
-                for (int px = Math.round(x), xBegin = px; px < maxX; px++)
-                    for (int py = Math.round(y), yBegin = py; py < maxY; py++) {
-                        int i = (int) ((float) ((px - xBegin) * width) / (float) xEnd);
-                        int j = (int) ((float) ((py - yBegin) * height) / (float) yEnd);
+                for (int px = Math.round(x), xBegin = px, xEnd = maxX - px - 1; px < maxX; px++)
+                    for (int py = Math.round(y), yBegin = py, yEnd = maxY - py - 1; py < maxY; py++) {
+                        int i = (int) ((float) ((px - xBegin) * widthEnd) / (float) xEnd);
+                        int j = (int) ((float) ((py - yBegin) * heightEnd) / (float) yEnd);
                         
                         mosaic.setRGB(px, py, frame.getRGB(i, j));
                     }
