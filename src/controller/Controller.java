@@ -76,6 +76,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             case "openFile": openFile(); return;
             case "save": save(); return;
             case "saveAs": saveAs(); return;
+            case "exportFrameMenu": exportFrame(); return;
             case "exportMosaicMenu": exportMosaic(); return;
             case "exportPiecesMenu": exportPieces(); return;
             case "close": close(); return;
@@ -88,6 +89,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             /* Tabbed pane */
             /* Frame tab */
             case "openVideo": openVideo(); return;
+            case "exportFrameButton": exportFrame(); return;
             
             /* Mosaic tab */
             case "generate": generate(); return;
@@ -107,8 +109,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Perform state changed
      * @param e Change event
      */
-    @Override
     // <editor-fold defaultstate="collapsed" desc="Perform component state changed">
+    @Override
     public void stateChanged(ChangeEvent e) {
         Object source = e.getSource();
         
@@ -251,6 +253,22 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             String path = fileChooser.getSelectedFile().getAbsolutePath();
             
+        }
+    }
+    /**
+     * Export frame as image.
+     */
+    public void exportFrame() {
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.resetChoosableFileFilters();
+        
+        if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+            try {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                ImageIO.write(video.getFrame(mainWindow.getFrameNumber()), "png", new File(path + ".png"));
+            } catch (IOException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
