@@ -846,25 +846,6 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     /**
-     * Fit and center an image into panel.
-     * @param image Image.
-     * @param panel Panel.
-     * @return Dimensions and position.
-     */
-    private Rectangle fitAndCenter(Rectangle image, Rectangle panel) {
-        /* Zoom */
-        double zoom = Math.min(Math.min((double) panel.width / (double) image.width, (double) panel.height / (double) image.height), 1.0);
-        image.width *= zoom;
-        image.height *= zoom;
-
-        /* Center */
-        image.x = (panel.width < image.width ? 0 : (panel.width - image.width) >> 1);
-        image.y = (panel.height < image.height ? 0 : (panel.height - image.height) >> 1);
-        
-        return image;
-    }
-    
-    /**
      * Setup components.
      */
     // <editor-fold defaultstate="collapsed" desc="Setup components">
@@ -1155,7 +1136,7 @@ public class MainWindow extends javax.swing.JFrame {
         divisionsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
-        scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.01F));
+        scaleValue.setModel(new SpinnerNumberModel(1.0F, 0.25F, null, 0.01F));
         mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width(), metadata.width() >> 2, metadata.width() << 4, 1));
         mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height(), metadata.height() >> 2, metadata.width() << 4, 1));
         exportMosaicButton.setEnabled(false);
