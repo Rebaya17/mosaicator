@@ -23,6 +23,8 @@ import org.bytedeco.javacv.FrameGrabber;
  */
 public class Multimedia {
     private int gap;
+    private int frameID;
+    private int divisions;
     private int samplingLevel;
     private int[] sourceFrame;
     private Metadata metadata;
@@ -35,6 +37,8 @@ public class Multimedia {
      */
     public Multimedia() {
         gap = 0;
+        frameID = 0;
+        divisions = 0;
         samplingLevel = 0;
         sourceFrame = null;
         metadata = null;
@@ -105,6 +109,124 @@ public class Multimedia {
     }
     
     /**
+     * Sample the selected frame with the currnt sampling level.
+     * @param frameNumber Number of the frame to mosaicate.
+     * @return Samples array with each color mean by level.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
+     */
+    private Integer[][] sampleFrame(int frameNumber) throws FrameGrabber.Exception {
+        /* Get frame to mosaicate */
+        BufferedImage frame = getFrame(frameNumber);
+        if (frame == null) return null;
+        
+        /* Frame split */
+        int width = metadata.width();
+        int height = metadata.height();
+        float sampleWidth = (float) width / (float) divisions;
+        float sampleHeight = (float) height / (float) divisions;
+        float dx = sampleWidth / (float) samplingLevel;
+        float dy = sampleHeight / (float) samplingLevel;
+        
+        /* For each division */
+        Integer[][] frameSample = new Integer[divisions * divisions][samplingLevel * samplingLevel];
+        int sample = 0;
+        
+        float n = 0.0F;
+        for (int colD = 0; colD < divisions; colD++, n += sampleWidth) {
+            
+            float m = 0.0F;
+            for (int rowD = 0; rowD < divisions; rowD++, m += sampleHeight, sample++) {
+                
+                /* For each sample */
+                int k = 0;
+                float x = n;
+                for (int colL = 0; colL < samplingLevel; colL++, x += dx) {
+                    int maxI = Math.round(x + dx);
+                    if (maxI > width) maxI = Math.round(width);
+                        
+                    float y = m;
+                    for (int rowL = 0; rowL < samplingLevel; rowL++, y += dy, k++) {
+                        int maxJ = Math.round(y + dy);
+                        int meanR = 0;
+                        int meanG = 0;
+                        int meanB = 0;
+                        int sum = 0;
+                        
+                        if (maxJ > height) maxJ = Math.round(height);
+
+                        /* Get color sum by channel */
+                        for (int i = Math.round(x); i < maxI; i++)
+                            for (int j = Math.round(y); j < maxJ; j++) {
+                                int rgb = frame.getRGB(i, j);
+                                meanR += (rgb >> 16) & 0x00FF0000;
+                                meanG += (rgb >>  8) & 0x0000FF00;
+                                meanB +=  rgb        & 0x000000FF;
+                                sum++;
+                            }
+
+                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
+                    }
+                }
+            }
+        }
+        
+        return frameSample;
+    }
+    
+    /**
+     * Search source frames to mosaic and save on sourceFrame.
+     * @param frameNumber Number of the frame to mosaicate.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
+     */
+    private void searchSources(int frameNumber) throws FrameGrabber.Exception {
+        /* Sample selected frame */
+        Integer[][] frameSample = sampleFrame(frameNumber);
+        
+        //PriorityQueue<Integer> used = new PriorityQueue<>();
+        int destiny = frameSample.length;
+        sourceFrame = new int[destiny];
+        
+        /* For each destiny */
+        for (int i = 0; i < destiny; i++) {
+            if (frameSample[i][0] == null) break;
+            int min = Integer.MAX_VALUE;
+            int nearest = 0;
+            
+            /* For each sampled frame */
+            for (HashMap.Entry<Integer, Integer[]> sampled : framesSamples.entrySet()) {
+                frameNumber = sampled.getKey();
+                //if (used.contains(frameNumber)) continue;
+                
+                Integer[] mean = sampled.getValue();
+                int distance = 0;
+                
+                /* Manhattan distance */
+                for (int j = 0; j < mean.length; j++) {
+                    if (frameSample[i][j] == null) break;
+                    
+                    int rgbDst = frameSample[i][j];
+                    int rgbSrc = mean[j];
+                    int r = Math.abs(((rgbSrc >> 16) & 0xFF) - ((rgbDst >> 16) & 0xFF));
+                    int g = Math.abs(((rgbSrc >>  8) & 0xFF) - ((rgbDst >>  8) & 0xFF));
+                    int b = Math.abs(( rgbSrc        & 0xFF) - ( rgbDst        & 0xFF));
+                    
+                    distance += r + g + b;
+                }
+                
+                /* Get min distance */
+                if (distance < min) {
+                    min = distance;
+                    nearest = frameNumber;
+                    //used.add(frameNumber);
+                }
+            }
+            
+            /* Store nearest */
+            sourceFrame[i] = nearest;
+        }
+    }
+    
+    /**
      * Open video from absolute path.
      * @param video Video file.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception FrameGrabber exception.
@@ -146,135 +268,55 @@ public class Multimedia {
      * @param div Number of divisions.
      * @param interval Interval of frames to sample.
      * @param level Sampling level.
+     * @param scale Scale of the mosaic.
      * @return Photomosaic.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public BufferedImage getMosaic(int frameNumber, int div, int interval, int level) throws FrameGrabber.Exception {
-        /* Validate already processing */
+    public BufferedImage getMosaic(int frameNumber, int div, int interval, int level, float scale) throws FrameGrabber.Exception {
+        /* Process video frames */
         if ((gap != interval) || (samplingLevel != level)) {
             gap = interval;
             samplingLevel = level;
             sampleFrames();
         }
         
-        /* Get frame to mosaicate */
-        BufferedImage frame = getFrame(frameNumber);
-        if (frame == null) return null;
-        
-        /* Frame split */
-        int width = metadata.width();
-        int height = metadata.height();
-        int mosaicWidth = width * div;
-        int mosaicHeight = height * div;
-        float sampleWidth = (float) width / (float) div;
-        float sampleHeight = (float) height / (float) div;
-        float dx = sampleWidth / (float) samplingLevel;
-        float dy = sampleHeight / (float) samplingLevel;
-        
-        /* For each division */
-        Integer[][] frameSample = new Integer[div * div][samplingLevel * samplingLevel];
-        int sample = 0;
-        
-        float n = 0.0F;
-        for (int colD = 0; colD < div; colD++, n += sampleWidth) {
-            
-            float m = 0.0F;
-            for (int rowD = 0; rowD < div; rowD++, m += sampleHeight, sample++) {
-                
-                /* For each sample */
-                int k = 0;
-                float x = n;
-                for (int colL = 0; colL < samplingLevel; colL++, x += dx) {
-                    int maxI = Math.round(x + dx);
-                    if (maxI > width) maxI = Math.round(width);
-                        
-                    float y = m;
-                    for (int rowL = 0; rowL < samplingLevel; rowL++, y += dy, k++) {
-                        int maxJ = Math.round(y + dy);
-                        int meanR = 0;
-                        int meanG = 0;
-                        int meanB = 0;
-                        int sum = 0;
-                        
-                        if (maxJ > height) maxJ = Math.round(height);
-
-                        /* Get color sum by channel */
-                        for (int i = Math.round(x); i < maxI; i++)
-                            for (int j = Math.round(y); j < maxJ; j++) {
-                                int rgb = frame.getRGB(i, j);
-                                meanR += (rgb >> 16) & 0x00FF0000;
-                                meanG += (rgb >>  8) & 0x0000FF00;
-                                meanB +=  rgb        & 0x000000FF;
-                                sum++;
-                            }
-
-                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
-                    }
-                }
-            }
+        /* Search source frames */
+        if ((frameID != frameNumber) || (divisions != div)) {
+            frameID = frameNumber;
+            divisions = div;
+            searchSources(frameNumber);
         }
-        
-        
-        /* Get nearest */
-        int destiny = frameSample.length;
-        //PriorityQueue<Integer> used = new PriorityQueue<>();
-        sourceFrame = new int[destiny];
-        
-        /* For each destiny */
-        for (int i = 0; i < destiny; i++) {
-            if (frameSample[i][0] == null) break;
-            int min = Integer.MAX_VALUE;
-            int nearest = 0;
-            
-            /* For each sampled frame */
-            for (HashMap.Entry<Integer, Integer[]> sampled : framesSamples.entrySet()) {
-                frameNumber = sampled.getKey();
-                //if (used.contains(frameNumber)) continue;
-                
-                Integer[] mean = sampled.getValue();
-                int distance = 0;
-                
-                /* Manhattan distance */
-                for (int j = 0; j < mean.length; j++) {
-                    if (frameSample[i][j] == null) break;
-                    
-                    int rgbDst = frameSample[i][j];
-                    int rgbSrc = mean[j];
-                    int r = Math.abs(((rgbSrc >> 16) & 0xFF) - ((rgbDst >> 16) & 0xFF));
-                    int g = Math.abs(((rgbSrc >>  8) & 0xFF) - ((rgbDst >>  8) & 0xFF));
-                    int b = Math.abs(( rgbSrc        & 0xFF) - ( rgbDst        & 0xFF));
-                    
-                    distance += r + g + b;
-                }
-                
-                /* Get min distance */
-                if (distance < min) {
-                    min = distance;
-                    nearest = frameNumber;
-                    //used.add(frameNumber);
-                }
-            }
-            
-            /* Store nearest */
-            sourceFrame[i] = nearest;
-        }
-        
         
         /* Build mosaic */
-        BufferedImage mosaic = new BufferedImage(mosaicWidth, mosaicHeight, BufferedImage.TYPE_3BYTE_BGR);
-        sample = 0;
+        int sample = 0;
+        int width = Math.round(metadata.width() * scale);
+        int height = Math.round(metadata.height() * scale);
+        float pieceWidth = (float) width / (float) divisions;
+        float pieceHeight = (float) height / (float) divisions;
+        BufferedImage mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         
         /* For each sample */
-        for (int x = 0; x < mosaicWidth; x += width) {
-            for (int y = 0; y < mosaicHeight; y += height) {
-                frame = getFrame(sourceFrame[sample]);
-                
+        float x = 0.0F;
+        for (int col = 0; col < divisions; col++, x += pieceWidth) {
+            int maxX = Math.round(x + pieceWidth);
+            if (maxX > width) maxX = width;
+            int xEnd = maxX;
+            
+            float y = 0.0F;
+            for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
+                BufferedImage frame = getFrame(sourceFrame[sample]);
+                int maxY = Math.round(y + pieceHeight);
+                if (maxY > height) maxY = height;
+                int yEnd = maxY;
+            
                 /* Fill source */
-                for (int i = 0; i < width; i++)
-                    for (int j = 0; j < height; j++)
-                        mosaic.setRGB(x + i, y + j, frame.getRGB(i, j));
-                
-                sample++;
+                for (int px = Math.round(x), xBegin = px; px < maxX; px++)
+                    for (int py = Math.round(y), yBegin = py; py < maxY; py++) {
+                        int i = (int) ((float) ((px - xBegin) * width) / (float) xEnd);
+                        int j = (int) ((float) ((py - yBegin) * height) / (float) yEnd);
+                        
+                        mosaic.setRGB(px, py, frame.getRGB(i, j));
+                    }
             }
         }
         
