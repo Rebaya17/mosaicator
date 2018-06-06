@@ -335,9 +335,9 @@ public class MainWindow extends javax.swing.JFrame {
         frameLabel.setText("Cuadro:");
         frameLabel.setName("frameLabel"); // NOI18N
 
-        frameValue.setMinimumSize(new java.awt.Dimension(60, 20));
+        frameValue.setMinimumSize(new java.awt.Dimension(65, 20));
         frameValue.setName("frameValue"); // NOI18N
-        frameValue.setPreferredSize(new java.awt.Dimension(60, 20));
+        frameValue.setPreferredSize(new java.awt.Dimension(65, 20));
 
         frameSlider.setValue(0);
         frameSlider.setName("frameSlider"); // NOI18N
@@ -367,8 +367,8 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(frameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(frameValue, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addComponent(frameValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
         frameSelectorPanelLayout.setVerticalGroup(
             frameSelectorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1155,7 +1155,7 @@ public class MainWindow extends javax.swing.JFrame {
         divisionsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         samplingLevelValue.setModel(new SpinnerNumberModel(1, 1, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
-        scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.1));
+        scaleValue.setModel(new SpinnerNumberModel(1, 1, null, 0.01F));
         mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width(), metadata.width() >> 2, metadata.width() << 4, 1));
         mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height(), metadata.height() >> 2, metadata.width() << 4, 1));
         exportMosaicButton.setEnabled(false);
@@ -1245,6 +1245,14 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     /**
+     * Get the sampling level.
+     * @return The sampling level.
+     */
+    public int getSamplingLevel() {
+        return (Integer) samplingLevelValue.getValue();
+    }
+    
+    /**
      * Get the gap between frames to sample.
      * @return The gap between frames to sample.
      */
@@ -1253,11 +1261,11 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     /**
-     * Get the sampling level.
-     * @return The sampling level.
+     * Get the scale of the mosaic.
+     * @return The scale of the mosaic.
      */
-    public int getSamplingLevel() {
-        return (Integer) samplingLevelValue.getValue();
+    public float getScale() {
+        return (Float) scaleValue.getValue();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

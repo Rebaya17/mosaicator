@@ -520,8 +520,8 @@
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Component id="frameLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="frameValue" min="-2" pref="60" max="-2" attributes="0"/>
-                          <EmptySpace pref="23" max="32767" attributes="0"/>
+                          <Component id="frameValue" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="18" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -607,11 +607,11 @@
                 <Component class="javax.swing.JSpinner" name="frameValue">
                   <Properties>
                     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[60, 20]"/>
+                      <Dimension value="[65, 20]"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="frameValue" noResource="true"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[60, 20]"/>
+                      <Dimension value="[65, 20]"/>
                     </Property>
                   </Properties>
                 </Component>
