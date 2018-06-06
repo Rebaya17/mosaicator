@@ -57,8 +57,8 @@ public class Multimedia {
         int max = metadata.frames();
         int width = metadata.width();
         int height = metadata.height();
-        int dx = (int) Math.ceil((float) width / (float) samplingLevel);
-        int dy = (int) Math.ceil((float) height / (float) samplingLevel);
+        float dx = (float) width / (float) samplingLevel;
+        float dy = (float) height / (float) samplingLevel;
         
         /* For each frame */
         for (int index = 0; index < max; index += gap) {
@@ -70,18 +70,24 @@ public class Multimedia {
             int k = 0;
             
             /* For each sample */
-            for (int x = 0; x < width; x += dx) {
-                for (int y = 0; y < height; y += dy) {
-                    int maxI = x + dx;
-                    int maxJ = y + dy;
+            float x = 0.0F;
+            for (int col = 0; col < samplingLevel; col++, x += dx) {
+                int maxI = Math.round(x + dx);
+                if (maxI > width) maxI = width;
+                
+                float y = 0.0F;
+                for (int row = 0; row < samplingLevel; row++, y += dy, k++) {
+                    int maxJ = Math.round(y + dy);
                     int meanR = 0;
                     int meanG = 0;
                     int meanB = 0;
                     int sum = 0;
                     
+                    if (maxJ > height) maxJ = height;
+                    
                     /* Get color sum by channel */
-                    for (int i = x; (i < maxI) && (i < width); i++)
-                        for (int j = y; (j < maxJ) && (j < height); j++) {
+                    for (int i = Math.round(x); i < maxI; i++)
+                        for (int j = Math.round(y); j < maxJ; j++) {
                             int rgb = frame.getRGB(i, j);
                             meanR += (rgb >> 16) & 0x00FF0000;
                             meanG += (rgb >>  8) & 0x0000FF00;
@@ -90,7 +96,6 @@ public class Multimedia {
                         }
                     
                     mean[k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
-                    k++;
                 }
             }
             
@@ -159,36 +164,43 @@ public class Multimedia {
         /* Frame split */
         int width = metadata.width();
         int height = metadata.height();
-        int sampleWidth = (int) Math.ceil((float) width / (float) div);
-        int sampleHeight = (int) Math.ceil((float) height / (float) div);
-        int dx = (int) Math.ceil((float) sampleWidth / (float) samplingLevel);
-        int dy = (int) Math.ceil((float) sampleHeight / (float) samplingLevel);
         int mosaicWidth = width * div;
         int mosaicHeight = height * div;
+        float sampleWidth = (float) width / (float) div;
+        float sampleHeight = (float) height / (float) div;
+        float dx = sampleWidth / (float) samplingLevel;
+        float dy = sampleHeight / (float) samplingLevel;
         
         /* For each division */
         Integer[][] frameSample = new Integer[div * div][samplingLevel * samplingLevel];
         int sample = 0;
         
-        for (int n = 0; n < width; n += sampleWidth)
-            for (int m = 0; m < height; m += sampleHeight) {
-                int maxX = n + sampleWidth;
-                int maxY = m + sampleHeight;
-                int k = 0;
-
+        float n = 0.0F;
+        for (int colD = 0; colD < div; colD++, n += sampleWidth) {
+            
+            float m = 0.0F;
+            for (int rowD = 0; rowD < div; rowD++, m += sampleHeight, sample++) {
+                
                 /* For each sample */
-                for (int x = n; x < maxX; x += dx)
-                    for (int y = m; y < maxY; y += dy) {
-                        int maxI = x + dx;
-                        int maxJ = y + dy;
+                int k = 0;
+                float x = n;
+                for (int colL = 0; colL < samplingLevel; colL++, x += dx) {
+                    int maxI = Math.round(x + dx);
+                    if (maxI > width) maxI = Math.round(width);
+                        
+                    float y = m;
+                    for (int rowL = 0; rowL < samplingLevel; rowL++, y += dy, k++) {
+                        int maxJ = Math.round(y + dy);
                         int meanR = 0;
                         int meanG = 0;
                         int meanB = 0;
                         int sum = 0;
+                        
+                        if (maxJ > height) maxJ = Math.round(height);
 
                         /* Get color sum by channel */
-                        for (int i = x; (i < maxI) && (i < width); i++)
-                            for (int j = y; (j < maxJ) && (j < height); j++) {
+                        for (int i = Math.round(x); i < maxI; i++)
+                            for (int j = Math.round(y); j < maxJ; j++) {
                                 int rgb = frame.getRGB(i, j);
                                 meanR += (rgb >> 16) & 0x00FF0000;
                                 meanG += (rgb >>  8) & 0x0000FF00;
@@ -196,16 +208,11 @@ public class Multimedia {
                                 sum++;
                             }
 
-                        if (sum == 0)
-                            frameSample[sample][k] = 0;
-                        else
-                            frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
-                        
-                        k++;
+                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
                     }
-                
-                sample++;
+                }
             }
+        }
         
         
         /* Get nearest */
