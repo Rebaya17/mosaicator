@@ -4,6 +4,8 @@
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="samplingType">
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="colorSpace">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="menuBar">
       <Properties>
         <Property name="name" type="java.lang.String" value="menuBar" noResource="true"/>
@@ -224,7 +226,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="videoPanel" pref="329" max="32767" attributes="0"/>
+                          <Component id="videoPanel" pref="330" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="frame" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -288,15 +290,15 @@
                                       <Component id="videoFpsValue" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="openVideo" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="exportFrameButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="openVideo" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="exportFrameButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -348,12 +350,12 @@
                               <Component id="videoFpsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="videoFpsValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="openVideo" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="exportFrameButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="63" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -696,7 +698,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="mosaic" max="32767" attributes="0"/>
-                          <Component id="mosaicPanel" pref="329" max="32767" attributes="0"/>
+                          <Component id="mosaicPanel" pref="330" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -720,47 +722,55 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <Component id="samplingByLevel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="samplingTotal" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
-                                  <Component id="generate" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="2" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="divisionsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="gapLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="colorSpaceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="samplingLevelLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="scaleLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                      <Component id="gapLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="mosaicWidthLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="mosaicHeightLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="divisionsValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="samplingLevelValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="gapValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="scaleValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="mosaicWidthValue" alignment="1" max="32767" attributes="0"/>
-                                      <Component id="mosaicHeightValue" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="divisionsValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="gapValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="samplingLevelValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="scaleValue" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="mosaicWidthValue" max="32767" attributes="0"/>
+                                      <Component id="mosaicHeightValue" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <Component id="samplingTypeLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="samplingByLevel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="colorRGB" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="colorCIELAB" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="samplingTotal" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <Component id="samplingTypeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace pref="12" max="32767" attributes="0"/>
+                          <Component id="generate" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="exportMosaicButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="12" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -778,18 +788,25 @@
                               <Component id="gapValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="samplingTypeLabel" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="colorSpaceLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="samplingTotal" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorRGB" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="colorCIELAB" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="samplingTypeLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="samplingByLevel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="samplingTotal" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="samplingLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="samplingLevelValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="scaleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="scaleValue" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -804,12 +821,12 @@
                               <Component id="mosaicHeightLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="mosaicHeightValue" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="generate" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="exportMosaicButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace pref="51" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -836,6 +853,30 @@
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" value="Cuadros"/>
                     <Property name="name" type="java.lang.String" value="gapValue" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="colorSpaceLabel">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Espacio de color:"/>
+                    <Property name="name" type="java.lang.String" value="colorSpaceLabel" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JRadioButton" name="colorRGB">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="colorSpace"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="RGB"/>
+                    <Property name="name" type="java.lang.String" value="colorRGB" noResource="true"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JRadioButton" name="colorCIELAB">
+                  <Properties>
+                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                      <ComponentRef name="colorSpace"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="CIE L*A*B*"/>
+                    <Property name="name" type="java.lang.String" value="colorCIELAB" noResource="true"/>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="samplingTypeLabel">
@@ -888,7 +929,7 @@
                 </Component>
                 <Component class="javax.swing.JLabel" name="mosaicWidthLabel">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="Ancho"/>
+                    <Property name="text" type="java.lang.String" value="Ancho:"/>
                     <Property name="name" type="java.lang.String" value="mosaicWidthLabel" noResource="true"/>
                   </Properties>
                 </Component>
@@ -974,7 +1015,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="piecesScroll" max="32767" attributes="0"/>
-                          <Component id="piecesPanel" pref="329" max="32767" attributes="0"/>
+                          <Component id="piecesPanel" pref="330" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -1000,19 +1041,15 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" attributes="0">
-                                  <Component id="piecesLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="piecesValue" pref="75" max="32767" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="1" attributes="0">
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                                  <Component id="exportPiecesButton" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              </Group>
-                          </Group>
+                          <Component id="piecesLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="piecesValue" pref="75" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="exportPiecesButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -1108,7 +1145,7 @@
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="316" max="32767" attributes="0"/>
+                              <EmptySpace min="0" pref="317" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                       </Layout>

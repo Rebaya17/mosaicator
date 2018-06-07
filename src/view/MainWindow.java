@@ -30,6 +30,9 @@ import model.Metadata;
 public class MainWindow extends javax.swing.JFrame {
     private Metadata metadata;
     
+    public static final int RGB = 0;
+    public static final int CIELAB = 1;
+    
     public static final int SAMPLING_BY_LEVEL = 0;
     public static final int SAMPLING_TOTAL = 1;
     
@@ -72,6 +75,7 @@ public class MainWindow extends javax.swing.JFrame {
     private void initComponents() {
 
         samplingType = new javax.swing.ButtonGroup();
+        colorSpace = new javax.swing.ButtonGroup();
         tabbedPane = new javax.swing.JTabbedPane();
         frameTab = new javax.swing.JPanel();
         videoPanel = new javax.swing.JPanel();
@@ -114,6 +118,9 @@ public class MainWindow extends javax.swing.JFrame {
         divisionsValue = new javax.swing.JSpinner();
         gapLabel = new javax.swing.JLabel();
         gapValue = new javax.swing.JSpinner();
+        colorSpaceLabel = new javax.swing.JLabel();
+        colorRGB = new javax.swing.JRadioButton();
+        colorCIELAB = new javax.swing.JRadioButton();
         samplingTypeLabel = new javax.swing.JLabel();
         samplingByLevel = new javax.swing.JRadioButton();
         samplingTotal = new javax.swing.JRadioButton();
@@ -271,14 +278,14 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(videoLengthValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                             .addComponent(videoFramesValue)
-                            .addComponent(videoFpsValue)))
-                    .addGroup(videoPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(openVideo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exportFrameButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(videoFpsValue))))
                 .addContainerGap())
+            .addGroup(videoPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(openVideo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportFrameButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         videoPanelLayout.setVerticalGroup(
             videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -319,11 +326,11 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(videoFpsLabel)
                     .addComponent(videoFpsValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(openVideo)
                     .addComponent(exportFrameButton))
-                .addContainerGap(63, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         frameSelectorPanel.setMinimumSize(new java.awt.Dimension(398, 74));
@@ -443,7 +450,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(frameTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
+                    .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
                     .addGroup(frameTabLayout.createSequentialGroup()
                         .addComponent(frame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -470,6 +477,17 @@ public class MainWindow extends javax.swing.JFrame {
         gapValue.setToolTipText("Cuadros");
         gapValue.setName("gapValue"); // NOI18N
 
+        colorSpaceLabel.setText("Espacio de color:");
+        colorSpaceLabel.setName("colorSpaceLabel"); // NOI18N
+
+        colorSpace.add(colorRGB);
+        colorRGB.setText("RGB");
+        colorRGB.setName("colorRGB"); // NOI18N
+
+        colorSpace.add(colorCIELAB);
+        colorCIELAB.setText("CIE L*A*B*");
+        colorCIELAB.setName("colorCIELAB"); // NOI18N
+
         samplingTypeLabel.setText("Tipo de muestreo:");
         samplingTypeLabel.setName("samplingTypeLabel"); // NOI18N
 
@@ -493,7 +511,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         scaleValue.setName("scaleValue"); // NOI18N
 
-        mosaicWidthLabel.setText("Ancho");
+        mosaicWidthLabel.setText("Ancho:");
         mosaicWidthLabel.setName("mosaicWidthLabel"); // NOI18N
 
         mosaicWidthValue.setName("mosaicWidthValue"); // NOI18N
@@ -519,36 +537,41 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addComponent(samplingByLevel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(samplingTotal)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addGap(0, 2, Short.MAX_VALUE)
-                        .addComponent(generate)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exportMosaicButton)
-                        .addGap(0, 2, Short.MAX_VALUE))
-                    .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(divisionsLabel)
-                            .addComponent(mosaicHeightLabel)
-                            .addComponent(mosaicWidthLabel)
+                            .addComponent(gapLabel)
+                            .addComponent(colorSpaceLabel)
                             .addComponent(samplingLevelLabel)
                             .addComponent(scaleLabel)
-                            .addComponent(gapLabel))
+                            .addComponent(mosaicWidthLabel)
+                            .addComponent(mosaicHeightLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(divisionsValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(samplingLevelValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(gapValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(scaleValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(mosaicWidthValue, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING)))
+                            .addComponent(divisionsValue)
+                            .addComponent(gapValue)
+                            .addComponent(samplingLevelValue)
+                            .addComponent(scaleValue)
+                            .addComponent(mosaicWidthValue)
+                            .addComponent(mosaicHeightValue)))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addComponent(samplingTypeLabel)
+                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(mosaicPanelLayout.createSequentialGroup()
+                                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(samplingByLevel)
+                                    .addComponent(colorRGB))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(colorCIELAB)
+                                    .addComponent(samplingTotal)))
+                            .addComponent(samplingTypeLabel))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(mosaicPanelLayout.createSequentialGroup()
+                .addContainerGap(12, Short.MAX_VALUE)
+                .addComponent(generate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportMosaicButton)
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         mosaicPanelLayout.setVerticalGroup(
             mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -562,11 +585,17 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(gapLabel)
                     .addComponent(gapValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(colorSpaceLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(colorRGB)
+                    .addComponent(colorCIELAB))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(samplingTypeLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(samplingTotal)
-                    .addComponent(samplingByLevel))
+                    .addComponent(samplingByLevel)
+                    .addComponent(samplingTotal))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(samplingLevelLabel)
@@ -587,7 +616,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generate)
                     .addComponent(exportMosaicButton))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         mosaic.setName("mosaic"); // NOI18N
@@ -620,7 +649,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(mosaic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
+                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -649,16 +678,14 @@ public class MainWindow extends javax.swing.JFrame {
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(piecesPanelLayout.createSequentialGroup()
-                        .addComponent(piecesLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, piecesPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(exportPiecesButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addComponent(piecesLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(piecesPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(exportPiecesButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         piecesPanelLayout.setVerticalGroup(
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -694,7 +721,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         piecesCanvasLayout.setVerticalGroup(
             piecesCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 316, Short.MAX_VALUE)
+            .addGap(0, 317, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout piecesViewportLayout = new javax.swing.GroupLayout(piecesViewport);
@@ -731,7 +758,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(piecesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(piecesScroll)
-                    .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE))
+                    .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -1175,6 +1202,8 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, false);
         divisionsValue.setModel(spinnerModel);
         gapValue.setModel(spinnerModel);
+        colorRGB.setSelected(false);
+        colorCIELAB.setSelected(false);
         samplingByLevel.setSelected(false);
         samplingTotal.setSelected(false);
         samplingLevelValue.setModel(spinnerModel);
@@ -1263,6 +1292,7 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, true);
         divisionsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
+        colorRGB.setSelected(true);
         samplingByLevel.setSelected(true);
         samplingLevelValue.setModel(new SpinnerNumberModel(2, 1, null, 1));
         scaleValue.setModel(new SpinnerNumberModel(1.0F, 0.25F, null, 0.01F));
@@ -1374,11 +1404,31 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     /**
+     * Get the gap between frames to sample.
+     * @return The gap between frames to sample.
+     */
+    public int getGap() {
+        return (Integer) gapValue.getValue();
+    }
+    
+    /**
+     * Get the color space.
+     * @return The color space.
+     */
+    public int getColorSpace() {
+        if (colorRGB.isSelected()) return RGB;
+        if (colorCIELAB.isSelected()) return CIELAB;
+        return RGB;
+    }
+    
+    /**
      * Get the sampling type.
      * @return The sampling type.
      */
     public int getSamplingType() {
-        return samplingTotal.isSelected() ? SAMPLING_TOTAL : SAMPLING_BY_LEVEL;
+        if (samplingTotal.isSelected()) return SAMPLING_TOTAL;
+        if (samplingByLevel.isSelected()) return SAMPLING_BY_LEVEL;
+        return SAMPLING_TOTAL;
     }
     
     /**
@@ -1386,15 +1436,9 @@ public class MainWindow extends javax.swing.JFrame {
      * @return The sampling level.
      */
     public int getSamplingLevel() {
-        return samplingTotal.isSelected() ? 0 : (Integer) samplingLevelValue.getValue();
-    }
-    
-    /**
-     * Get the gap between frames to sample.
-     * @return The gap between frames to sample.
-     */
-    public int getGap() {
-        return (Integer) gapValue.getValue();
+        if (samplingTotal.isSelected()) return 0;
+        if (samplingByLevel.isSelected()) return (Integer) samplingLevelValue.getValue();
+        return 0;
     }
     
     /**
@@ -1411,6 +1455,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel colon1;
     private javax.swing.JLabel colon2;
     private javax.swing.JLabel colon3;
+    private javax.swing.JRadioButton colorCIELAB;
+    private javax.swing.JRadioButton colorRGB;
+    private javax.swing.ButtonGroup colorSpace;
+    private javax.swing.JLabel colorSpaceLabel;
     private javax.swing.JLabel divisionsLabel;
     private javax.swing.JSpinner divisionsValue;
     private javax.swing.JMenuItem exit;
