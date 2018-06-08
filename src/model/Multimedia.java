@@ -25,10 +25,11 @@ public class Multimedia {
     private int frameID;
     private int divisions;
     private int samplingLevel;
-    private int[] sourceFrame;
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
     private BufferedImage mosaic;
+    private int[] sourceFrameNumber;
+    private BufferedImage[] sourceFrame;
     private final HashMap<Integer, Integer[]> framesSamples;
     private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
     
@@ -40,8 +41,9 @@ public class Multimedia {
         frameID = -1;
         divisions = 0;
         samplingLevel = 0;
-        sourceFrame = null;
         mosaic = null;
+        sourceFrameNumber = null;
+        sourceFrame = null;
         metadata = null;
         grabber = null;
         framesSamples = new HashMap<>();
@@ -185,7 +187,7 @@ public class Multimedia {
         
         //PriorityQueue<Integer> used = new PriorityQueue<>();
         int destiny = frameSample.length;
-        sourceFrame = new int[destiny];
+        sourceFrameNumber = new int[destiny];
         
         /* For each destiny */
         for (int i = 0; i < destiny; i++) {
@@ -223,7 +225,7 @@ public class Multimedia {
             }
             
             /* Store nearest */
-            sourceFrame[i] = nearest;
+            sourceFrameNumber[i] = nearest;
         }
     }
     
@@ -234,31 +236,41 @@ public class Multimedia {
      */
     private void buildMosaic(float scale) throws FrameGrabber.Exception {
         int sample = 0;
-        int width = Math.round(metadata.width() * scale);
-        int height = Math.round(metadata.height() * scale);
-        float subScale = metadata.width() / (float) divisions * scale;
-        mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        int width = metadata.width();
+        int height = metadata.height();
+        
+        int mosaicWidth = Math.round(width * scale);
+        int mosaicWeight = Math.round(height * scale);
+        float pieceScale = ((float) mosaicWidth / (float) divisions) * scale;
+        mosaic = new BufferedImage(mosaicWidth, mosaicWeight, BufferedImage.TYPE_3BYTE_BGR);
+        
+        float sourceScale = (width <= 128 ? 1.0F : 128.0F / width);
+        int sourceWidth = 128;
+        int sourceHeight = Math.round(metadata.height() * sourceScale);
+        sourceFrame = new BufferedImage[sourceFrameNumber.length];
+        
         
         /* For each sample */
         float x = 0.0F;
-        for (int col = 0; col < divisions; col++, x += width) {
-            int maxX = Math.round(x + width);
-            if (maxX > width) maxX = width;
-            
+        for (int col = 0; col < divisions; col++, x += mosaicWidth) {
             float y = 0.0F;
-            for (int row = 0; row < divisions; row++, y += height, sample++) {
-                BufferedImage frame = getFrame(sourceFrame[sample]);
-                int maxY = Math.round(y + height);
-                if (maxY > height) maxY = height;
+            for (int row = 0; row < divisions; row++, y += mosaicWeight, sample++) {
+                BufferedImage frame = getFrame(sourceFrameNumber[sample]);
+                BufferedImage scaledFrame = new BufferedImage(sourceWidth, sourceHeight, BufferedImage.TYPE_3BYTE_BGR);
             
                 /* Fill source */
-                for (int px = Math.round(x), dX = px; px < maxX; px++)
-                    for (int py = Math.round(y), dY = py; py < maxY; py++) {
-                        int i = (int) ((px - dX) * subScale);
-                        int j = (int) ((py - dY) * subScale);
+                for (int px = 0; px < width; px++)
+                    for (int py = 0; py < height; py++) {
+                        int scaledX = (int) (x * sourceScale);
+                        int scaledY = (int) (y * sourceScale);
+                        int mosaicX = (int) ((x + px) * pieceScale);
+                        int mosaicY = (int) ((y + py) * pieceScale);
                         
-                        mosaic.setRGB(px, py, frame.getRGB(i, j));
+                        mosaic.setRGB(mosaicX, mosaicY, frame.getRGB(px, py));
+                        scaledFrame.setRGB(scaledX, scaledY, frame.getRGB(px, py));
                     }
+                
+                sourceFrame[sample] = scaledFrame;
             }
         }
     }
@@ -299,9 +311,11 @@ public class Multimedia {
         frameID = -1;
         divisions = 0;
         samplingLevel = 0;
-        framesSamples.clear();
         mosaic = null;
+        sourceFrameNumber = null;
+        sourceFrame = null;
         metadata = null;
+        framesSamples.clear();
     }
     
     /**
@@ -383,30 +397,8 @@ public class Multimedia {
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
     public BufferedImage[] getSourceFrames() throws FrameGrabber.Exception {
-        BufferedImage[] frame = new BufferedImage[sourceFrame.length];
-        int width = metadata.width();
-        int height = metadata.height();
-        float scale = (metadata.width() <= 128 ? 1.0F : 128.0F / (float) metadata.width());
-        
-        int scaledWidth = 128;
-        int scaledHeight = (int) (metadata.height() * scale);
-        
-        for (int k = 0; k < sourceFrame.length; k++) {
-            BufferedImage originalFrame = getFrame(sourceFrame[k]);
-            BufferedImage scaledFrame = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_3BYTE_BGR);
-            
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++) {
-                    int i = (int) (x * scale);
-                    int j = (int) (y * scale);
-                    
-                    scaledFrame.setRGB(i, j, originalFrame.getRGB(x, y));
-                }
-            
-            frame[k] = scaledFrame;
-        }
-        
-        return frame;
+        if (frameID == -1) return null;
+        return sourceFrame;
     }
     
     /**
