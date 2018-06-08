@@ -1315,8 +1315,9 @@ public class MainWindow extends javax.swing.JFrame {
      * Set mosaic and update the export option enabled state.
      * @param newMosaic Mosaic to draw.
      * @param pieces Pieces to draw.
+     * @param cols Number of columns of pieces to show.
      */
-    public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces) {
+    public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces, int cols) {
         mosaic.setImage(newMosaic);
         boolean enabled = mosaic.hasImage();
         
@@ -1340,7 +1341,7 @@ public class MainWindow extends javax.swing.JFrame {
             
             float width = (float) (piecesScroll.getWidth() - piecesScroll.getVerticalScrollBar().getWidth() - 40)  / 3.0F;
             float scale = width / (float) pieces[0].getWidth();
-            Dimension size = new Dimension((int) width, (int) (pieces[0].getHeight() * scale));
+            Dimension size = new Dimension(Math.round(width), Math.round(pieces[0].getHeight() * scale));
             
             piecesCanvas.setLayout(new GridBagLayout());
             
@@ -1348,8 +1349,8 @@ public class MainWindow extends javax.swing.JFrame {
                 ImagePanel piece = new ImagePanel(pieces[i]);
                 piece.setPreferredSize(size);
                 piece.setSize(size);
-                constraint.gridx = i % 3;
-                constraint.gridy = i / 3;
+                constraint.gridx = i % cols;
+                constraint.gridy = i / cols;
                 piecesCanvas.add(piece, constraint);
             }
         }

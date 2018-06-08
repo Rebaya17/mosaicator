@@ -25,10 +25,10 @@ public class Multimedia {
     private int frameID;
     private int divisions;
     private int samplingLevel;
+    private int[] sourceFrame;
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
     private BufferedImage mosaic;
-    private BufferedImage[] sourceFrame;
     private final HashMap<Integer, Integer[]> framesSamples;
     private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
     
@@ -185,7 +185,7 @@ public class Multimedia {
         
         //PriorityQueue<Integer> used = new PriorityQueue<>();
         int destiny = frameSample.length;
-        sourceFrame = new BufferedImage[destiny];
+        sourceFrame = new int[destiny];
         
         /* For each destiny */
         for (int i = 0; i < destiny; i++) {
@@ -223,7 +223,7 @@ public class Multimedia {
             }
             
             /* Store nearest */
-            sourceFrame[i] = getFrame(nearest);
+            sourceFrame[i] = nearest;
         }
     }
     
@@ -236,29 +236,26 @@ public class Multimedia {
         int sample = 0;
         int width = Math.round(metadata.width() * scale);
         int height = Math.round(metadata.height() * scale);
-        int widthEnd = width - 1;
-        int heightEnd = height - 1;
-        float pieceWidth = (float) width / (float) divisions;
-        float pieceHeight = (float) height / (float) divisions;
+        float subScale = metadata.width() / (float) divisions * scale;
         mosaic = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
         
         /* For each sample */
         float x = 0.0F;
-        for (int col = 0; col < divisions; col++, x += pieceWidth) {
-            int maxX = Math.round(x + pieceWidth);
+        for (int col = 0; col < divisions; col++, x += width) {
+            int maxX = Math.round(x + width);
             if (maxX > width) maxX = width;
             
             float y = 0.0F;
-            for (int row = 0; row < divisions; row++, y += pieceHeight, sample++) {
-                BufferedImage frame = sourceFrame[sample];
-                int maxY = Math.round(y + pieceHeight);
+            for (int row = 0; row < divisions; row++, y += height, sample++) {
+                BufferedImage frame = getFrame(sourceFrame[sample]);
+                int maxY = Math.round(y + height);
                 if (maxY > height) maxY = height;
             
                 /* Fill source */
-                for (int px = Math.round(x), xBegin = px, xEnd = maxX - px - 1; px < maxX; px++)
-                    for (int py = Math.round(y), yBegin = py, yEnd = maxY - py - 1; py < maxY; py++) {
-                        int i = (int) ((float) ((px - xBegin) * widthEnd) / (float) xEnd);
-                        int j = (int) ((float) ((py - yBegin) * heightEnd) / (float) yEnd);
+                for (int px = Math.round(x), dX = px; px < maxX; px++)
+                    for (int py = Math.round(y), dY = py; py < maxY; py++) {
+                        int i = (int) ((px - dX) * subScale);
+                        int j = (int) ((py - dY) * subScale);
                         
                         mosaic.setRGB(px, py, frame.getRGB(i, j));
                     }
@@ -383,9 +380,33 @@ public class Multimedia {
     /**
      * Get the source frames array.
      * @return Source frames array.
+     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public BufferedImage[] getSourceFrames() {
-        return sourceFrame;
+    public BufferedImage[] getSourceFrames() throws FrameGrabber.Exception {
+        BufferedImage[] frame = new BufferedImage[sourceFrame.length];
+        int width = metadata.width();
+        int height = metadata.height();
+        float scale = (metadata.width() <= 128 ? 1.0F : 128.0F / (float) metadata.width());
+        
+        int scaledWidth = 128;
+        int scaledHeight = (int) (metadata.height() * scale);
+        
+        for (int k = 0; k < sourceFrame.length; k++) {
+            BufferedImage originalFrame = getFrame(sourceFrame[k]);
+            BufferedImage scaledFrame = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_3BYTE_BGR);
+            
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++) {
+                    int i = (int) (x * scale);
+                    int j = (int) (y * scale);
+                    
+                    scaledFrame.setRGB(i, j, originalFrame.getRGB(x, y));
+                }
+            
+            frame[k] = scaledFrame;
+        }
+        
+        return frame;
     }
     
     /**

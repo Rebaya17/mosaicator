@@ -222,7 +222,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
                 // Read Mosaicator project file
                 File file = fileChooser.getSelectedFile();
                 video.open(null);
-                mainWindow.setMosaic(null, null);
+                mainWindow.setMosaic(null, null, 0);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -342,7 +342,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
                 video.open(fileChooser.getSelectedFile());
                 mainWindow.setVideoMetadata(video.getMetadata());
                 mainWindow.setFrame(video.getFrame(0));
-                mainWindow.setMosaic(null, null);
+                mainWindow.setMosaic(null, null, 0);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -356,7 +356,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     public void generate() {
         try {
             video.mosaicate(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getScale(), mainWindow.getSamplingLevel());
-            mainWindow.setMosaic(video.getMosaic(), video.getSourceFrames());
+            mainWindow.setMosaic(video.getMosaic(), video.getSourceFrames(), 5);
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error creando el mosaico:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
