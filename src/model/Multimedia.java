@@ -239,13 +239,13 @@ public class Multimedia {
         int width = metadata.width();
         int height = metadata.height();
         
+        float pieceScale = scale / (float) divisions;
         int mosaicWidth = Math.round(width * scale);
         int mosaicWeight = Math.round(height * scale);
-        float pieceScale = ((float) mosaicWidth / (float) divisions) * scale;
         mosaic = new BufferedImage(mosaicWidth, mosaicWeight, BufferedImage.TYPE_3BYTE_BGR);
         
-        float sourceScale = (width <= 128 ? 1.0F : 128.0F / width);
-        int sourceWidth = 128;
+        int sourceWidth = 96;
+        float sourceScale = (width <= sourceWidth ? 1.0F : (float) sourceWidth / (float) width);
         int sourceHeight = Math.round(metadata.height() * sourceScale);
         sourceFrame = new BufferedImage[sourceFrameNumber.length];
         
@@ -261,8 +261,8 @@ public class Multimedia {
                 /* Fill source */
                 for (int px = 0; px < width; px++)
                     for (int py = 0; py < height; py++) {
-                        int scaledX = (int) (x * sourceScale);
-                        int scaledY = (int) (y * sourceScale);
+                        int scaledX = (int) (px * sourceScale);
+                        int scaledY = (int) (py * sourceScale);
                         int mosaicX = (int) ((x + px) * pieceScale);
                         int mosaicY = (int) ((y + py) * pieceScale);
                         

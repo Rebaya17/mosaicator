@@ -29,6 +29,8 @@ import model.Metadata;
  */
 public class MainWindow extends javax.swing.JFrame {
     private Metadata metadata;
+    private int piecesCols;
+    private int piecesPadding;
     
     public static final int RGB = 0;
     public static final int CIELAB = 1;
@@ -159,7 +161,7 @@ public class MainWindow extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mosaicator");
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/resources/icon.png")).getImage());
-        setMinimumSize(new java.awt.Dimension(640, 400));
+        setMinimumSize(new java.awt.Dimension(640, 451));
         setName("mainWindow"); // NOI18N
 
         tabbedPane.setName("tabbedPane"); // NOI18N
@@ -274,14 +276,14 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(videoLengthValue, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                             .addComponent(videoFramesValue)
-                            .addComponent(videoFpsValue))))
+                            .addComponent(videoFpsValue)))
+                    .addGroup(videoPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(openVideo)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exportFrameButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(videoPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(openVideo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exportFrameButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         videoPanelLayout.setVerticalGroup(
             videoPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -560,14 +562,14 @@ public class MainWindow extends javax.swing.JFrame {
                                     .addComponent(colorCIELAB)
                                     .addComponent(samplingTotal)))
                             .addComponent(samplingTypeLabel))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addGap(0, 2, Short.MAX_VALUE)
+                        .addComponent(generate)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(exportMosaicButton)
+                        .addGap(0, 2, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(mosaicPanelLayout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(generate)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exportMosaicButton)
-                .addContainerGap(12, Short.MAX_VALUE))
         );
         mosaicPanelLayout.setVerticalGroup(
             mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -674,14 +676,16 @@ public class MainWindow extends javax.swing.JFrame {
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(piecesLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(piecesPanelLayout.createSequentialGroup()
+                        .addComponent(piecesLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
+                    .addGroup(piecesPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(exportPiecesButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(piecesPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(exportPiecesButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         piecesPanelLayout.setVerticalGroup(
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -863,7 +867,7 @@ public class MainWindow extends javax.swing.JFrame {
         Component[] panels = piecesCanvas.getComponents();
         if (panels.length == 0) return;
         
-        float width = (float) (piecesScroll.getWidth() - piecesScroll.getVerticalScrollBar().getWidth() - 40)  / 3.0F;
+        float width = (float) (piecesScroll.getWidth() - piecesScroll.getVerticalScrollBar().getWidth() - (piecesPadding * (piecesCols + 1)))  / piecesCols;
         float scale = width / (float) ((ImagePanel) panels[0]).getImage().getWidth();
         Dimension size = new Dimension((int) width, (int) (((ImagePanel) panels[0]).getImage().getHeight() * scale));
         
@@ -1333,13 +1337,17 @@ public class MainWindow extends javax.swing.JFrame {
         piecesCanvas.removeAll();
         
         if (pieces == null) {
+            piecesCols = 1;
+            piecesPadding = 0;
             piecesCanvas.setLayout(new GridBagLayout());
         } else {
+            piecesCols = cols;
+            piecesPadding = 10;
             GridBagConstraints constraint = new GridBagConstraints();
             constraint.fill = GridBagConstraints.HORIZONTAL;
-            constraint.insets = new Insets(0, 0, 10, 10);
+            constraint.insets = new Insets(0, 0, piecesPadding, piecesPadding);
             
-            float width = (float) (piecesScroll.getWidth() - piecesScroll.getVerticalScrollBar().getWidth() - 40)  / 3.0F;
+            float width = (float) (piecesScroll.getWidth() - piecesScroll.getVerticalScrollBar().getWidth() - (piecesPadding * (piecesCols + 1)))  / piecesCols;
             float scale = width / (float) pieces[0].getWidth();
             Dimension size = new Dimension(Math.round(width), Math.round(pieces[0].getHeight() * scale));
             
@@ -1349,8 +1357,8 @@ public class MainWindow extends javax.swing.JFrame {
                 ImagePanel piece = new ImagePanel(pieces[i]);
                 piece.setPreferredSize(size);
                 piece.setSize(size);
-                constraint.gridx = i % cols;
-                constraint.gridy = i / cols;
+                constraint.gridx = i % piecesCols;
+                constraint.gridy = i / piecesCols;
                 piecesCanvas.add(piece, constraint);
             }
         }
