@@ -1334,9 +1334,9 @@ public class MainWindow extends javax.swing.JFrame {
         exportMosaicButton.setEnabled(enabled);
         
         /* Pieces tab */
-        setFullyEnabled(piecesPanel, true);
+        setFullyEnabled(piecesPanel, enabled);
         int divisions = (Integer) divisionsValue.getValue();
-        piecesValue.setText(String.valueOf(divisions * divisions));
+        piecesValue.setText(enabled ? String.valueOf(divisions * divisions) : "");
         
         /* Refresh */
         mosaic.revalidate();

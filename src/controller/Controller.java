@@ -176,7 +176,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Set the mosaic model.
      * @param model Mosaic model.
      */
-    public void setMosaic(Multimedia model) {
+    public void setMultimedia(Multimedia model) {
         video = model;
     }
     

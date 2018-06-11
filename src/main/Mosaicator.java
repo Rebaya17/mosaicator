@@ -33,7 +33,7 @@ public class Mosaicator {
         controller = new Controller();
         
         /* Initialize MVC */
-        controller.setMosaic(video);
+        controller.setMultimedia(video);
         controller.setMainWindow(mainWindow);
         controller.setAbout(about);
         controller.initMVC();
