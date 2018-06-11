@@ -7,9 +7,7 @@ package model;
 
 import java.io.File;
 import java.util.HashMap;
-//import java.util.PriorityQueue;
 
-import java.awt.image.ColorModel;
 import java.awt.image.BufferedImage;
 import org.bytedeco.javacpp.avutil;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -21,10 +19,12 @@ import org.bytedeco.javacv.FrameGrabber;
  * Mosaic class.
  */
 public class Multimedia {
-    private int gap;
     private int frameID;
     private int divisions;
+    private int gap;
     private int samplingLevel;
+    private boolean deltaE;
+    private float scale;
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
     private BufferedImage mosaic;
@@ -37,19 +37,48 @@ public class Multimedia {
      * Mosaic Constructor.
      */
     public Multimedia() {
-        gap = 0;
         frameID = -1;
         divisions = 0;
+        gap = 0;
         samplingLevel = 0;
+        deltaE = false;
+        scale = 0.0F;
+        metadata = null;
+        grabber = null;
         mosaic = null;
         sourceFrameNumber = null;
         sourceFrame = null;
-        metadata = null;
-        grabber = null;
         framesSamples = new HashMap<>();
         
         /* Disable FFmpeg verbose */
         avutil.av_log_set_level(avutil.AV_LOG_QUIET);
+    }
+    
+    /**
+     * Calculate the average color of an image.
+     * @param src Source image.
+     * @param offset Pixel offset.
+     * @return Average color.
+     */
+    private int averageColor(BufferedImage src, int offset) {
+        int width = src.getWidth();
+        int height = src.getHeight();
+        int acumR = 0;
+        int acumG = 0;
+        int acumB = 0;
+        int sum = 0;
+        
+        for (int x = 0; x < width; x += offset) {
+            for (int y = 0; y < height; y += offset) {
+                int rgb = src.getRGB(x, y);
+                acumR += (rgb >> 16) & 0x00FF0000;
+                acumG += (rgb >>  8) & 0x0000FF00;
+                acumB +=  rgb        & 0x000000FF;
+                sum++;
+            }
+        }
+        
+        return ((acumR / (sum)) << 16) | ((acumG / sum) << 8) | (acumB / sum);
     }
     
     /**
@@ -59,118 +88,82 @@ public class Multimedia {
     private void sampleFrames() throws FrameGrabber.Exception {
         /* Reset members */
         framesSamples.clear();
+        int top = metadata.frames();
         
-        /* Frame split */
-        int max = metadata.frames();
-        int width = metadata.width();
-        int height = metadata.height();
-        float dx = (float) width / (float) samplingLevel;
-        float dy = (float) height / (float) samplingLevel;
+        /* Dimensions of the subframes */
+        int offset = (int) (samplingLevel / scale);
+        float dx = (float) metadata.width() / (float) samplingLevel;
+        float dy = (float) metadata.height() / (float) samplingLevel;
+        
         
         /* For each frame */
-        for (int index = 0; index < max; index += gap) {
-            grabber.setFrameNumber(index);
-            BufferedImage frame = TO_BUFFERED_IMAGE.convert(grabber.grab());
+        for (int i = 0; i < top; i += gap) {
+            BufferedImage frame = getFrame(i);
             if (frame == null) break;
             
-            Integer[] mean = new Integer[samplingLevel * samplingLevel];
+            Integer[] average = new Integer[samplingLevel * samplingLevel];
             int k = 0;
-            
-            /* For each sample */
             float x = 0.0F;
-            for (int col = 0; col < samplingLevel; col++, x += dx) {
-                int maxI = Math.round(x + dx);
-                if (maxI > width) maxI = width;
-                
-                float y = 0.0F;
-                for (int row = 0; row < samplingLevel; row++, y += dy, k++) {
-                    int maxJ = Math.round(y + dy);
-                    int meanR = 0;
-                    int meanG = 0;
-                    int meanB = 0;
-                    int sum = 0;
-                    
-                    if (maxJ > height) maxJ = height;
-                    
-                    /* Get color sum by channel */
-                    for (int i = Math.round(x); i < maxI; i++)
-                        for (int j = Math.round(y); j < maxJ; j++) {
-                            int rgb = frame.getRGB(i, j);
-                            meanR += (rgb >> 16) & 0x00FF0000;
-                            meanG += (rgb >>  8) & 0x0000FF00;
-                            meanB +=  rgb        & 0x000000FF;
-                            sum++;
-                        }
-                    
-                    mean[k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
-                }
-            }
+            float y = 0.0F;
             
+            /* For each subframe */
+            for (int col = 0; col < samplingLevel; col++, x += dx,  y = 0.0F)
+                for (int row = 0; row < samplingLevel; row++, y += dy, k++) {
+                    float px = x + 0.5F;
+                    float py = y + 0.5F;
+                    float subWidth = px + dx;
+                    float subHeight = py + dy;
+                    average[k] = averageColor(frame.getSubimage((int) px, (int) py, (int) subWidth, (int) subHeight), offset);
+                }
             /* Put frame sample */
-            framesSamples.put(index, mean.clone());
+            framesSamples.put(i, average);
         }
     }
     
     /**
      * Sample the selected frame with the currnt sampling level.
-     * @param frameNumber Number of the frame to mosaicate.
      * @return Samples array with each color mean by level.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    private Integer[][] sampleFrame(int frameNumber) throws FrameGrabber.Exception {
+    private Integer[][] sampleFrame() throws FrameGrabber.Exception {
         /* Get frame to mosaicate */
-        BufferedImage frame = getFrame(frameNumber);
+        BufferedImage frame = getFrame(frameID);
         if (frame == null) return null;
         
-        /* Frame split */
-        int width = metadata.width();
-        int height = metadata.height();
-        float sampleWidth = (float) width / (float) divisions;
-        float sampleHeight = (float) height / (float) divisions;
-        float dx = sampleWidth / (float) samplingLevel;
-        float dy = sampleHeight / (float) samplingLevel;
+        /* Dimensions of the pieces*/
+        float dx = (float) metadata.width() / (float) divisions;
+        float dy = (float) metadata.height() / (float) divisions;
         
-        /* For each division */
+        /* Dimensions of the subpieces */
+        float dw = dx / (float) samplingLevel;
+        float dz = dy / (float) samplingLevel;
+        
         Integer[][] frameSample = new Integer[divisions * divisions][samplingLevel * samplingLevel];
-        int sample = 0;
+        int k = 0;
+        int l = 0;
+        float x = 0.0F;
+        float y = 0.0F;
+        float w = 0.0F;
+        float z = 0.0F;
         
-        float n = 0.0F;
-        for (int colD = 0; colD < divisions; colD++, n += sampleWidth) {
-            
-            float m = 0.0F;
-            for (int rowD = 0; rowD < divisions; rowD++, m += sampleHeight, sample++) {
+        /* For each piece */
+        for (int colD = 0; colD < divisions; colD++, x += dx, y = 0.0F) 
+            for (int rowD = 0; rowD < divisions; rowD++, y += dy, k++, l = 0) {
+                float px = x + 0.5F;
+                float py = y + 0.5F;
+                float pieceWidth = px + dx;
+                float pieceHeight = py + dy;
+                BufferedImage piece = frame.getSubimage((int) x, (int) y, (int) pieceWidth, (int) pieceHeight);
                 
-                /* For each sample */
-                int k = 0;
-                float x = n;
-                for (int colL = 0; colL < samplingLevel; colL++, x += dx) {
-                    int maxI = Math.round(x + dx);
-                    if (maxI > width) maxI = Math.round(width);
-                        
-                    float y = m;
-                    for (int rowL = 0; rowL < samplingLevel; rowL++, y += dy, k++) {
-                        int maxJ = Math.round(y + dy);
-                        int meanR = 0;
-                        int meanG = 0;
-                        int meanB = 0;
-                        int sum = 0;
-                        
-                        if (maxJ > height) maxJ = Math.round(height);
-
-                        /* Get color sum by channel */
-                        for (int i = Math.round(x); i < maxI; i++)
-                            for (int j = Math.round(y); j < maxJ; j++) {
-                                int rgb = frame.getRGB(i, j);
-                                meanR += (rgb >> 16) & 0x00FF0000;
-                                meanG += (rgb >>  8) & 0x0000FF00;
-                                meanB +=  rgb        & 0x000000FF;
-                                sum++;
-                            }
-
-                        frameSample[sample][k] = ((meanR / (sum)) << 16) | ((meanG / sum) << 8) | (meanB / sum);
+                /* For each subpiece */
+                for (int colL = 0; colL < samplingLevel; colL++, w += dw, z = 0.0F)
+                    for (int rowL = 0; rowL < samplingLevel; rowL++, z += dz, l++) {
+                        float pw = w + 0.5F;
+                        float pz = z + 0.5F;
+                        float subWidth = pw + dw;
+                        float subHeight = pz + dz;
+                        frameSample[k][l] = averageColor(piece.getSubimage((int) w, (int) z, (int) subWidth, (int) subHeight), 1);
                     }
-                }
-            }
         }
         
         return frameSample;
@@ -178,37 +171,35 @@ public class Multimedia {
     
     /**
      * Search source frames to mosaic and save on sourceFrame.
-     * @param frameNumber Number of the frame to mosaicate.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    private void searchSources(int frameNumber) throws FrameGrabber.Exception {
+    private void searchSources() throws FrameGrabber.Exception {
         /* Sample selected frame */
-        Integer[][] frameSample = sampleFrame(frameNumber);
+        Integer[][] frameSample = sampleFrame();
         
-        //PriorityQueue<Integer> used = new PriorityQueue<>();
-        int destiny = frameSample.length;
-        sourceFrameNumber = new int[destiny];
+        int top = frameSample.length;
+        sourceFrameNumber = new int[top];
         
         /* For each destiny */
-        for (int i = 0; i < destiny; i++) {
-            if (frameSample[i][0] == null) break;
+        for (int i = 0; i < top; i++) {
             int min = Integer.MAX_VALUE;
             int nearest = 0;
             
             /* For each sampled frame */
             for (HashMap.Entry<Integer, Integer[]> sampled : framesSamples.entrySet()) {
-                frameNumber = sampled.getKey();
-                //if (used.contains(frameNumber)) continue;
-                
-                Integer[] mean = sampled.getValue();
                 int distance = 0;
+                int frameNumber = sampled.getKey();
+                Integer[] average = sampled.getValue();
                 
                 /* Manhattan distance */
-                for (int j = 0; j < mean.length; j++) {
-                    if (frameSample[i][j] == null) break;
+                for (int j = 0; j < average.length; j++) {
+                    if (frameSample[i][j] == null) {
+                        distance = Integer.MAX_VALUE;
+                        break;
+                    }
                     
                     int rgbDst = frameSample[i][j];
-                    int rgbSrc = mean[j];
+                    int rgbSrc = average[j];
                     int r = Math.abs(((rgbSrc >> 16) & 0xFF) - ((rgbDst >> 16) & 0xFF));
                     int g = Math.abs(((rgbSrc >>  8) & 0xFF) - ((rgbDst >>  8) & 0xFF));
                     int b = Math.abs(( rgbSrc        & 0xFF) - ( rgbDst        & 0xFF));
@@ -220,7 +211,6 @@ public class Multimedia {
                 if (distance < min) {
                     min = distance;
                     nearest = frameNumber;
-                    //used.add(frameNumber);
                 }
             }
             
@@ -231,46 +221,44 @@ public class Multimedia {
     
     /**
      * Build a photomosaic from the selected source frames.
-     * @param scale Scale of the photomosaic.
      * @throws FrameGrabber.Exception FrameGrabber exception.
      */
-    private void buildMosaic(float scale) throws FrameGrabber.Exception {
-        int sample = 0;
-        int width = metadata.width();
-        int height = metadata.height();
+    private void buildMosaic() throws FrameGrabber.Exception {
+        /* Dimensions of the frames */
+        int frameWidth = metadata.width();
+        int frameHeight = metadata.height();
         
-        float pieceScale = scale / (float) divisions;
-        int mosaicWidth = Math.round(width * scale);
-        int mosaicWeight = Math.round(height * scale);
-        mosaic = new BufferedImage(mosaicWidth, mosaicWeight, BufferedImage.TYPE_3BYTE_BGR);
+        /* Dimensions of the pieces */
+        int offset = (int) (samplingLevel / scale);
+        float dx = (float) frameWidth / (float) samplingLevel;
+        float dy = (float) frameHeight / (float) samplingLevel;
         
-        int sourceWidth = 96;
-        float sourceScale = (width <= sourceWidth ? 1.0F : (float) sourceWidth / (float) width);
-        int sourceHeight = Math.round(metadata.height() * sourceScale);
-        sourceFrame = new BufferedImage[sourceFrameNumber.length];
+        /* Dimensions of the mosaic */
+        int mosaicWidth = (int) Math.ceil(frameWidth * scale);
+        int mosaicHeight = (int) Math.ceil(frameHeight * scale);
+        mosaic = new BufferedImage(mosaicWidth, mosaicHeight, BufferedImage.TYPE_3BYTE_BGR);
         
-        
-        /* For each sample */
+        int k = 0;
         float x = 0.0F;
-        for (int col = 0; col < divisions; col++, x += mosaicWidth) {
-            float y = 0.0F;
-            for (int row = 0; row < divisions; row++, y += mosaicWeight, sample++) {
-                BufferedImage frame = getFrame(sourceFrameNumber[sample]);
-                BufferedImage scaledFrame = new BufferedImage(sourceWidth, sourceHeight, BufferedImage.TYPE_3BYTE_BGR);
-            
-                /* Fill source */
-                for (int px = 0; px < width; px++)
-                    for (int py = 0; py < height; py++) {
-                        int scaledX = (int) (px * sourceScale);
-                        int scaledY = (int) (py * sourceScale);
-                        int mosaicX = (int) ((x + px) * pieceScale);
-                        int mosaicY = (int) ((y + py) * pieceScale);
-                        
-                        mosaic.setRGB(mosaicX, mosaicY, frame.getRGB(px, py));
-                        scaledFrame.setRGB(scaledX, scaledY, frame.getRGB(px, py));
-                    }
+        float y = 0.0F;
+        float w = 0.0F;
+        float z = 0.0F;
+        
+        /* For each piece */
+        for (int col = 0; col < divisions; col++, x += dx, y = 0.0F) {
+            for (int row = 0; row < divisions; row++, y += dy, k++, w = 0.0F) {
+                BufferedImage piece = getFrame(sourceFrameNumber[k]);
                 
-                sourceFrame[sample] = scaledFrame;
+                /* For each scaled pixel */
+                for (int i = 0; w < frameWidth; i++, w += offset, z = 0.0F)
+                    for (int j = 0; z < frameWidth; j++, z += offset) {
+                        float px = x + i + 0.5F;
+                        float py = y + j + 0.5F;
+                        float pw = w + 0.5F;
+                        float pz = z + 0.5F;
+                        
+                        mosaic.setRGB((int) px, (int) py, piece.getRGB((int) pw, (int) pz));
+                    }
             }
         }
     }
@@ -301,20 +289,20 @@ public class Multimedia {
      */
     public void close () throws FrameGrabber.Exception {
         /* Close video */
-        if (grabber != null) {
-            grabber.close();
-            grabber = null;
-        }
+        if (grabber != null) grabber.close();
         
         /* Clear metadata */
-        gap = 0;
         frameID = -1;
         divisions = 0;
+        gap = 0;
         samplingLevel = 0;
+        deltaE = false;
+        scale = 0.0F;
+        metadata = null;
+        grabber = null;
         mosaic = null;
         sourceFrameNumber = null;
         sourceFrame = null;
-        metadata = null;
         framesSamples.clear();
     }
     
@@ -324,47 +312,34 @@ public class Multimedia {
      * @param frameNumber Number of the frame to mosaicate.
      * @param div Number of divisions.
      * @param interval Interval of frames to sample.
-     * @param scale Scale of the mosaic.
      * @param level Sampling level.
+     * @param cielab Color space
+     * @param factor Scale of the mosaic.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public void mosaicate(int frameNumber, int div, int interval, float scale, int level) throws FrameGrabber.Exception {
-        /* Total sampling */
-        if (level <= 0) mosaicate(frameNumber, div, interval, scale);
-        
+    public void mosaicate(int frameNumber, int div, int interval, int level, boolean cielab, float factor) throws FrameGrabber.Exception {
         boolean build = false;
         
         /* Process video frames */
-        if ((gap != interval) || (samplingLevel != level)) {
+        if ((gap != interval) || (samplingLevel != level)|| (deltaE != cielab)  || (scale != factor)) {
             gap = interval;
+            deltaE = cielab;
             samplingLevel = level;
-            build = true;
+            scale = factor;
             sampleFrames();
+            build = true;
         }
         
         /* Search source frames */
-        if ((frameID != frameNumber) || (divisions != div)) {
+        if ((frameID != frameNumber) || (divisions != div) || (scale != factor) || build) {
             frameID = frameNumber;
             divisions = div;
+            searchSources();
             build = true;
-            searchSources(frameNumber);
         }
         
         /* Build mosaic */
-        if(build) buildMosaic(scale);
-    }
-    
-    /**
-     * Create a photomosaic from video frames totally sampled.
-     * @param frameNumber Number of the frame to mosaicate.
-     * @param div Number of divisions.
-     * @param interval Interval of frames to sample.
-     * @param scale Scale of the mosaic.
-     * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
-     */
-    public void mosaicate(int frameNumber, int div, int interval, float scale) throws FrameGrabber.Exception {
-        samplingLevel = 0;
-        
+        if(build) buildMosaic();
     }
     
     /**
@@ -384,11 +359,7 @@ public class Multimedia {
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
         if (grabber == null) return null;
         grabber.setFrameNumber(frameNumber);
-        BufferedImage frame = TO_BUFFERED_IMAGE.convert(grabber.grab());
-        if (frame == null) return null;
-        
-        ColorModel colorModel = frame.getColorModel();
-        return new BufferedImage(colorModel, frame.copyData(null), colorModel.isAlphaPremultiplied(), null);
+        return TO_BUFFERED_IMAGE.convert(grabber.grab());
     }
     
     /**

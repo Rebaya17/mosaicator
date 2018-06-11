@@ -355,7 +355,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void generate() {
         try {
-            video.mosaicate(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getScale(), mainWindow.getSamplingLevel());
+            video.mosaicate(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getSamplingLevel(), mainWindow.isCIELAB(), mainWindow.getScale());
             mainWindow.setMosaic(video.getMosaic(), video.getSourceFrames(), 8);
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);

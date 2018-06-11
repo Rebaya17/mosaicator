@@ -6,7 +6,6 @@
 package view;
 
 import javax.swing.event.ChangeEvent;
-import java.awt.event.ActionEvent;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,8 +31,8 @@ public class MainWindow extends javax.swing.JFrame {
     private int piecesCols;
     private int piecesPadding;
     
-    public static final int RGB = 0;
-    public static final int CIELAB = 1;
+    public static final boolean RGB = false;
+    public static final boolean CIELAB = true;
     
     public static final int SAMPLING_BY_LEVEL = 0;
     public static final int SAMPLING_TOTAL = 1;
@@ -119,9 +118,6 @@ public class MainWindow extends javax.swing.JFrame {
         colorSpaceLabel = new javax.swing.JLabel();
         colorRGB = new javax.swing.JRadioButton();
         colorCIELAB = new javax.swing.JRadioButton();
-        samplingTypeLabel = new javax.swing.JLabel();
-        samplingByLevel = new javax.swing.JRadioButton();
-        samplingTotal = new javax.swing.JRadioButton();
         samplingLevelLabel = new javax.swing.JLabel();
         samplingLevelValue = new javax.swing.JSpinner();
         scaleLabel = new javax.swing.JLabel();
@@ -448,7 +444,7 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(frameTabLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(frameTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
+                    .addComponent(videoPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
                     .addGroup(frameTabLayout.createSequentialGroup()
                         .addComponent(frame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -483,21 +479,8 @@ public class MainWindow extends javax.swing.JFrame {
         colorRGB.setName("colorRGB"); // NOI18N
 
         colorSpace.add(colorCIELAB);
-        colorCIELAB.setText("CIE L*A*B*");
+        colorCIELAB.setText("CIELAB");
         colorCIELAB.setName("colorCIELAB"); // NOI18N
-
-        samplingTypeLabel.setText("Tipo de muestreo:");
-        samplingTypeLabel.setName("samplingTypeLabel"); // NOI18N
-
-        samplingType.add(samplingByLevel);
-        samplingByLevel.setMnemonic('n');
-        samplingByLevel.setText("Por nivel");
-        samplingByLevel.setName("samplingByLevel"); // NOI18N
-
-        samplingType.add(samplingTotal);
-        samplingTotal.setMnemonic('T');
-        samplingTotal.setText("Total");
-        samplingTotal.setName("samplingTotal"); // NOI18N
 
         samplingLevelLabel.setText("Nivel de muestreo:");
         samplingLevelLabel.setName("samplingLevelLabel"); // NOI18N
@@ -538,7 +521,6 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(divisionsLabel)
                             .addComponent(gapLabel)
-                            .addComponent(colorSpaceLabel)
                             .addComponent(samplingLevelLabel)
                             .addComponent(scaleLabel)
                             .addComponent(mosaicWidthLabel)
@@ -552,23 +534,19 @@ public class MainWindow extends javax.swing.JFrame {
                             .addComponent(mosaicWidthValue)
                             .addComponent(mosaicHeightValue)))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(mosaicPanelLayout.createSequentialGroup()
-                                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(samplingByLevel)
-                                    .addComponent(colorRGB))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(colorCIELAB)
-                                    .addComponent(samplingTotal)))
-                            .addComponent(samplingTypeLabel))
+                        .addComponent(colorRGB)
+                        .addGap(22, 22, 22)
+                        .addComponent(colorCIELAB)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addGap(0, 2, Short.MAX_VALUE)
                         .addComponent(generate)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exportMosaicButton)
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addGap(0, 2, Short.MAX_VALUE))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addComponent(colorSpaceLabel)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         mosaicPanelLayout.setVerticalGroup(
@@ -583,21 +561,15 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(gapLabel)
                     .addComponent(gapValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(samplingLevelLabel)
+                    .addComponent(samplingLevelValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(colorSpaceLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(colorRGB)
                     .addComponent(colorCIELAB))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(samplingTypeLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(samplingByLevel)
-                    .addComponent(samplingTotal))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(samplingLevelLabel)
-                    .addComponent(samplingLevelValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(scaleLabel)
@@ -647,7 +619,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(mosaicTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(mosaic, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
+                    .addComponent(mosaicPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -721,7 +693,7 @@ public class MainWindow extends javax.swing.JFrame {
         );
         piecesCanvasLayout.setVerticalGroup(
             piecesCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 317, Short.MAX_VALUE)
+            .addGap(0, 318, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout piecesViewportLayout = new javax.swing.GroupLayout(piecesViewport);
@@ -758,7 +730,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(piecesTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(piecesScroll)
-                    .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE))
+                    .addComponent(piecesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -956,22 +928,6 @@ public class MainWindow extends javax.swing.JFrame {
     // </editor-fold>
     
     /**
-     * Select sampling total.
-     */
-    private void selectSamplingTotal() {
-        samplingLevelLabel.setEnabled(false);
-        samplingLevelValue.setEnabled(false);
-    }
-    
-    /**
-     * Select sampling by level.
-     */
-    private void selectSamplingByLevel() {
-        samplingLevelLabel.setEnabled(true);
-        samplingLevelValue.setEnabled(true);
-    }
-    
-    /**
      * Set component and all its childrend enabled status.<br>
      * <a href="https://stackoverflow.com/a/13920371">Source.</a>
      * @param component Parent component.
@@ -1068,8 +1024,6 @@ public class MainWindow extends javax.swing.JFrame {
         frameSlider.addChangeListener((ChangeEvent e) -> { updateTimeScale(frameSlider.getValue()); });
         
         /* Mosaic panel */
-        samplingByLevel.addActionListener((ActionEvent e) -> { selectSamplingByLevel(); });
-        samplingTotal.addActionListener((ActionEvent e) -> { selectSamplingTotal(); });
         generate.addActionListener(controller);
         exportMosaicButton.addActionListener(controller);
         
@@ -1202,11 +1156,9 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, false);
         divisionsValue.setModel(spinnerModel);
         gapValue.setModel(spinnerModel);
+        samplingLevelValue.setModel(spinnerModel);
         colorRGB.setSelected(false);
         colorCIELAB.setSelected(false);
-        samplingByLevel.setSelected(false);
-        samplingTotal.setSelected(false);
-        samplingLevelValue.setModel(spinnerModel);
         scaleValue.setModel(spinnerModel);
         mosaicWidthValue.setModel(spinnerModel);
         mosaicHeightValue.setModel(spinnerModel);
@@ -1292,9 +1244,8 @@ public class MainWindow extends javax.swing.JFrame {
         setFullyEnabled(mosaicPanel, true);
         divisionsValue.setModel(new SpinnerNumberModel(16, 10, null, 1));
         gapValue.setModel(new SpinnerNumberModel(5, 1, null, 1));
-        colorRGB.setSelected(true);
-        samplingByLevel.setSelected(true);
         samplingLevelValue.setModel(new SpinnerNumberModel(2, 1, null, 1));
+        colorRGB.setSelected(true);
         scaleValue.setModel(new SpinnerNumberModel(1.0F, 0.25F, null, 0.01F));
         mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width(), metadata.width() >> 2, metadata.width() << 4, 1));
         mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height(), metadata.height() >> 2, metadata.width() << 4, 1));
@@ -1420,20 +1371,8 @@ public class MainWindow extends javax.swing.JFrame {
      * Get the color space.
      * @return The color space.
      */
-    public int getColorSpace() {
-        if (colorRGB.isSelected()) return RGB;
-        if (colorCIELAB.isSelected()) return CIELAB;
-        return RGB;
-    }
-    
-    /**
-     * Get the sampling type.
-     * @return The sampling type.
-     */
-    public int getSamplingType() {
-        if (samplingTotal.isSelected()) return SAMPLING_TOTAL;
-        if (samplingByLevel.isSelected()) return SAMPLING_BY_LEVEL;
-        return SAMPLING_TOTAL;
+    public boolean isCIELAB() {
+        return colorCIELAB.isSelected();
     }
     
     /**
@@ -1441,9 +1380,7 @@ public class MainWindow extends javax.swing.JFrame {
      * @return The sampling level.
      */
     public int getSamplingLevel() {
-        if (samplingTotal.isSelected()) return 0;
-        if (samplingByLevel.isSelected()) return (Integer) samplingLevelValue.getValue();
-        return 0;
+        return (Integer) samplingLevelValue.getValue();
     }
     
     /**
@@ -1506,12 +1443,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel piecesTab;
     private javax.swing.JTextField piecesValue;
     private javax.swing.JPanel piecesViewport;
-    private javax.swing.JRadioButton samplingByLevel;
     private javax.swing.JLabel samplingLevelLabel;
     private javax.swing.JSpinner samplingLevelValue;
-    private javax.swing.JRadioButton samplingTotal;
     private javax.swing.ButtonGroup samplingType;
-    private javax.swing.JLabel samplingTypeLabel;
     private javax.swing.JMenuItem save;
     private javax.swing.JMenuItem saveAs;
     private javax.swing.JLabel scaleLabel;
