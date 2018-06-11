@@ -123,17 +123,19 @@ public class MainWindow extends javax.swing.JFrame {
         scaleLabel = new javax.swing.JLabel();
         scaleValue = new javax.swing.JSpinner();
         mosaicWidthLabel = new javax.swing.JLabel();
-        mosaicWidthValue = new javax.swing.JSpinner();
         mosaicHeightLabel = new javax.swing.JLabel();
-        mosaicHeightValue = new javax.swing.JSpinner();
         generate = new javax.swing.JButton();
         exportMosaicButton = new javax.swing.JButton();
+        mosaicWidthValue = new javax.swing.JTextField();
+        mosaicHeightValue = new javax.swing.JTextField();
         mosaic = new view.ImagePanel();
         piecesTab = new javax.swing.JPanel();
         piecesPanel = new javax.swing.JPanel();
         piecesLabel = new javax.swing.JLabel();
         piecesValue = new javax.swing.JTextField();
         exportPiecesButton = new javax.swing.JButton();
+        piecesPreview = new javax.swing.JButton();
+        piecesMessage = new javax.swing.JTextArea();
         piecesScroll = new javax.swing.JScrollPane();
         piecesViewport = new javax.swing.JPanel();
         piecesCanvas = new javax.swing.JPanel();
@@ -200,6 +202,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoWidthLabel.setName("videoWidthLabel"); // NOI18N
 
         videoWidthValue.setEditable(false);
+        videoWidthValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         videoWidthValue.setBorder(null);
         videoWidthValue.setName("videoWidthValue"); // NOI18N
 
@@ -207,6 +210,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoHeightLabel.setName("videoHeightLabel"); // NOI18N
 
         videoHeightValue.setEditable(false);
+        videoHeightValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         videoHeightValue.setBorder(null);
         videoHeightValue.setName("videoHeightValue"); // NOI18N
 
@@ -214,6 +218,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoLengthLabel.setName("videoLengthLabel"); // NOI18N
 
         videoLengthValue.setEditable(false);
+        videoLengthValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         videoLengthValue.setToolTipText("HH:MM:SS,MS");
         videoLengthValue.setBorder(null);
         videoLengthValue.setName("videoLengthValue"); // NOI18N
@@ -222,6 +227,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoFramesLabel.setName("videoFramesLabel"); // NOI18N
 
         videoFramesValue.setEditable(false);
+        videoFramesValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         videoFramesValue.setBorder(null);
         videoFramesValue.setName("pathValue"); // NOI18N
 
@@ -229,6 +235,7 @@ public class MainWindow extends javax.swing.JFrame {
         videoFpsLabel.setName("videoFpsLabel"); // NOI18N
 
         videoFpsValue.setEditable(false);
+        videoFpsValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         videoFpsValue.setBorder(null);
         videoFpsValue.setName("videoFpsValue"); // NOI18N
 
@@ -495,12 +502,8 @@ public class MainWindow extends javax.swing.JFrame {
         mosaicWidthLabel.setText("Ancho:");
         mosaicWidthLabel.setName("mosaicWidthLabel"); // NOI18N
 
-        mosaicWidthValue.setName("mosaicWidthValue"); // NOI18N
-
         mosaicHeightLabel.setText("Alto:");
         mosaicHeightLabel.setName("mosaicHeightLabel"); // NOI18N
-
-        mosaicHeightValue.setName("mosaicHeightValue"); // NOI18N
 
         generate.setMnemonic('G');
         generate.setText("Generar");
@@ -510,6 +513,16 @@ public class MainWindow extends javax.swing.JFrame {
         exportMosaicButton.setText("Exportar...");
         exportMosaicButton.setName("exportMosaicButton"); // NOI18N
 
+        mosaicWidthValue.setEditable(false);
+        mosaicWidthValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        mosaicWidthValue.setBorder(null);
+        mosaicWidthValue.setName("mosaicWidthValue"); // NOI18N
+
+        mosaicHeightValue.setEditable(false);
+        mosaicHeightValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        mosaicHeightValue.setBorder(null);
+        mosaicHeightValue.setName("mosaicHeightValue"); // NOI18N
+
         javax.swing.GroupLayout mosaicPanelLayout = new javax.swing.GroupLayout(mosaicPanel);
         mosaicPanel.setLayout(mosaicPanelLayout);
         mosaicPanelLayout.setHorizontalGroup(
@@ -517,22 +530,6 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(mosaicPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(mosaicPanelLayout.createSequentialGroup()
-                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(divisionsLabel)
-                            .addComponent(gapLabel)
-                            .addComponent(samplingLevelLabel)
-                            .addComponent(scaleLabel)
-                            .addComponent(mosaicWidthLabel)
-                            .addComponent(mosaicHeightLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(divisionsValue)
-                            .addComponent(gapValue)
-                            .addComponent(samplingLevelValue)
-                            .addComponent(scaleValue)
-                            .addComponent(mosaicWidthValue)
-                            .addComponent(mosaicHeightValue)))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addComponent(colorRGB)
                         .addGap(22, 22, 22)
@@ -546,7 +543,23 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGap(0, 2, Short.MAX_VALUE))
                     .addGroup(mosaicPanelLayout.createSequentialGroup()
                         .addComponent(colorSpaceLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(mosaicPanelLayout.createSequentialGroup()
+                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(divisionsLabel)
+                            .addComponent(gapLabel)
+                            .addComponent(samplingLevelLabel)
+                            .addComponent(scaleLabel)
+                            .addComponent(mosaicHeightLabel)
+                            .addComponent(mosaicWidthLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(mosaicWidthValue)
+                            .addComponent(divisionsValue)
+                            .addComponent(gapValue)
+                            .addComponent(samplingLevelValue)
+                            .addComponent(scaleValue)
+                            .addComponent(mosaicHeightValue, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         mosaicPanelLayout.setVerticalGroup(
@@ -586,7 +599,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(mosaicPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(generate)
                     .addComponent(exportMosaicButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         mosaic.setName("mosaic"); // NOI18N
@@ -635,6 +648,7 @@ public class MainWindow extends javax.swing.JFrame {
         piecesLabel.setName("piecesLabel"); // NOI18N
 
         piecesValue.setEditable(false);
+        piecesValue.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         piecesValue.setBorder(null);
         piecesValue.setName("piecesValue"); // NOI18N
 
@@ -642,21 +656,38 @@ public class MainWindow extends javax.swing.JFrame {
         exportPiecesButton.setText("Exportar...");
         exportPiecesButton.setName("exportPiecesButton"); // NOI18N
 
+        piecesPreview.setText("Vista previa");
+        piecesPreview.setName("piecesPreview"); // NOI18N
+
+        piecesMessage.setEditable(false);
+        piecesMessage.setBackground(new java.awt.Color(240, 240, 240));
+        piecesMessage.setColumns(20);
+        piecesMessage.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
+        piecesMessage.setLineWrap(true);
+        piecesMessage.setTabSize(4);
+        piecesMessage.setText("La vista previa puede presentar problemas al representar grandes cantidades de piezas. En este caso use el botón exportar para ver las piezas con un visor externo.");
+        piecesMessage.setWrapStyleWord(true);
+        piecesMessage.setFocusable(false);
+        piecesMessage.setName("piecesMessage"); // NOI18N
+
         javax.swing.GroupLayout piecesPanelLayout = new javax.swing.GroupLayout(piecesPanel);
         piecesPanel.setLayout(piecesPanelLayout);
         piecesPanelLayout.setHorizontalGroup(
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(piecesPanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(piecesPreview)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportPiecesButton)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(piecesMessage)
                     .addGroup(piecesPanelLayout.createSequentialGroup()
                         .addComponent(piecesLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(piecesValue, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE))
-                    .addGroup(piecesPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(exportPiecesButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(piecesValue)))
                 .addContainerGap())
         );
         piecesPanelLayout.setVerticalGroup(
@@ -667,7 +698,11 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(piecesLabel)
                     .addComponent(piecesValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(exportPiecesButton)
+                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(piecesPreview)
+                    .addComponent(exportPiecesButton))
+                .addGap(18, 18, 18)
+                .addComponent(piecesMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -928,6 +963,17 @@ public class MainWindow extends javax.swing.JFrame {
     // </editor-fold>
     
     /**
+     * Update the scale of the mosaic.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Update the time scale from frame number">
+    private void updateScale() {
+        float scale = (Float) scaleValue.getValue();
+        mosaicWidthValue.setText(String.valueOf((int) (metadata.width() * scale + 0.5F)));
+        mosaicHeightValue.setText(String.valueOf((int) (metadata.height() * scale + 0.5F)));
+    }
+    // </editor-fold>
+    
+    /**
      * Set component and all its childrend enabled status.<br>
      * <a href="https://stackoverflow.com/a/13920371">Source.</a>
      * @param component Parent component.
@@ -974,6 +1020,7 @@ public class MainWindow extends javax.swing.JFrame {
         exportMosaicButton.setActionCommand(exportMosaicButton.getName());
         
         /* Pieces tab */
+        piecesPreview.setActionCommand(piecesPreview.getName());
         exportPiecesButton.setActionCommand(exportPiecesButton.getName());
     }
     // </editor-fold>
@@ -1024,10 +1071,12 @@ public class MainWindow extends javax.swing.JFrame {
         frameSlider.addChangeListener((ChangeEvent e) -> { updateTimeScale(frameSlider.getValue()); });
         
         /* Mosaic panel */
+        scaleValue.addChangeListener((ChangeEvent e) -> { updateScale(); });
         generate.addActionListener(controller);
         exportMosaicButton.addActionListener(controller);
         
         /* Pieces panel */
+        piecesPreview.addActionListener(controller);
         exportPiecesButton.addActionListener(controller);
     }
     // </editor-fold>
@@ -1091,6 +1140,7 @@ public class MainWindow extends javax.swing.JFrame {
             /* Pieces tab */
             case "piecesTab": setFullyEnabled(piecesTab, enabled); return;
             case "piecesPanel": setFullyEnabled(piecesPanel, enabled); return;
+            case "piecesPreview": piecesPreview.setEnabled(enabled); return;
             case "exportPiecesButton": exportPiecesButton.setEnabled(enabled); return;
             case "piecesScroll": piecesScroll.setEnabled(enabled); return;
             
@@ -1160,11 +1210,12 @@ public class MainWindow extends javax.swing.JFrame {
         colorRGB.setSelected(false);
         colorCIELAB.setSelected(false);
         scaleValue.setModel(spinnerModel);
-        mosaicWidthValue.setModel(spinnerModel);
-        mosaicHeightValue.setModel(spinnerModel);
+        mosaicWidthValue.setText("");
+        mosaicHeightValue.setText("");
         
         /* Pieces tab */
         setFullyEnabled(piecesPanel, false);
+        piecesValue.setText("");
         piecesCanvas.removeAll();
         piecesCanvas.setLayout(new GridBagLayout());
     }
@@ -1247,12 +1298,13 @@ public class MainWindow extends javax.swing.JFrame {
         samplingLevelValue.setModel(new SpinnerNumberModel(2, 1, null, 1));
         colorRGB.setSelected(true);
         scaleValue.setModel(new SpinnerNumberModel(1.0F, 0.25F, null, 0.01F));
-        mosaicWidthValue.setModel(new SpinnerNumberModel(metadata.width(), metadata.width() >> 2, metadata.width() << 4, 1));
-        mosaicHeightValue.setModel(new SpinnerNumberModel(metadata.height(), metadata.height() >> 2, metadata.width() << 4, 1));
+        mosaicWidthValue.setText(String.valueOf(metadata.width()));
+        mosaicHeightValue.setText(String.valueOf(metadata.height()));
         exportMosaicButton.setEnabled(false);
         
         /* Pieces tab */
         setFullyEnabled(piecesPanel, false);
+        piecesValue.setText("");
         piecesCanvas.removeAll();
         piecesCanvas.setLayout(new GridBagLayout());
     }
@@ -1269,10 +1321,8 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * Set mosaic and update the export option enabled state.
      * @param newMosaic Mosaic to draw.
-     * @param pieces Pieces to draw.
-     * @param cols Number of columns of pieces to show.
      */
-    public void setMosaic(BufferedImage newMosaic, BufferedImage[] pieces, int cols) {
+    public void setMosaic(BufferedImage newMosaic) {
         mosaic.setImage(newMosaic);
         boolean enabled = mosaic.hasImage();
         
@@ -1284,8 +1334,24 @@ public class MainWindow extends javax.swing.JFrame {
         exportMosaicButton.setEnabled(enabled);
         
         /* Pieces tab */
-        setFullyEnabled(piecesPanel, enabled);
+        setFullyEnabled(piecesPanel, true);
+        int divisions = (Integer) divisionsValue.getValue();
+        piecesValue.setText(String.valueOf(divisions * divisions));
+        
+        /* Refresh */
+        mosaic.revalidate();
+        mosaic.repaint();
+    }
+    
+    /**
+     * Set the preview pieces.
+     * @param pieces Pieces to draw.
+     * @param cols Number of columns of pieces to show.
+     */
+    public void setPieces(BufferedImage[] pieces, int cols) {
+        /* Pieces tab */
         piecesCanvas.removeAll();
+        piecesCanvas.setLayout(new GridBagLayout());
         
         if (pieces == null) {
             piecesCols = 1;
@@ -1302,6 +1368,7 @@ public class MainWindow extends javax.swing.JFrame {
             float scale = width / (float) pieces[0].getWidth();
             Dimension size = new Dimension(Math.round(width), Math.round(pieces[0].getHeight() * scale));
             
+            piecesValue.setText(String.valueOf(pieces.length));
             piecesCanvas.setLayout(new GridBagLayout());
             
             for (int i = 0; i < pieces.length; i++) {
@@ -1315,8 +1382,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
         /* Refresh */
-        mosaic.revalidate();
-        mosaic.repaint();
+        piecesScroll.revalidate();
+        piecesScroll.repaint();
     }
     
     /**
@@ -1428,17 +1495,19 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSpinner minuteValue;
     private view.ImagePanel mosaic;
     private javax.swing.JLabel mosaicHeightLabel;
-    private javax.swing.JSpinner mosaicHeightValue;
+    private javax.swing.JTextField mosaicHeightValue;
     private javax.swing.JPanel mosaicPanel;
     private javax.swing.JPanel mosaicTab;
     private javax.swing.JLabel mosaicWidthLabel;
-    private javax.swing.JSpinner mosaicWidthValue;
+    private javax.swing.JTextField mosaicWidthValue;
     private javax.swing.JMenuItem newFile;
     private javax.swing.JMenuItem openFile;
     private javax.swing.JButton openVideo;
     private javax.swing.JPanel piecesCanvas;
     private javax.swing.JLabel piecesLabel;
+    private javax.swing.JTextArea piecesMessage;
     private javax.swing.JPanel piecesPanel;
+    private javax.swing.JButton piecesPreview;
     private javax.swing.JScrollPane piecesScroll;
     private javax.swing.JPanel piecesTab;
     private javax.swing.JTextField piecesValue;

@@ -23,7 +23,6 @@ import javax.swing.event.ChangeEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bytedeco.javacv.FrameGrabber;
-import javax.imageio.ImageIO;
 
 import model.Multimedia;
 import view.MainWindow;
@@ -96,6 +95,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
             case "exportMosaicButton": exportMosaic(); return;
             
             /* Pieces tab */
+            case "piecesPreview": piecesPreview(); return;
             case "exportPiecesButton": exportPieces(); return;
             
             /* Unknow */
@@ -222,7 +222,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
                 // Read Mosaicator project file
                 File file = fileChooser.getSelectedFile();
                 video.open(null);
-                mainWindow.setMosaic(null, null, 0);
+                mainWindow.setMosaic(null);
+                mainWindow.setPieces(null, 0);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -265,9 +266,10 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
                 String path = fileChooser.getSelectedFile().getAbsolutePath();
-                ImageIO.write(video.getFrame(mainWindow.getFrameNumber()), "png", new File(path + ".png"));
+                video.saveFrame(path);
             } catch (IOException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error guardando el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -282,9 +284,10 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
             try {
                 String path = fileChooser.getSelectedFile().getAbsolutePath();
-                ImageIO.write(video.getMosaic(), "png", new File(path + ".png"));
+                video.saveMosaic(path);
             } catch (IOException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error guardando el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -293,12 +296,29 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      * Export posaic pieces as image.
      */
     public void exportPieces() {
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fileChooser.resetChoosableFileFilters();
         
         if (fileChooser.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
-            String path = fileChooser.getSelectedFile().getAbsolutePath();
-            
+            try {
+                String path = fileChooser.getSelectedFile().getAbsolutePath();
+                video.savePieces(path);
+            } catch (IOException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error guardando el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    /**
+     * Load preview pieces.
+     */
+    public void piecesPreview() {
+        try {
+            mainWindow.setPieces(video.getPieces(80), 10);
+        } catch (FrameGrabber.Exception ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error con el archivo de video:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -342,7 +362,8 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
                 video.open(fileChooser.getSelectedFile());
                 mainWindow.setVideoMetadata(video.getMetadata());
                 mainWindow.setFrame(video.getFrame(0));
-                mainWindow.setMosaic(null, null, 0);
+                mainWindow.setMosaic(null);
+                mainWindow.setPieces(null, 0);
             } catch (FrameGrabber.Exception ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error abriendo el archivo:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -356,7 +377,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
     public void generate() {
         try {
             video.mosaicate(mainWindow.getFrameNumber(), mainWindow.getDivisions(), mainWindow.getGap(), mainWindow.getSamplingLevel(), mainWindow.isCIELAB(), mainWindow.getScale());
-            mainWindow.setMosaic(video.getMosaic(), video.getSourceFrames(), 8);
+            mainWindow.setMosaic(video.getMosaic());
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error creando el mosaico:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

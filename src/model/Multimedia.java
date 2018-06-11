@@ -5,9 +5,13 @@
  */
 package model;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
+import java.io.File;
+import javax.imageio.ImageIO;
+
+import java.awt.image.ColorModel;
 import java.awt.image.BufferedImage;
 import org.bytedeco.javacpp.avutil;
 import org.bytedeco.javacv.Java2DFrameConverter;
@@ -25,12 +29,12 @@ public class Multimedia {
     private int samplingLevel;
     private boolean deltaE;
     private float scale;
+    private long time;
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
     private BufferedImage mosaic;
-    private int[] sourceFrameNumber;
-    private BufferedImage[] sourceFrame;
-    private final HashMap<Integer, Integer[]> framesSamples;
+    private int[] sourceFrame;
+    private final HashMap<Integer, Color[]> framesSamples;
     private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
     
     /**
@@ -43,10 +47,10 @@ public class Multimedia {
         samplingLevel = 0;
         deltaE = false;
         scale = 0.0F;
+        time = 0;
         metadata = null;
         grabber = null;
         mosaic = null;
-        sourceFrameNumber = null;
         sourceFrame = null;
         framesSamples = new HashMap<>();
         
@@ -55,30 +59,78 @@ public class Multimedia {
     }
     
     /**
+     * Initialize timer.
+     * @param message Message to show.
+     * @return Time at begin.
+     */
+    public long timerStart(String message) {
+        if ((message == null) || (message.isEmpty())) message = "Init timer";
+        System.out.print("\t" + message + ":...");
+        time = System.currentTimeMillis();
+        return time;
+    }
+    
+    /**
+     * Stop the timer.
+     * @return Time elapsed.
+     */
+    public long timerStop() {
+        time = System.currentTimeMillis() - time;
+        System.out.println("\t" + time / 1000.0F + " seconds elapsed approx.");
+        return time;
+    }
+    
+    /**
      * Calculate the average color of an image.
      * @param src Source image.
-     * @param offset Pixel offset.
+     * @param xi Initial column.
+     * @param yi Initial row.
+     * @param xf Final column.
+     * @param yf Final row.
      * @return Average color.
      */
-    private int averageColor(BufferedImage src, int offset) {
-        int width = src.getWidth();
-        int height = src.getHeight();
-        int acumR = 0;
-        int acumG = 0;
-        int acumB = 0;
+    private Color averageColor(BufferedImage src, int xi, int yi, int xf, int yf) {
+        float acumR = 0.0F;
+        float acumG = 0.0F;
+        float acumB = 0.0F;
         int sum = 0;
         
-        for (int x = 0; x < width; x += offset) {
-            for (int y = 0; y < height; y += offset) {
-                int rgb = src.getRGB(x, y);
-                acumR += (rgb >> 16) & 0x00FF0000;
-                acumG += (rgb >>  8) & 0x0000FF00;
-                acumB +=  rgb        & 0x000000FF;
+        for (int i = xi; i < xf; i++) {
+            for (int j = yi; j < yf; j++) {
+                int color = src.getRGB(i, j);
+                float u = (color >> 16) & 0xFF;
+                float v = (color >>  8) & 0xFF;
+                float s =  color        & 0xFF;
                 sum++;
+                
+                if (deltaE) {
+                    float r = u / 255.0F;
+                    float g = v / 255.0F;
+                    float b = s / 255.0F;
+                    
+                    r = (float) (r > 0.04045F ? Math.pow((r + 0.055F) / 1.055F, 2.4F) : r / 12.92F);
+                    g = (float) (g > 0.04045F ? Math.pow((g + 0.055F) / 1.055F, 2.4F) : g / 12.92F);
+                    b = (float) (b > 0.04045F ? Math.pow((b + 0.055F) / 1.055F, 2.4F) : b / 12.92F);
+
+                    float x = (r * 0.4124F + g * 0.3576F + b * 0.1805F) / 0.95047F;
+                    float y = (r * 0.2126F + g * 0.7152F + b * 0.0722F) / 1.00000F;
+                    float z = (r * 0.0193F + g * 0.1192F + b * 0.9505F) / 1.08883F;
+
+                    acumR += (float) (x > 0.008856F ? Math.pow(x, 1.0F / 3.0F) : (7.787F * x) + 16.0F / 116.0F);
+                    acumG += (float) (y > 0.008856F ? Math.pow(y, 1.0F / 3.0F) : (7.787F * y) + 16.0F / 116.0F);
+                    acumB += (float) (z > 0.008856F ? Math.pow(z, 1.0F / 3.0F) : (7.787F * z) + 16.0F / 116.0F);
+                } else {
+                    acumR += u;
+                    acumG += v;
+                    acumB += s;
+                }
             }
         }
         
-        return ((acumR / (sum)) << 16) | ((acumG / sum) << 8) | (acumB / sum);
+        float a = acumR / sum;
+        float b = acumG / sum;
+        float c = acumB / sum;
+        return deltaE ? Color.toCIELAB(a, b, c) : new Color(a, b, c);
     }
     
     /**
@@ -89,11 +141,12 @@ public class Multimedia {
         /* Reset members */
         framesSamples.clear();
         int top = metadata.frames();
+        int width = metadata.width();
+        int height = metadata.height();
         
         /* Dimensions of the subframes */
-        int offset = (int) (samplingLevel / scale);
-        float dx = (float) metadata.width() / (float) samplingLevel;
-        float dy = (float) metadata.height() / (float) samplingLevel;
+        float dx = (float) width / (float) samplingLevel;
+        float dy = (float) height / (float) samplingLevel;
         
         
         /* For each frame */
@@ -101,20 +154,29 @@ public class Multimedia {
             BufferedImage frame = getFrame(i);
             if (frame == null) break;
             
-            Integer[] average = new Integer[samplingLevel * samplingLevel];
+            Color[] average = new Color[samplingLevel * samplingLevel];
             int k = 0;
-            float x = 0.0F;
-            float y = 0.0F;
+            float xi = 0.0F;
+            float yi = 0.0F;
+            float xf;
+            float yf;
             
             /* For each subframe */
-            for (int col = 0; col < samplingLevel; col++, x += dx,  y = 0.0F)
-                for (int row = 0; row < samplingLevel; row++, y += dy, k++) {
-                    float px = x + 0.5F;
-                    float py = y + 0.5F;
-                    float subWidth = px + dx;
-                    float subHeight = py + dy;
-                    average[k] = averageColor(frame.getSubimage((int) px, (int) py, (int) subWidth, (int) subHeight), offset);
+            for (int col = 0; col < samplingLevel; col++, xi += dx, yi = 0.0F) {
+                xf = (int) (xi + dx + 0.5F);
+                if (xf > width) xf = width;
+                
+                for (int row = 0; row < samplingLevel; row++, yi += dy, k++) {
+                    yf = (int) (yi + dy + 0.5F);
+                    if (yf > height) yf = height;
+                    
+                    int px = (int) (xi + 0.5F);
+                    int py = (int) (yi + 0.5F);
+                    
+                    average[k] = averageColor(frame, (int) px, (int) py, (int) xf, (int) yf);
                 }
+            }
+            
             /* Put frame sample */
             framesSamples.put(i, average);
         }
@@ -125,46 +187,50 @@ public class Multimedia {
      * @return Samples array with each color mean by level.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    private Integer[][] sampleFrame() throws FrameGrabber.Exception {
+    private Color[][] sampleFrame() throws FrameGrabber.Exception {
         /* Get frame to mosaicate */
         BufferedImage frame = getFrame(frameID);
         if (frame == null) return null;
         
+        int width = metadata.width();
+        int height = metadata.height();
+        
         /* Dimensions of the pieces*/
-        float dx = (float) metadata.width() / (float) divisions;
-        float dy = (float) metadata.height() / (float) divisions;
+        float dx = (float) width / (float) divisions;
+        float dy = (float) height / (float) divisions;
         
         /* Dimensions of the subpieces */
         float dw = dx / (float) samplingLevel;
         float dz = dy / (float) samplingLevel;
         
-        Integer[][] frameSample = new Integer[divisions * divisions][samplingLevel * samplingLevel];
+        Color[][] frameSample = new Color[divisions * divisions][samplingLevel * samplingLevel];
         int k = 0;
         int l = 0;
-        float x = 0.0F;
-        float y = 0.0F;
-        float w = 0.0F;
-        float z = 0.0F;
+        float xi = 0.0F;
+        float yi = 0.0F;
+        float wi = 0.0F;
+        float zi = 0.0F;
+        float wf;
+        float zf;
         
         /* For each piece */
-        for (int colD = 0; colD < divisions; colD++, x += dx, y = 0.0F) 
-            for (int rowD = 0; rowD < divisions; rowD++, y += dy, k++, l = 0) {
-                float px = x + 0.5F;
-                float py = y + 0.5F;
-                float pieceWidth = px + dx;
-                float pieceHeight = py + dy;
-                BufferedImage piece = frame.getSubimage((int) x, (int) y, (int) pieceWidth, (int) pieceHeight);
-                
+        for (int colD = 0; colD < divisions; colD++, xi += dx, yi = 0.0F)
+            for (int rowD = 0; rowD < divisions; rowD++, yi += dy, wi = xi, k++, l = 0)
                 /* For each subpiece */
-                for (int colL = 0; colL < samplingLevel; colL++, w += dw, z = 0.0F)
-                    for (int rowL = 0; rowL < samplingLevel; rowL++, z += dz, l++) {
-                        float pw = w + 0.5F;
-                        float pz = z + 0.5F;
-                        float subWidth = pw + dw;
-                        float subHeight = pz + dz;
-                        frameSample[k][l] = averageColor(piece.getSubimage((int) w, (int) z, (int) subWidth, (int) subHeight), 1);
+                for (int colL = 0; colL < samplingLevel; colL++, wi += dw, zi = yi) {
+                    wf = (int) (wi + dw + 0.5F);
+                    if (wf > width) wf = (int) (width + 0.5F);
+                    
+                    for (int rowL = 0; rowL < samplingLevel; rowL++, zi += dz, l++) {
+                        zf = (int) (zi + dz + 0.5F);
+                        if (zf > height) zf = (int) (height * 0.5F);
+                        
+                        int pw = (int) (wi + 0.5F);
+                        int pz = (int) (zi + 0.5F);
+                        
+                        frameSample[k][l] = averageColor(frame, pw, pz, (int) wf, (int) zf);
                     }
-        }
+                }
         
         return frameSample;
     }
@@ -175,36 +241,30 @@ public class Multimedia {
      */
     private void searchSources() throws FrameGrabber.Exception {
         /* Sample selected frame */
-        Integer[][] frameSample = sampleFrame();
+        Color[][] frameSample = sampleFrame();
         
         int top = frameSample.length;
-        sourceFrameNumber = new int[top];
+        sourceFrame = new int[top];
         
         /* For each destiny */
         for (int i = 0; i < top; i++) {
-            int min = Integer.MAX_VALUE;
+            float min = Float.POSITIVE_INFINITY;
             int nearest = 0;
             
             /* For each sampled frame */
-            for (HashMap.Entry<Integer, Integer[]> sampled : framesSamples.entrySet()) {
-                int distance = 0;
+            for (HashMap.Entry<Integer, Color[]> sampled : framesSamples.entrySet()) {
+                float distance = 0;
                 int frameNumber = sampled.getKey();
-                Integer[] average = sampled.getValue();
+                Color[] average = sampled.getValue();
                 
                 /* Manhattan distance */
                 for (int j = 0; j < average.length; j++) {
                     if (frameSample[i][j] == null) {
-                        distance = Integer.MAX_VALUE;
+                        distance = Float.POSITIVE_INFINITY;
                         break;
                     }
                     
-                    int rgbDst = frameSample[i][j];
-                    int rgbSrc = average[j];
-                    int r = Math.abs(((rgbSrc >> 16) & 0xFF) - ((rgbDst >> 16) & 0xFF));
-                    int g = Math.abs(((rgbSrc >>  8) & 0xFF) - ((rgbDst >>  8) & 0xFF));
-                    int b = Math.abs(( rgbSrc        & 0xFF) - ( rgbDst        & 0xFF));
-                    
-                    distance += r + g + b;
+                    distance += frameSample[i][j].difference(average[j]);
                 }
                 
                 /* Get min distance */
@@ -215,7 +275,7 @@ public class Multimedia {
             }
             
             /* Store nearest */
-            sourceFrameNumber[i] = nearest;
+            sourceFrame[i] = nearest;
         }
     }
     
@@ -228,36 +288,31 @@ public class Multimedia {
         int frameWidth = metadata.width();
         int frameHeight = metadata.height();
         
-        /* Dimensions of the pieces */
-        int offset = (int) (samplingLevel / scale);
-        float dx = (float) frameWidth / (float) samplingLevel;
-        float dy = (float) frameHeight / (float) samplingLevel;
+        /* Scale of the pieces */
+        float scaleFactor = scale / divisions;
         
         /* Dimensions of the mosaic */
-        int mosaicWidth = (int) Math.ceil(frameWidth * scale);
-        int mosaicHeight = (int) Math.ceil(frameHeight * scale);
+        int mosaicWidth = (int) (frameWidth * scale + 0.5F);
+        int mosaicHeight = (int) (frameHeight * scale + 0.5F);
         mosaic = new BufferedImage(mosaicWidth, mosaicHeight, BufferedImage.TYPE_3BYTE_BGR);
         
         int k = 0;
         float x = 0.0F;
         float y = 0.0F;
-        float w = 0.0F;
-        float z = 0.0F;
         
         /* For each piece */
-        for (int col = 0; col < divisions; col++, x += dx, y = 0.0F) {
-            for (int row = 0; row < divisions; row++, y += dy, k++, w = 0.0F) {
-                BufferedImage piece = getFrame(sourceFrameNumber[k]);
+        for (int col = 0; col < divisions; col++, x += frameWidth, y = 0.0F) {
+            for (int row = 0; row < divisions; row++, y += frameHeight, k++) {
+                BufferedImage piece = getFrame(sourceFrame[k]);
                 
-                /* For each scaled pixel */
-                for (int i = 0; w < frameWidth; i++, w += offset, z = 0.0F)
-                    for (int j = 0; z < frameWidth; j++, z += offset) {
-                        float px = x + i + 0.5F;
-                        float py = y + j + 0.5F;
-                        float pw = w + 0.5F;
-                        float pz = z + 0.5F;
+                /* Fill destination */
+                for (int i = 0; i < frameWidth; i++)
+                    for (int j = 0; j < frameHeight; j++) {
+                        int px = (int) ((x + i) * scaleFactor);
+                        int py = (int) ((y + j) * scaleFactor);
                         
-                        mosaic.setRGB((int) px, (int) py, piece.getRGB((int) pw, (int) pz));
+                        if ((px >= mosaicWidth) || (py >= mosaicHeight)) break;
+                        mosaic.setRGB(px, py, piece.getRGB(i, j));
                     }
             }
         }
@@ -301,7 +356,6 @@ public class Multimedia {
         metadata = null;
         grabber = null;
         mosaic = null;
-        sourceFrameNumber = null;
         sourceFrame = null;
         framesSamples.clear();
     }
@@ -319,27 +373,46 @@ public class Multimedia {
      */
     public void mosaicate(int frameNumber, int div, int interval, int level, boolean cielab, float factor) throws FrameGrabber.Exception {
         boolean build = false;
+        long time;
         
         /* Process video frames */
-        if ((gap != interval) || (samplingLevel != level)|| (deltaE != cielab)  || (scale != factor)) {
+        if ((gap != interval) || (samplingLevel != level)|| (deltaE != cielab) || (scale == 0.0F)) {
             gap = interval;
             deltaE = cielab;
             samplingLevel = level;
             scale = factor;
+            
+            timerStart("Processing video");
+            
             sampleFrames();
             build = true;
+            
+            timerStop();
         }
         
         /* Search source frames */
-        if ((frameID != frameNumber) || (divisions != div) || (scale != factor) || build) {
+        if ((frameID != frameNumber) || (divisions != div)) {
             frameID = frameNumber;
             divisions = div;
+            
+            timerStart("Processing frame");
+            
             searchSources();
             build = true;
+            
+            timerStop();
         }
         
         /* Build mosaic */
-        if(build) buildMosaic();
+        if((scale != factor) || build) {
+            scale = factor;
+            
+            timerStart("Building mosaic");
+            
+            buildMosaic();
+            
+            timerStop();
+        }
     }
     
     /**
@@ -359,17 +432,55 @@ public class Multimedia {
     public BufferedImage getFrame(int frameNumber) throws FrameGrabber.Exception {
         if (grabber == null) return null;
         grabber.setFrameNumber(frameNumber);
-        return TO_BUFFERED_IMAGE.convert(grabber.grab());
+        BufferedImage frame = TO_BUFFERED_IMAGE.convert(grabber.grab());
+        if (frame == null) return null;
+        
+        ColorModel colorModel = frame.getColorModel();
+        return new BufferedImage(colorModel, frame.copyData(null), colorModel.isAlphaPremultiplied(), null);
     }
     
     /**
      * Get the source frames array.
+     * @param pieceWidth Width of the pieces
      * @return Source frames array.
      * @throws org.bytedeco.javacv.FrameGrabber.Exception Frame grabber exception.
      */
-    public BufferedImage[] getSourceFrames() throws FrameGrabber.Exception {
+    public BufferedImage[] getPieces(int pieceWidth) throws FrameGrabber.Exception {
         if (frameID == -1) return null;
-        return sourceFrame;
+        
+        /* Pieces */
+        int top = sourceFrame.length;
+        BufferedImage[] piece = new BufferedImage[top];
+        
+        /* Dimensions of the frame */
+        int width = metadata.width();
+        int height = metadata.height();
+        
+        /* Dimensions of the pieces */
+        float scaleFactor = (float) pieceWidth / (float) width;
+        int pieceHeight = (int) (height * scaleFactor + 0.5F);
+        
+        float offset = 1.0F / scaleFactor;
+        float x = 0.0F;
+        float y = 0.0F;
+        
+        timerStart("Building preview");
+        
+        /* For each source frame */
+        for (int k = 0; k < top; k++, x = 0.0F) {
+            BufferedImage source = getFrame(sourceFrame[k]);
+            BufferedImage frame = new BufferedImage(pieceWidth, pieceHeight, source.getType());
+            
+            /* Scale frame */
+            for (int i = 0; i < pieceWidth; i++, x += offset, y = 0.0F)
+                for (int j = 0; j < pieceHeight;  j++, y += offset)
+                    frame.setRGB(i, j, source.getRGB((int) x, (int) y));
+            
+            piece[k] = frame;
+        }
+        
+        timerStop();
+        return piece;
     }
     
     /**
@@ -378,5 +489,37 @@ public class Multimedia {
      */
     public BufferedImage getMosaic() {
         return mosaic;
+    }
+    
+    /**
+     * Save current frame.
+     * @param path Path to save.
+     * @throws IOException IO Exception.
+     */
+    public void saveFrame(String path) throws IOException {
+        ImageIO.write(getFrame(frameID), "png", new File(path + ".png"));
+    }
+    
+    /**
+     * Save current mosaic.
+     * @param path Path to save.
+     * @throws IOException IO Exception.
+     */
+    public void saveMosaic(String path) throws IOException {
+        ImageIO.write(mosaic, "png", new File(path + ".png"));
+    }
+    
+    /**
+     * Save pieces.
+     * @param path Path to save.
+     * @throws IOException IO Exception.
+     */
+    public void savePieces(String path) throws IOException {
+        timerStart("Saving pieces");
+        
+        for (int i = 0; i < sourceFrame.length; i++)
+            ImageIO.write(getFrame(i), "png", new File(String.format("%s%04d.png", path, i)));
+        
+        timerStop();
     }
 }
