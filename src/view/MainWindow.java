@@ -1235,8 +1235,8 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
         /* Menu bar */
-        save.setEnabled(true);
-        saveAs.setEnabled(true);
+        save.setEnabled(false);
+        saveAs.setEnabled(false);
         exportFrameMenu.setEnabled(true);
         exportMosaicMenu.setEnabled(true);
         exportPiecesMenu.setEnabled(true);
