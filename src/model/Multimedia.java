@@ -63,7 +63,7 @@ public class Multimedia {
      * @param message Message to show.
      * @return Time at begin.
      */
-    public long timerStart(String message) {
+    private long timerStart(String message) {
         if ((message == null) || (message.isEmpty())) message = "Init timer";
         System.out.print("\t" + message + ":...");
         time = System.currentTimeMillis();
@@ -74,7 +74,7 @@ public class Multimedia {
      * Stop the timer.
      * @return Time elapsed.
      */
-    public long timerStop() {
+    private long timerStop() {
         time = System.currentTimeMillis() - time;
         System.out.println("\t" + time / 1000.0F + " seconds elapsed approx.");
         return time;
@@ -373,7 +373,6 @@ public class Multimedia {
      */
     public void mosaicate(int frameNumber, int div, int interval, int level, boolean cielab, float factor) throws FrameGrabber.Exception {
         boolean build = false;
-        long time;
         
         /* Process video frames */
         if ((gap != interval) || (samplingLevel != level)|| (deltaE != cielab) || (scale == 0.0F)) {
@@ -391,7 +390,7 @@ public class Multimedia {
         }
         
         /* Search source frames */
-        if ((frameID != frameNumber) || (divisions != div)) {
+        if ((frameID != frameNumber) || (divisions != div) || build) {
             frameID = frameNumber;
             divisions = div;
             
