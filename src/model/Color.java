@@ -40,16 +40,17 @@ public class Color {
     }
     
     /**
-     * RGB constructor
+     * Color constructor.
      * @param r Red.
      * @param g Green.
      * @param b Blue.
+     * @param model Color space model.
      */
-    public Color(float r, float g, float b) {
+    public Color(float r, float g, float b, int model) {
         x = r;
         y = g;
         z = b;
-        space = RGB;
+        space = model;
     }
     
     /**
@@ -76,7 +77,7 @@ public class Color {
         y = (float) (y > 0.008856F ? Math.pow(y, 1.0F / 3.0F) : (7.787F * y) + 16.0F / 116.0F);
         z = (float) (z > 0.008856F ? Math.pow(z, 1.0F / 3.0F) : (7.787F * z) + 16.0F / 116.0F);
         
-        return new Color(x, y, z);
+        return new Color(x, y, z, CIELAB);
     }
     
     /**

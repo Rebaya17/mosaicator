@@ -965,7 +965,7 @@ public class MainWindow extends javax.swing.JFrame {
     /**
      * Update the scale of the mosaic.
      */
-    // <editor-fold defaultstate="collapsed" desc="Update the time scale from frame number">
+    // <editor-fold defaultstate="collapsed" desc="Update the scale of the mosaic">
     private void updateScale() {
         float scale = (Float) scaleValue.getValue();
         mosaicWidthValue.setText(String.valueOf((int) (metadata.width() * scale + 0.5F)));

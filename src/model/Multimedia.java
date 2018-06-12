@@ -130,7 +130,7 @@ public class Multimedia {
         float a = acumR / sum;
         float b = acumG / sum;
         float c = acumB / sum;
-        return deltaE ? Color.toCIELAB(a, b, c) : new Color(a, b, c);
+        return deltaE ? new Color(a, b, c, Color.CIELAB) : new Color(a, b, c, Color.RGB);
     }
     
     /**
