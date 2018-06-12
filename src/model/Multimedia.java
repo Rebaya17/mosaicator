@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import java.awt.image.ColorModel;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import org.bytedeco.javacpp.avutil;
 import org.bytedeco.javacv.Java2DFrameConverter;
 
@@ -33,9 +34,32 @@ public class Multimedia {
     private Metadata metadata;
     private FFmpegFrameGrabber grabber;
     private BufferedImage mosaic;
-    private int[] sourceFrame;
+    private PieceInfo[] piece;
     private final HashMap<Integer, Color[]> framesSamples;
     private static final Java2DFrameConverter TO_BUFFERED_IMAGE = new Java2DFrameConverter();
+    
+    /**
+     * Piece information class.
+     */
+    private static class PieceInfo {
+        public boolean used;
+        public int frame;
+        public int row;
+        public int col;
+        
+        /**
+         * Piece information Constructor.
+         * @param id Frame number.
+         * @param i Row.
+         * @param j Column.
+         */
+        public PieceInfo(int id, int i, int j) {
+            used = false;
+            frame = id;
+            row = i;
+            col = j;
+        }
+    }
     
     /**
      * Mosaic Constructor.
@@ -51,7 +75,7 @@ public class Multimedia {
         metadata = null;
         grabber = null;
         mosaic = null;
-        sourceFrame = null;
+        piece = null;
         framesSamples = new HashMap<>();
         
         /* Disable FFmpeg verbose */
@@ -244,7 +268,7 @@ public class Multimedia {
         Color[][] frameSample = sampleFrame();
         
         int top = frameSample.length;
-        sourceFrame = new int[top];
+        piece = new PieceInfo[top];
         
         /* For each destiny */
         for (int i = 0; i < top; i++) {
@@ -275,7 +299,7 @@ public class Multimedia {
             }
             
             /* Store nearest */
-            sourceFrame[i] = nearest;
+            piece[i] = new PieceInfo(nearest, i / divisions, i % divisions);
         }
     }
     
@@ -288,34 +312,53 @@ public class Multimedia {
         int frameWidth = metadata.width();
         int frameHeight = metadata.height();
         
-        /* Scale of the pieces */
-        float scaleFactor = scale / divisions;
+        /* Dimensions of the pieces */
+        float d = divisions / scale;
+        float pieceWidth = (frameWidth * scale) / divisions;
+        float pieceHeight = (frameHeight * scale) / divisions;
         
         /* Dimensions of the mosaic */
         int mosaicWidth = (int) (frameWidth * scale + 0.5F);
         int mosaicHeight = (int) (frameHeight * scale + 0.5F);
         mosaic = new BufferedImage(mosaicWidth, mosaicHeight, BufferedImage.TYPE_3BYTE_BGR);
         
-        int k = 0;
-        float x = 0.0F;
-        float y = 0.0F;
-        
         /* For each piece */
-        for (int col = 0; col < divisions; col++, x += frameWidth, y = 0.0F) {
-            for (int row = 0; row < divisions; row++, y += frameHeight, k++) {
-                BufferedImage piece = getFrame(sourceFrame[k]);
+        for (int i = 0; i < piece.length; i++) {
+            PieceInfo info = piece[i];
+            if (info.used) continue;
+            
+            int id = info.frame;
+            BufferedImage frame = getFrame(id);
+            
+            /* Fill the mosaic */
+            for (int j = i; j < piece.length; j++) {
+                info = piece[j];
+                if (info.frame != id) continue;
                 
-                /* Fill destination */
-                for (int i = 0; i < frameWidth; i++)
-                    for (int j = 0; j < frameHeight; j++) {
-                        int px = (int) ((x + i) * scaleFactor);
-                        int py = (int) ((y + j) * scaleFactor);
-                        
-                        if ((px >= mosaicWidth) || (py >= mosaicHeight)) break;
-                        mosaic.setRGB(px, py, piece.getRGB(i, j));
+                info.used = true;
+                float row = info.row * pieceWidth;
+                float col = info.col * pieceHeight;
+
+                float x = row;
+                float y = col;
+
+                for (float w = 0.0F; w < frameWidth; w += d, x++, y = col)
+                    for (float z = 0.0F; z < frameHeight; z += d, y++) {
+                        int px = (int) x;
+                        int py = (int) y;
+                        int pw = (int) w;
+                        int pz = (int) z;
+
+                        if (px >= mosaicWidth) px = mosaicWidth - 1;
+                        if (py >= mosaicHeight) py = mosaicHeight - 1;
+
+                        mosaic.setRGB(px, py, frame.getRGB(pw, pz));
                     }
             }
         }
+        
+        /* Reset flag */
+        for (PieceInfo info : piece) info.used = false;
     }
     
     /**
@@ -356,7 +399,7 @@ public class Multimedia {
         metadata = null;
         grabber = null;
         mosaic = null;
-        sourceFrame = null;
+        piece = null;
         framesSamples.clear();
     }
     
@@ -447,9 +490,8 @@ public class Multimedia {
     public BufferedImage[] getPieces(int pieceWidth) throws FrameGrabber.Exception {
         if (frameID == -1) return null;
         
-        /* Pieces */
-        int top = sourceFrame.length;
-        BufferedImage[] piece = new BufferedImage[top];
+        /* Scaled pieces */
+        ArrayList<BufferedImage> scaledPiece = new ArrayList<>();
         
         /* Dimensions of the frame */
         int width = metadata.width();
@@ -460,26 +502,45 @@ public class Multimedia {
         int pieceHeight = (int) (height * scaleFactor + 0.5F);
         
         float offset = 1.0F / scaleFactor;
-        float x = 0.0F;
-        float y = 0.0F;
         
         timerStart("Building preview");
         
-        /* For each source frame */
-        for (int k = 0; k < top; k++, x = 0.0F) {
-            BufferedImage source = getFrame(sourceFrame[k]);
+        /* For each piece */
+        for (int i = 0; i < piece.length; i++) {
+            PieceInfo info = piece[i];
+            if (info.used) continue;
+            
+            int id = info.frame;
+            BufferedImage source = getFrame(id);
             BufferedImage frame = new BufferedImage(pieceWidth, pieceHeight, source.getType());
             
             /* Scale frame */
-            for (int i = 0; i < pieceWidth; i++, x += offset, y = 0.0F)
-                for (int j = 0; j < pieceHeight;  j++, y += offset)
-                    frame.setRGB(i, j, source.getRGB((int) x, (int) y));
+            float x = 0.0F;
+            float y = 0.0F;
             
-            piece[k] = frame;
+            for (int w = 0; w < pieceWidth; w++, x += offset, y = 0.0F)
+                for (int z = 0; z < pieceHeight;  z++, y += offset)
+                    frame.setRGB(w, z, source.getRGB((int) x, (int) y));
+
+            scaledPiece.add(frame);
+            
+            /* Mark frames with the same id */
+            for (int j = i; j < piece.length; j++) {
+                info = piece[j];
+                if (info.frame == id)
+                    info.used = true;
+            }
         }
         
         timerStop();
-        return piece;
+        
+        /* Reset flag */
+        for (PieceInfo info : piece) info.used = false;
+        
+        /* To array */
+        BufferedImage[] pieces = new BufferedImage[scaledPiece.size()];
+        pieces = scaledPiece.toArray(pieces);
+        return pieces;
     }
     
     /**
@@ -516,9 +577,26 @@ public class Multimedia {
     public void savePieces(String path) throws IOException {
         timerStart("Saving pieces");
         
-        for (int i = 0; i < sourceFrame.length; i++)
-            ImageIO.write(getFrame(i), "png", new File(String.format("%s%04d.png", path, i)));
+        /* For each piece */
+        for (int i = 0; i < piece.length; i++) {
+            PieceInfo info = piece[i];
+            if (info.used) continue;
+            
+            /* Save frame */
+            int id = info.frame;
+            ImageIO.write(getFrame(id), "png", new File(String.format("%s%04d.png", path, i)));
+            
+            /* Mark frames with the same id */
+            for (int j = i; j < piece.length; j++) {
+                info = piece[j];
+                if (info.frame == id)
+                    info.used = true;
+            }
+        }
         
         timerStop();
+        
+        /* Reset flag */
+        for (PieceInfo info : piece) info.used = false;
     }
 }

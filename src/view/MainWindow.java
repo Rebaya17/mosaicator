@@ -1335,8 +1335,9 @@ public class MainWindow extends javax.swing.JFrame {
         
         /* Pieces tab */
         setFullyEnabled(piecesPanel, enabled);
-        int divisions = (Integer) divisionsValue.getValue();
-        piecesValue.setText(enabled ? String.valueOf(divisions * divisions) : "");
+        piecesValue.setText("");
+        piecesCanvas.removeAll();
+        piecesCanvas.setLayout(new GridBagLayout());
         
         /* Refresh */
         mosaic.revalidate();
