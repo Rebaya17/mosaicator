@@ -315,7 +315,7 @@ public class Controller extends WindowAdapter implements ActionListener, ChangeL
      */
     public void piecesPreview() {
         try {
-            mainWindow.setPieces(video.getPieces(80), 11);
+            mainWindow.setPieces(video.getPieces(80), 12);
         } catch (FrameGrabber.Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(mainWindow, "Ha ocurrido un error con el archivo de video:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

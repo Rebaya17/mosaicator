@@ -135,7 +135,6 @@ public class MainWindow extends javax.swing.JFrame {
         piecesValue = new javax.swing.JTextField();
         exportPiecesButton = new javax.swing.JButton();
         piecesPreview = new javax.swing.JButton();
-        piecesMessage = new javax.swing.JTextArea();
         piecesScroll = new javax.swing.JScrollPane();
         piecesViewport = new javax.swing.JPanel();
         piecesCanvas = new javax.swing.JPanel();
@@ -659,35 +658,21 @@ public class MainWindow extends javax.swing.JFrame {
         piecesPreview.setText("Vista previa");
         piecesPreview.setName("piecesPreview"); // NOI18N
 
-        piecesMessage.setEditable(false);
-        piecesMessage.setBackground(new java.awt.Color(240, 240, 240));
-        piecesMessage.setColumns(20);
-        piecesMessage.setFont(new java.awt.Font("Tahoma", 0, 11)); // NOI18N
-        piecesMessage.setLineWrap(true);
-        piecesMessage.setTabSize(4);
-        piecesMessage.setText("La vista previa puede presentar problemas al representar grandes cantidades de piezas. En este caso use el botón exportar para ver las piezas con un visor externo.");
-        piecesMessage.setWrapStyleWord(true);
-        piecesMessage.setFocusable(false);
-        piecesMessage.setName("piecesMessage"); // NOI18N
-
         javax.swing.GroupLayout piecesPanelLayout = new javax.swing.GroupLayout(piecesPanel);
         piecesPanel.setLayout(piecesPanelLayout);
         piecesPanelLayout.setHorizontalGroup(
             piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(piecesPanelLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 3, Short.MAX_VALUE)
                 .addComponent(piecesPreview)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exportPiecesButton)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 3, Short.MAX_VALUE))
             .addGroup(piecesPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(piecesMessage)
-                    .addGroup(piecesPanelLayout.createSequentialGroup()
-                        .addComponent(piecesLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(piecesValue)))
+                .addComponent(piecesLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(piecesValue)
                 .addContainerGap())
         );
         piecesPanelLayout.setVerticalGroup(
@@ -701,8 +686,6 @@ public class MainWindow extends javax.swing.JFrame {
                 .addGroup(piecesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(piecesPreview)
                     .addComponent(exportPiecesButton))
-                .addGap(18, 18, 18)
-                .addComponent(piecesMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1506,7 +1489,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JButton openVideo;
     private javax.swing.JPanel piecesCanvas;
     private javax.swing.JLabel piecesLabel;
-    private javax.swing.JTextArea piecesMessage;
     private javax.swing.JPanel piecesPanel;
     private javax.swing.JButton piecesPreview;
     private javax.swing.JScrollPane piecesScroll;

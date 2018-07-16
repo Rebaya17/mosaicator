@@ -539,7 +539,7 @@ public class Multimedia {
         
         /* To array */
         BufferedImage[] pieces = new BufferedImage[scaledPiece.size()];
-        pieces = scaledPiece.toArray(pieces);
+        scaledPiece.toArray(pieces);
         return pieces;
     }
     
